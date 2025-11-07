@@ -4,7 +4,7 @@
  * It doesn't know about Leaflet, Mapbox, or any specific library
  */
 
-import { LeafletAdapter } from './adapters/leaflet-adapter.ts';
+import { LeafletAdapter } from './adapters/leaflet-adapter';
 import {
   GeoJSONFeature,
   GeoJSONFeatureCollection,
@@ -29,6 +29,21 @@ export class MapEngine {
     this.adapter.onMapClick((lat, lng) => {
       this.handleMapClick(lat, lng);
     });
+  }
+
+  /**
+   * Get the underlying map adapter (for advanced features)
+   */
+  getAdapter(): LeafletAdapter {
+    return this.adapter;
+  }
+
+  /**
+   * Center map on coordinates
+   */
+  centerOn(lat: number, lng: number, zoom?: number): void {
+    const map = this.adapter.getMap();
+    map.setView([lat, lng], zoom || map.getZoom());
   }
 
   /**
@@ -174,18 +189,41 @@ export class MapEngine {
 
   private createPopupContent(feature: GeoJSONFeature): string {
     const props = feature.properties;
+    const rating = props.rating || 0;
+    const stars = '⭐'.repeat(Math.floor(rating)) + '☆'.repeat(5 - Math.floor(rating));
+    const reviewCount = props.reviews?.length || 0;
+    
     return `
       <div style="min-width: 200px;">
         <h3 style="margin: 0 0 8px 0;">${props.name || 'Unnamed'}</h3>
+        ${rating > 0 ? `
+          <div style="margin: 4px 0; font-size: 1.1em;">
+            ${stars} <span style="color: #666; font-size: 0.9em;">(${rating.toFixed(1)})</span>
+          </div>
+        ` : ''}
+        ${reviewCount > 0 ? `
+          <p style="margin: 4px 0; color: #666; font-size: 0.9em;">
+            ${reviewCount} review${reviewCount !== 1 ? 's' : ''}
+          </p>
+        ` : ''}
         ${props.tags ? `<p style="margin: 4px 0;"><strong>Tags:</strong> ${props.tags.join(', ')}</p>` : ''}
         ${props.comments ? `<p style="margin: 4px 0;"><em>${props.comments}</em></p>` : ''}
+        ${props.last_visited ? `
+          <p style="margin: 4px 0; color: #666; font-size: 0.85em;">
+            Last visited: ${new Date(props.last_visited).toLocaleDateString()}
+          </p>
+        ` : ''}
       </div>
     `;
   }
 
   private handleMapClick(lat: number, lng: number): void {
-    // For now, just log. App layer will handle creation UI
-    console.log('Map clicked:', lat, lng);
+    // Emit event so app layer can handle it
+    this.emit('map:click', {
+      type: 'Feature',
+      properties: { lat, lng },
+      geometry: { type: 'Point', coordinates: [lng, lat] }
+    } as any);
   }
 
   private ensureFeatureId(feature: GeoJSONFeature): string {
