@@ -1,0 +1,57 @@
+[
+  {
+    "name": "Casa Lucio",
+    "address": "Cava Baja, 35, Madrid",
+    "lat": 40.4138,
+    "lng": -3.7082,
+    "note": "Famous for huevos rotos. Book in advance!",
+    "tags": ["traditional", "restaurant", "fancy"],
+    "visited": true,
+    "rating": 5,
+    "date_added": "2024-10-15"
+  },
+  {
+    "name": "Mercado de San Miguel",
+    "address": "Plaza de San Miguel, Madrid",
+    "lat": 40.4154,
+    "lng": -3.7088,
+    "note": "Great variety of tapas. Can be crowded.",
+    "tags": ["tapas", "tourist-friendly", "food"],
+    "visited": true,
+    "rating": 4,
+    "date_added": "2024-09-20"
+  },
+  {
+    "name": "La Carmencita",
+    "address": "Calle Libertad, 16, Madrid",
+    "lat": 40.4260,
+    "lng": -3.6987,
+    "note": "Hidden gem! Amazing menu del día.",
+    "tags": ["cheap", "local", "tapas"],
+    "visited": true,
+    "rating": 5,
+    "date_added": "2024-08-10"
+  },
+  {
+    "name": "Bodega de la Ardosa",
+    "address": "Calle Colón, 13, Madrid",
+    "lat": 40.4278,
+    "lng": -3.7014,
+    "note": "Best tortilla in Madrid. Try the vermouth!",
+    "tags": ["traditional", "cheap", "tapas"],
+    "visited": true,
+    "rating": 4,
+    "date_added": "2024-07-22"
+  },
+  {
+    "name": "DiverXO",
+    "address": "Calle Padre Damián, 23, Madrid",
+    "lat": 40.4509,
+    "lng": -3.6889,
+    "note": "3 Michelin stars. Expensive but worth it for special occasions.",
+    "tags": ["fancy", "restaurant", "michelin"],
+    "visited": false,
+    "rating": null,
+    "date_added": "2024-11-01"
+  }
+]
