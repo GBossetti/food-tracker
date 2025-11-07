@@ -1,57 +1,1321 @@
-[
-  {
-    "name": "Casa Lucio",
-    "address": "Cava Baja, 35, Madrid",
-    "lat": 40.4138,
-    "lng": -3.7082,
-    "note": "Famous for huevos rotos. Book in advance!",
-    "tags": ["traditional", "restaurant", "fancy"],
-    "visited": true,
-    "rating": 5,
-    "date_added": "2024-10-15"
-  },
-  {
-    "name": "Mercado de San Miguel",
-    "address": "Plaza de San Miguel, Madrid",
-    "lat": 40.4154,
-    "lng": -3.7088,
-    "note": "Great variety of tapas. Can be crowded.",
-    "tags": ["tapas", "tourist-friendly", "food"],
-    "visited": true,
-    "rating": 4,
-    "date_added": "2024-09-20"
-  },
-  {
-    "name": "La Carmencita",
-    "address": "Calle Libertad, 16, Madrid",
-    "lat": 40.4260,
-    "lng": -3.6987,
-    "note": "Hidden gem! Amazing menu del día.",
-    "tags": ["cheap", "local", "tapas"],
-    "visited": true,
-    "rating": 5,
-    "date_added": "2024-08-10"
-  },
-  {
-    "name": "Bodega de la Ardosa",
-    "address": "Calle Colón, 13, Madrid",
-    "lat": 40.4278,
-    "lng": -3.7014,
-    "note": "Best tortilla in Madrid. Try the vermouth!",
-    "tags": ["traditional", "cheap", "tapas"],
-    "visited": true,
-    "rating": 4,
-    "date_added": "2024-07-22"
-  },
-  {
-    "name": "DiverXO",
-    "address": "Calle Padre Damián, 23, Madrid",
-    "lat": 40.4509,
-    "lng": -3.6889,
-    "note": "3 Michelin stars. Expensive but worth it for special occasions.",
-    "tags": ["fancy", "restaurant", "michelin"],
-    "visited": false,
-    "rating": null,
-    "date_added": "2024-11-01"
-  }
-]
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-3.7082, 40.4138]
+      },
+      "properties": {
+        "id": "poi-1",
+        "name": "Casa Lucio",
+        "tags": ["fancy", "traditional", "good food"],
+        "comments": "Famous for huevos rotos. Must book 2 weeks in advance!",
+        "rating": 4.8,
+        "visit_count": 5,
+        "created_at": "2024-01-15T10:00:00Z",
+        "last_visited": "2024-10-20T21:30:00Z",
+        "reviews": [
+          {
+            "id": "r1-1",
+            "date": "2024-10-20T21:30:00Z",
+            "rating": 5,
+            "text": "Still the best! Huevos rotos are incredible. Service is excellent."
+          },
+          {
+            "id": "r1-2",
+            "date": "2024-08-15T20:00:00Z",
+            "rating": 5,
+            "text": "Amazing food, traditional Spanish cuisine at its finest."
+          },
+          {
+            "id": "r1-3",
+            "date": "2024-05-10T19:30:00Z",
+            "rating": 4,
+            "text": "Very good but quite expensive. Worth it for special occasions."
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-3.7088, 40.4154]
+      },
+      "properties": {
+        "id": "poi-2",
+        "name": "Mercado de San Miguel",
+        "tags": ["tapas", "tourist-friendly", "variety"],
+        "comments": "Great variety but can get very crowded. Go early!",
+        "rating": 4.0,
+        "visit_count": 8,
+        "created_at": "2024-02-01T12:00:00Z",
+        "last_visited": "2024-11-01T18:00:00Z",
+        "reviews": [
+          {
+            "id": "r2-1",
+            "date": "2024-11-01T18:00:00Z",
+            "rating": 4,
+            "text": "Always reliable for tapas. Try the jamón ibérico!"
+          },
+          {
+            "id": "r2-2",
+            "date": "2024-09-20T17:30:00Z",
+            "rating": 4,
+            "text": "Crowded on weekends but worth it for the variety."
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-3.6987, 40.4260]
+      },
+      "properties": {
+        "id": "poi-3",
+        "name": "La Carmencita",
+        "tags": ["cheap", "local", "hidden gem"],
+        "comments": "Best menu del día in the neighborhood!",
+        "rating": 5.0,
+        "visit_count": 12,
+        "created_at": "2024-01-20T14:00:00Z",
+        "last_visited": "2024-10-25T14:00:00Z",
+        "reviews": [
+          {
+            "id": "r3-1",
+            "date": "2024-10-25T14:00:00Z",
+            "rating": 5,
+            "text": "My go-to lunch spot. Amazing value for money!"
+          },
+          {
+            "id": "r3-2",
+            "date": "2024-09-15T13:30:00Z",
+            "rating": 5,
+            "text": "Authentic Spanish food, locals only. Perfect!"
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-3.7025, 40.4215]
+      },
+      "properties": {
+        "id": "poi-4",
+        "name": "Sobrino de Botín",
+        "tags": ["fancy", "historical", "touristy"],
+        "comments": "Oldest restaurant in the world! Try the cochinillo.",
+        "rating": 4.3,
+        "visit_count": 2,
+        "created_at": "2024-03-10T19:00:00Z",
+        "last_visited": "2024-08-20T20:00:00Z",
+        "reviews": [
+          {
+            "id": "r4-1",
+            "date": "2024-08-20T20:00:00Z",
+            "rating": 4,
+            "text": "Historic atmosphere, good food. A bit touristy but worth visiting once."
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-3.7066, 40.4190]
+      },
+      "properties": {
+        "id": "poi-5",
+        "name": "Casa Revuelta",
+        "tags": ["tapas", "cheap", "local", "good food"],
+        "comments": "Best bacalao in Madrid!",
+        "rating": 4.7,
+        "visit_count": 6,
+        "created_at": "2024-02-15T13:00:00Z",
+        "last_visited": "2024-10-10T13:30:00Z",
+        "reviews": [
+          {
+            "id": "r5-1",
+            "date": "2024-10-10T13:30:00Z",
+            "rating": 5,
+            "text": "The bacalao frito is legendary. Always packed but worth the wait."
+          },
+          {
+            "id": "r5-2",
+            "date": "2024-07-20T12:00:00Z",
+            "rating": 4,
+            "text": "Standing room only but the tapas are excellent and cheap."
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-3.7105, 40.4231]
+      },
+      "properties": {
+        "id": "poi-6",
+        "name": "StreetXO",
+        "tags": ["fancy", "modern", "creative"],
+        "comments": "DiverXO's casual concept. Still amazing!",
+        "rating": 4.9,
+        "visit_count": 3,
+        "created_at": "2024-04-05T21:00:00Z",
+        "last_visited": "2024-09-30T21:30:00Z",
+        "reviews": [
+          {
+            "id": "r6-1",
+            "date": "2024-09-30T21:30:00Z",
+            "rating": 5,
+            "text": "Innovative Asian fusion. The dumplings are mind-blowing!"
+          },
+          {
+            "id": "r6-2",
+            "date": "2024-06-15T20:00:00Z",
+            "rating": 5,
+            "text": "Creative menu, great atmosphere. Book ahead!"
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-3.7000, 40.4250]
+      },
+      "properties": {
+        "id": "poi-7",
+        "name": "Taberna La Bola",
+        "tags": ["traditional", "cocido", "good food"],
+        "comments": "THE place for cocido madrileño in winter.",
+        "rating": 4.6,
+        "visit_count": 4,
+        "created_at": "2024-01-25T14:00:00Z",
+        "last_visited": "2024-10-18T14:30:00Z",
+        "reviews": [
+          {
+            "id": "r7-1",
+            "date": "2024-10-18T14:30:00Z",
+            "rating": 5,
+            "text": "Best cocido in Madrid. Hearty, traditional, perfect for cold days."
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-3.7120, 40.4180]
+      },
+      "properties": {
+        "id": "poi-8",
+        "name": "El Brillante",
+        "tags": ["cheap", "sandwich", "local", "quick"],
+        "comments": "Best calamari sandwich near Reina Sofía!",
+        "rating": 4.4,
+        "visit_count": 10,
+        "created_at": "2024-02-20T12:00:00Z",
+        "last_visited": "2024-11-02T12:30:00Z",
+        "reviews": [
+          {
+            "id": "r8-1",
+            "date": "2024-11-02T12:30:00Z",
+            "rating": 4,
+            "text": "Quick lunch spot. The bocadillo de calamares is a must!"
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-3.6945, 40.4280]
+      },
+      "properties": {
+        "id": "poi-9",
+        "name": "Celso y Manolo",
+        "tags": ["tapas", "local", "cheap", "good food"],
+        "comments": "Hidden gem in Chueca. Amazing croquetas!",
+        "rating": 4.8,
+        "visit_count": 7,
+        "created_at": "2024-03-15T19:00:00Z",
+        "last_visited": "2024-10-28T19:30:00Z",
+        "reviews": [
+          {
+            "id": "r9-1",
+            "date": "2024-10-28T19:30:00Z",
+            "rating": 5,
+            "text": "Best croquetas in Madrid! Friendly staff, local vibe."
+          },
+          {
+            "id": "r9-2",
+            "date": "2024-08-10T18:00:00Z",
+            "rating": 5,
+            "text": "Never disappoints. Try the patatas bravas too!"
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-3.7055, 40.4170]
+      },
+      "properties": {
+        "id": "poi-10",
+        "name": "La Catapa",
+        "tags": ["tapas", "modern", "good food"],
+        "comments": "Modern tapas, great wine selection.",
+        "rating": 4.5,
+        "visit_count": 5,
+        "created_at": "2024-04-20T20:00:00Z",
+        "last_visited": "2024-10-05T20:30:00Z",
+        "reviews": [
+          {
+            "id": "r10-1",
+            "date": "2024-10-05T20:30:00Z",
+            "rating": 5,
+            "text": "Creative tapas and excellent wine list. A bit pricey but worth it."
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-3.7098, 40.4143]
+      },
+      "properties": {
+        "id": "poi-11",
+        "name": "Casa Labra",
+        "tags": ["traditional", "tapas", "cheap", "historical"],
+        "comments": "Since 1860! Famous for cod croquettes.",
+        "rating": 4.2,
+        "visit_count": 3,
+        "created_at": "2024-05-01T13:00:00Z",
+        "last_visited": "2024-09-15T13:30:00Z",
+        "reviews": [
+          {
+            "id": "r11-1",
+            "date": "2024-09-15T13:30:00Z",
+            "rating": 4,
+            "text": "Historic spot. The bacalao croquettes are the reason to go."
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-3.7010, 40.4300]
+      },
+      "properties": {
+        "id": "poi-12",
+        "name": "Yakitoro",
+        "tags": ["japanese", "modern", "fancy"],
+        "comments": "Japanese-Spanish fusion by chef Alberto Chicote.",
+        "rating": 4.7,
+        "visit_count": 2,
+        "created_at": "2024-06-10T21:00:00Z",
+        "last_visited": "2024-10-12T21:30:00Z",
+        "reviews": [
+          {
+            "id": "r12-1",
+            "date": "2024-10-12T21:30:00Z",
+            "rating": 5,
+            "text": "Amazing fusion food. The yakitori is exceptional!"
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-3.6920, 40.4310]
+      },
+      "properties": {
+        "id": "poi-13",
+        "name": "La Castela",
+        "tags": ["traditional", "good food", "local"],
+        "comments": "Perfect for Sunday lunch. Great wine selection.",
+        "rating": 4.6,
+        "visit_count": 4,
+        "created_at": "2024-03-25T14:00:00Z",
+        "last_visited": "2024-10-22T14:30:00Z",
+        "reviews": [
+          {
+            "id": "r13-1",
+            "date": "2024-10-22T14:30:00Z",
+            "rating": 5,
+            "text": "Excellent traditional food. The rabo de toro is amazing!"
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-3.7145, 40.4120]
+      },
+      "properties": {
+        "id": "poi-14",
+        "name": "Taberna Alhambra",
+        "tags": ["tapas", "cheap", "local", "beer"],
+        "comments": "Great terrace, perfect for vermouth on Sundays.",
+        "rating": 4.3,
+        "visit_count": 8,
+        "created_at": "2024-02-28T12:00:00Z",
+        "last_visited": "2024-11-03T12:30:00Z",
+        "reviews": [
+          {
+            "id": "r14-1",
+            "date": "2024-11-03T12:30:00Z",
+            "rating": 4,
+            "text": "Nice terrace for Sunday vermouth. Tapas are decent."
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-3.7075, 40.4205]
+      },
+      "properties": {
+        "id": "poi-15",
+        "name": "Juana La Loca",
+        "tags": ["pintxos", "basque", "good food"],
+        "comments": "Best pintxos in Madrid! Always crowded.",
+        "rating": 4.9,
+        "visit_count": 6,
+        "created_at": "2024-04-15T19:30:00Z",
+        "last_visited": "2024-10-27T20:00:00Z",
+        "reviews": [
+          {
+            "id": "r15-1",
+            "date": "2024-10-27T20:00:00Z",
+            "rating": 5,
+            "text": "Incredible pintxos! Get there early as it fills up fast."
+          },
+          {
+            "id": "r15-2",
+            "date": "2024-07-30T19:00:00Z",
+            "rating": 5,
+            "text": "Worth the wait. Every pintxo is delicious!"
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-3.7130, 40.4195]
+      },
+      "properties": {
+        "id": "poi-16",
+        "name": "Bodega de la Ardosa",
+        "tags": ["tapas", "traditional", "beer", "local"],
+        "comments": "Historic tavern. Great tortilla and vermouth!",
+        "rating": 4.4,
+        "visit_count": 5,
+        "created_at": "2024-03-30T18:00:00Z",
+        "last_visited": "2024-09-28T18:30:00Z",
+        "reviews": [
+          {
+            "id": "r16-1",
+            "date": "2024-09-28T18:30:00Z",
+            "rating": 4,
+            "text": "Classic Madrid tavern. The tortilla is excellent!"
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-3.6965, 40.4245]
+      },
+      "properties": {
+        "id": "poi-17",
+        "name": "Lateral",
+        "tags": ["modern", "tapas", "good food", "design"],
+        "comments": "Modern tapas bar with great ambiance.",
+        "rating": 4.5,
+        "visit_count": 7,
+        "created_at": "2024-05-15T20:00:00Z",
+        "last_visited": "2024-10-30T20:30:00Z",
+        "reviews": [
+          {
+            "id": "r17-1",
+            "date": "2024-10-30T20:30:00Z",
+            "rating": 5,
+            "text": "Love the modern take on tapas. The tuna tartare is amazing!"
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-3.7040, 40.4160]
+      },
+      "properties": {
+        "id": "poi-18",
+        "name": "Los Galayos",
+        "tags": ["traditional", "terrace", "good food"],
+        "comments": "Great terrace in Plaza Mayor. Tourist prices but good quality.",
+        "rating": 3.8,
+        "visit_count": 2,
+        "created_at": "2024-06-20T13:00:00Z",
+        "last_visited": "2024-08-25T13:30:00Z",
+        "reviews": [
+          {
+            "id": "r18-1",
+            "date": "2024-08-25T13:30:00Z",
+            "rating": 4,
+            "text": "Decent food in Plaza Mayor. Expensive but expected for the location."
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-3.6880, 40.4330]
+      },
+      "properties": {
+        "id": "poi-19",
+        "name": "Bazaar",
+        "tags": ["international", "cheap", "trendy", "variety"],
+        "comments": "Eclectic menu, great prices. Perfect for groups.",
+        "rating": 4.2,
+        "visit_count": 9,
+        "created_at": "2024-02-10T20:00:00Z",
+        "last_visited": "2024-10-15T20:30:00Z",
+        "reviews": [
+          {
+            "id": "r19-1",
+            "date": "2024-10-15T20:30:00Z",
+            "rating": 4,
+            "text": "Good value, lots of variety. Something for everyone!"
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-3.7092, 40.4225]
+      },
+      "properties": {
+        "id": "poi-20",
+        "name": "La Musa Latina",
+        "tags": ["brunch", "modern", "terrace", "good food"],
+        "comments": "Best brunch spot in Malasaña!",
+        "rating": 4.6,
+        "visit_count": 11,
+        "created_at": "2024-01-30T11:00:00Z",
+        "last_visited": "2024-11-04T11:30:00Z",
+        "reviews": [
+          {
+            "id": "r20-1",
+            "date": "2024-11-04T11:30:00Z",
+            "rating": 5,
+            "text": "Perfect Sunday brunch. The huevos benedictinos are delicious!"
+          },
+          {
+            "id": "r20-2",
+            "date": "2024-09-08T12:00:00Z",
+            "rating": 4,
+            "text": "Great for brunch but can get crowded. Book ahead!"
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-3.7110, 40.4210]
+      },
+      "properties": {
+        "id": "poi-21",
+        "name": "Ojalá",
+        "tags": ["modern", "brunch", "design", "hipster"],
+        "comments": "Unique decor with indoor beach. Instagram-worthy!",
+        "rating": 4.3,
+        "visit_count": 3,
+        "created_at": "2024-07-05T12:00:00Z",
+        "last_visited": "2024-10-08T12:30:00Z",
+        "reviews": [
+          {
+            "id": "r21-1",
+            "date": "2024-10-08T12:30:00Z",
+            "rating": 4,
+            "text": "Cool atmosphere, good food. A bit hipster but fun!"
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-3.7005, 40.4185]
+      },
+      "properties": {
+        "id": "poi-22",
+        "name": "Estado Puro",
+        "tags": ["tapas", "modern", "fancy", "good food"],
+        "comments": "Paco Roncero's tapas bar. Michelin-quality at tapas prices!",
+        "rating": 4.8,
+        "visit_count": 4,
+        "created_at": "2024-05-25T21:00:00Z",
+        "last_visited": "2024-09-20T21:30:00Z",
+        "reviews": [
+          {
+            "id": "r22-1",
+            "date": "2024-09-20T21:30:00Z",
+            "rating": 5,
+            "text": "Incredible tapas! Every dish is perfectly executed."
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-3.6995, 40.4270]
+      },
+      "properties": {
+        "id": "poi-23",
+        "name": "La Tasquería",
+        "tags": ["burger", "modern", "good food"],
+        "comments": "Gourmet burgers. The beef is exceptional!",
+        "rating": 4.7,
+        "visit_count": 6,
+        "created_at": "2024-04-10T20:00:00Z",
+        "last_visited": "2024-10-25T20:30:00Z",
+        "reviews": [
+          {
+            "id": "r23-1",
+            "date": "2024-10-25T20:30:00Z",
+            "rating": 5,
+            "text": "Best burger in Madrid! High quality meat and perfect cooking."
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-3.7060, 40.4240]
+      },
+      "properties": {
+        "id": "poi-24",
+        "name": "Ramses Life & Food",
+        "tags": ["fancy", "modern", "design", "terrace"],
+        "comments": "Philippe Starck design. Great for cocktails!",
+        "rating": 4.0,
+        "visit_count": 2,
+        "created_at": "2024-06-30T22:00:00Z",
+        "last_visited": "2024-09-05T22:30:00Z",
+        "reviews": [
+          {
+            "id": "r24-1",
+            "date": "2024-09-05T22:30:00Z",
+            "rating": 4,
+            "text": "Beautiful space, good cocktails. Food is okay but atmosphere is great."
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-3.6910, 40.4290]
+      },
+      "properties": {
+        "id": "poi-25",
+        "name": "Bibo Madrid",
+        "tags": ["fancy", "modern", "andalusian", "good food"],
+        "comments": "Dani García's Madrid restaurant. Andalusian flavors.",
+        "rating": 4.9,
+        "visit_count": 2,
+        "created_at": "2024-08-01T21:00:00Z",
+        "last_visited": "2024-10-18T21:30:00Z",
+        "reviews": [
+          {
+            "id": "r25-1",
+            "date": "2024-10-18T21:30:00Z",
+            "rating": 5,
+            "text": "Spectacular! Every dish is a work of art. Expensive but worth it."
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-3.7135, 40.4165]
+      },
+      "properties": {
+        "id": "poi-26",
+        "name": "Café del Círculo",
+        "tags": ["cafe", "traditional", "terrace", "art"],
+        "comments": "Beautiful cafe inside Fine Arts Circle. Great for coffee.",
+        "rating": 4.4,
+        "visit_count": 5,
+        "created_at": "2024-03-20T11:00:00Z",
+        "last_visited": "2024-10-20T11:30:00Z",
+        "reviews": [
+          {
+            "id": "r26-1",
+            "date": "2024-10-20T11:30:00Z",
+            "rating": 4,
+            "text": "Lovely space for coffee. The terrace on the roof is amazing!"
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-3.7020, 40.4155]
+      },
+      "properties": {
+        "id": "poi-27",
+        "name": "Chocolatería San Ginés",
+        "tags": ["dessert", "traditional", "churros", "historical"],
+        "comments": "The churros con chocolate institution. Open 24/7!",
+        "rating": 4.5,
+        "visit_count": 15,
+        "created_at": "2024-01-10T02:00:00Z",
+        "last_visited": "2024-11-02T02:30:00Z",
+        "reviews": [
+          {
+            "id": "r27-1",
+            "date": "2024-11-02T02:30:00Z",
+            "rating": 5,
+            "text": "Classic! Perfect after a night out. The churros are always crispy."
+          },
+          {
+            "id": "r27-2",
+            "date": "2024-08-15T10:00:00Z",
+            "rating": 4,
+            "text": "Tourist trap but the churros are genuinely good!"
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-3.7150, 40.4250]
+      },
+      "properties": {
+        "id": "poi-28",
+        "name": "Honest Greens",
+        "tags": ["healthy", "salad", "modern", "quick"],
+        "comments": "Healthy fast food. Great salads and bowls.",
+        "rating": 4.2,
+        "visit_count": 8,
+        "created_at": "2024-02-25T13:00:00Z",
+        "last_visited": "2024-10-28T13:30:00Z",
+        "reviews": [
+          {
+            "id": "r28-1",
+            "date": "2024-10-28T13:30:00Z",
+            "rating": 4,
+            "text": "Good for a healthy lunch. Fresh ingredients and good portions."
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-3.6955, 40.4265]
+      },
+      "properties": {
+        "id": "poi-29",
+        "name": "La Finca de Susana",
+        "tags": ["cheap", "good food", "local", "queue"],
+        "comments": "Amazing quality-price ratio but long queues!",
+        "rating": 4.6,
+        "visit_count": 4,
+        "created_at": "2024-04-25T14:00:00Z",
+        "last_visited": "2024-09-25T14:30:00Z",
+        "reviews": [
+          {
+            "id": "r29-1",
+            "date": "2024-09-25T14:30:00Z",
+            "rating": 5,
+            "text": "Best value in Madrid! Worth waiting in line."
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-3.7085, 40.4178]
+      },
+      "properties": {
+        "id": "poi-30",
+        "name": "Restaurante Botín",
+        "tags": ["fancy", "traditional", "historical", "touristy"],
+        "comments": "Guinness World Record oldest restaurant. The roast suckling pig is famous.",
+        "rating": 4.1,
+        "visit_count": 1,
+        "created_at": "2024-07-15T20:00:00Z",
+        "last_visited": "2024-07-15T20:00:00Z",
+        "reviews": [
+          {
+            "id": "r30-1",
+            "date": "2024-07-15T20:00:00Z",
+            "rating": 4,
+            "text": "Historic place, good traditional food. Very touristy but worth visiting once."
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-3.7115, 40.4235]
+      },
+      "properties": {
+        "id": "poi-31",
+        "name": "Lhardy",
+        "tags": ["fancy", "traditional", "historical", "elegant"],
+        "comments": "Since 1839. Very elegant, traditional Madrid cuisine.",
+        "rating": 4.4,
+        "visit_count": 2,
+        "created_at": "2024-05-20T21:00:00Z",
+        "last_visited": "2024-09-10T21:30:00Z",
+        "reviews": [
+          {
+            "id": "r31-1",
+            "date": "2024-09-10T21:30:00Z",
+            "rating": 4,
+            "text": "Elegant old-world atmosphere. Food is traditional and well-executed."
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-3.6970, 40.4320]
+      },
+      "properties": {
+        "id": "poi-32",
+        "name": "La Daniela",
+        "tags": ["traditional", "cocido", "good food", "local"],
+        "comments": "Another great cocido spot. Less touristy than La Bola.",
+        "rating": 4.5,
+        "visit_count": 3,
+        "created_at": "2024-03-05T14:00:00Z",
+        "last_visited": "2024-10-19T14:30:00Z",
+        "reviews": [
+          {
+            "id": "r32-1",
+            "date": "2024-10-19T14:30:00Z",
+            "rating": 5,
+            "text": "Excellent cocido! More authentic and less touristy than other places."
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-3.7050, 40.4290]
+      },
+      "properties": {
+        "id": "poi-33",
+        "name": "Goiko Grill",
+        "tags": ["burger", "casual", "good food", "chain"],
+        "comments": "Best burger chain in Spain. Always reliable.",
+        "rating": 4.3,
+        "visit_count": 12,
+        "created_at": "2024-02-05T20:00:00Z",
+        "last_visited": "2024-11-01T20:30:00Z",
+        "reviews": [
+          {
+            "id": "r33-1",
+            "date": "2024-11-01T20:30:00Z",
+            "rating": 4,
+            "text": "Solid burgers, good quality. The Kevin Bacon is my favorite!"
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-3.6890, 40.4350]
+      },
+      "properties": {
+        "id": "poi-34",
+        "name": "Coque",
+        "tags": ["fancy", "michelin", "tasting menu", "special occasion"],
+        "comments": "3 Michelin stars! Book 2 months ahead. Expensive but incredible.",
+        "rating": 5.0,
+        "visit_count": 1,
+        "created_at": "2024-09-01T21:00:00Z",
+        "last_visited": "2024-09-01T21:00:00Z",
+        "reviews": [
+          {
+            "id": "r34-1",
+            "date": "2024-09-01T21:00:00Z",
+            "rating": 5,
+            "text": "Once in a lifetime experience! Every course was perfect. Worth every euro."
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-3.7095, 40.4200]
+      },
+      "properties": {
+        "id": "poi-35",
+        "name": "Federal Café",
+        "tags": ["brunch", "coffee", "hipster", "australian"],
+        "comments": "Australian-style brunch. Great coffee and avocado toast!",
+        "rating": 4.4,
+        "visit_count": 7,
+        "created_at": "2024-03-12T11:00:00Z",
+        "last_visited": "2024-10-26T11:30:00Z",
+        "reviews": [
+          {
+            "id": "r35-1",
+            "date": "2024-10-26T11:30:00Z",
+            "rating": 4,
+            "text": "Great brunch spot. The flat white is perfect!"
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-3.7030, 40.4220]
+      },
+      "properties": {
+        "id": "poi-36",
+        "name": "Sala de Despiece",
+        "tags": ["modern", "meat", "good food", "creative"],
+        "comments": "Butcher shop meets restaurant. Creative meat dishes.",
+        "rating": 4.7,
+        "visit_count": 3,
+        "created_at": "2024-06-05T20:30:00Z",
+        "last_visited": "2024-10-14T21:00:00Z",
+        "reviews": [
+          {
+            "id": "r36-1",
+            "date": "2024-10-14T21:00:00Z",
+            "rating": 5,
+            "text": "Unique concept and excellent execution. The steak tartare is amazing!"
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-3.6935, 40.4275]
+      },
+      "properties": {
+        "id": "poi-37",
+        "name": "Platea Madrid",
+        "tags": ["variety", "modern", "entertainment", "touristy"],
+        "comments": "Food hall with multiple restaurants. Great for groups with different tastes.",
+        "rating": 3.9,
+        "visit_count": 4,
+        "created_at": "2024-04-18T19:00:00Z",
+        "last_visited": "2024-09-22T19:30:00Z",
+        "reviews": [
+          {
+            "id": "r37-1",
+            "date": "2024-09-22T19:30:00Z",
+            "rating": 4,
+            "text": "Fun atmosphere, lots of options. Quality varies by stall."
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-3.7125, 40.4155]
+      },
+      "properties": {
+        "id": "poi-38",
+        "name": "Casa González",
+        "tags": ["tapas", "wine", "cheese", "traditional"],
+        "comments": "Wine and cheese paradise! Great selection of Spanish products.",
+        "rating": 4.6,
+        "visit_count": 5,
+        "created_at": "2024-05-08T19:00:00Z",
+        "last_visited": "2024-10-23T19:30:00Z",
+        "reviews": [
+          {
+            "id": "r38-1",
+            "date": "2024-10-23T19:30:00Z",
+            "rating": 5,
+            "text": "Incredible wine and cheese selection. Perfect for a light dinner."
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-3.7008, 40.4310]
+      },
+      "properties": {
+        "id": "poi-39",
+        "name": "Ten Con Ten",
+        "tags": ["fancy", "mediterranean", "good food", "elegant"],
+        "comments": "Elegant Mediterranean cuisine. Great for business dinners.",
+        "rating": 4.5,
+        "visit_count": 2,
+        "created_at": "2024-07-20T21:00:00Z",
+        "last_visited": "2024-10-05T21:30:00Z",
+        "reviews": [
+          {
+            "id": "r39-1",
+            "date": "2024-10-05T21:30:00Z",
+            "rating": 5,
+            "text": "Sophisticated and delicious. The tuna is exceptional!"
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-3.7078, 40.4263]
+      },
+      "properties": {
+        "id": "poi-40",
+        "name": "El Tigre",
+        "tags": ["tapas", "cheap", "generous", "beer"],
+        "comments": "Legendary for generous free tapas with drinks. Chaotic but fun!",
+        "rating": 4.0,
+        "visit_count": 10,
+        "created_at": "2024-01-18T20:00:00Z",
+        "last_visited": "2024-10-29T20:30:00Z",
+        "reviews": [
+          {
+            "id": "r40-1",
+            "date": "2024-10-29T20:30:00Z",
+            "rating": 4,
+            "text": "Can't beat the value! Huge tapas with every drink. Gets very crowded."
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-3.6948, 40.4238]
+      },
+      "properties": {
+        "id": "poi-41",
+        "name": "Amazónico",
+        "tags": ["fancy", "modern", "latin american", "design"],
+        "comments": "Stunning jungle-themed restaurant. Latin American fusion.",
+        "rating": 4.6,
+        "visit_count": 2,
+        "created_at": "2024-08-10T21:30:00Z",
+        "last_visited": "2024-10-16T22:00:00Z",
+        "reviews": [
+          {
+            "id": "r41-1",
+            "date": "2024-10-16T22:00:00Z",
+            "rating": 5,
+            "text": "Incredible atmosphere! The ceviche is perfect. A bit pricey but worth it."
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-3.7142, 40.4188]
+      },
+      "properties": {
+        "id": "poi-42",
+        "name": "Lamucca",
+        "tags": ["brunch", "casual", "good food", "local"],
+        "comments": "Cozy spot for brunch or casual dinner. Good value.",
+        "rating": 4.3,
+        "visit_count": 6,
+        "created_at": "2024-03-28T12:00:00Z",
+        "last_visited": "2024-10-21T12:30:00Z",
+        "reviews": [
+          {
+            "id": "r42-1",
+            "date": "2024-10-21T12:30:00Z",
+            "rating": 4,
+            "text": "Reliable neighborhood spot. Good for lazy Sunday brunch."
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-3.7018, 40.4195]
+      },
+      "properties": {
+        "id": "poi-43",
+        "name": "Tatel",
+        "tags": ["fancy", "modern", "celebrity", "good food"],
+        "comments": "Owned by Rafael Nadal and Cristiano Ronaldo. Great steaks!",
+        "rating": 4.4,
+        "visit_count": 2,
+        "created_at": "2024-06-25T21:00:00Z",
+        "last_visited": "2024-09-18T21:30:00Z",
+        "reviews": [
+          {
+            "id": "r43-1",
+            "date": "2024-09-18T21:30:00Z",
+            "rating": 4,
+            "text": "Stylish restaurant with excellent meat. A bit see-and-be-seen but food is solid."
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-3.6975, 40.4258]
+      },
+      "properties": {
+        "id": "poi-44",
+        "name": "El Imparcial",
+        "tags": ["tapas", "modern", "good food", "wine"],
+        "comments": "Former newspaper headquarters. Great tapas and wine list.",
+        "rating": 4.5,
+        "visit_count": 4,
+        "created_at": "2024-05-12T20:00:00Z",
+        "last_visited": "2024-10-11T20:30:00Z",
+        "reviews": [
+          {
+            "id": "r44-1",
+            "date": "2024-10-11T20:30:00Z",
+            "rating": 5,
+            "text": "Love the historic building. Food and wine are both excellent!"
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-3.7105, 40.4248]
+      },
+      "properties": {
+        "id": "poi-45",
+        "name": "Santceloni",
+        "tags": ["fancy", "michelin", "tasting menu", "special occasion"],
+        "comments": "2 Michelin stars. Classic fine dining experience.",
+        "rating": 4.9,
+        "visit_count": 1,
+        "created_at": "2024-10-01T21:00:00Z",
+        "last_visited": "2024-10-01T21:00:00Z",
+        "reviews": [
+          {
+            "id": "r45-1",
+            "date": "2024-10-01T21:00:00Z",
+            "rating": 5,
+            "text": "Impeccable service and food. Every detail perfect. Anniversary dinner was unforgettable!"
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-3.6925, 40.4295]
+      },
+      "properties": {
+        "id": "poi-46",
+        "name": "Papparoti",
+        "tags": ["cheap", "sandwich", "quick", "local"],
+        "comments": "Best sandwiches in Chamberí. Huge portions!",
+        "rating": 4.4,
+        "visit_count": 9,
+        "created_at": "2024-02-18T13:00:00Z",
+        "last_visited": "2024-10-31T13:30:00Z",
+        "reviews": [
+          {
+            "id": "r46-1",
+            "date": "2024-10-31T13:30:00Z",
+            "rating": 4,
+            "text": "Great value sandwiches. Always fresh and huge portions!"
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-3.7062, 40.4275]
+      },
+      "properties": {
+        "id": "poi-47",
+        "name": "Maricastaña",
+        "tags": ["tapas", "traditional", "good food", "local"],
+        "comments": "Hidden gem in Malasaña. Great croquetas and oreja!",
+        "rating": 4.7,
+        "visit_count": 5,
+        "created_at": "2024-04-22T19:00:00Z",
+        "last_visited": "2024-10-24T19:30:00Z",
+        "reviews": [
+          {
+            "id": "r47-1",
+            "date": "2024-10-24T19:30:00Z",
+            "rating": 5,
+            "text": "Authentic Madrid tavern. The oreja is the best I've had!"
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-3.7155, 40.4218]
+      },
+      "properties": {
+        "id": "poi-48",
+        "name": "Pez Gordo",
+        "tags": ["seafood", "modern", "good food", "casual"],
+        "comments": "Fresh seafood, casual atmosphere. Great oysters!",
+        "rating": 4.6,
+        "visit_count": 3,
+        "created_at": "2024-07-08T20:00:00Z",
+        "last_visited": "2024-10-17T20:30:00Z",
+        "reviews": [
+          {
+            "id": "r48-1",
+            "date": "2024-10-17T20:30:00Z",
+            "rating": 5,
+            "text": "Amazing seafood! The oysters and prawns are super fresh."
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-3.6998, 40.4283]
+      },
+      "properties": {
+        "id": "poi-49",
+        "name": "La Bien Aparecida",
+        "tags": ["tapas", "cantabrian", "good food", "local"],
+        "comments": "Cantabrian cuisine. The anchoas are incredible!",
+        "rating": 4.8,
+        "visit_count": 4,
+        "created_at": "2024-05-30T19:30:00Z",
+        "last_visited": "2024-10-13T20:00:00Z",
+        "reviews": [
+          {
+            "id": "r49-1",
+            "date": "2024-10-13T20:00:00Z",
+            "rating": 5,
+            "text": "Best anchoas in Madrid! Everything from Cantabria is top quality."
+          }
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-3.7045, 40.4305]
+      },
+      "properties": {
+        "id": "poi-50",
+        "name": "La Mucca de Prado",
+        "tags": ["burger", "italian", "good food", "casual"],
+        "comments": "Italian burgers! Unique and delicious. The truffle burger is amazing.",
+        "rating": 4.5,
+        "visit_count": 6,
+        "created_at": "2024-03-18T20:00:00Z",
+        "last_visited": "2024-10-30T20:30:00Z",
+        "reviews": [
+          {
+            "id": "r50-1",
+            "date": "2024-10-30T20:30:00Z",
+            "rating": 5,
+            "text": "Love the Italian twist on burgers. The truffle burger is heaven!"
+          },
+          {
+            "id": "r50-2",
+            "date": "2024-08-22T19:00:00Z",
+            "rating": 4,
+            "text": "Great burgers, good atmosphere. A bit pricey but quality is there."
+          }
+        ]
+      }
+    }
+  ]
+}

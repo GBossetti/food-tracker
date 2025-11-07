@@ -3,284 +3,117 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Food Map - Track Every Great Meal</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <title>Food Map - My Restaurant Tracker</title>
 </head>
 <body>
-  
-  <!-- ============================================ -->
-  <!-- LANDING PAGE VIEW -->
-  <!-- ============================================ -->
-  <div id="landing-view" class="view active">
-    <nav class="landing-nav">
-      <div class="nav-container">
-        <div class="logo">
-          <span class="logo-text">Food Tracker</span>
-        </div>
-        <button id="theme-toggle-landing" class="theme-toggle" aria-label="Toggle theme">
-          <span class="theme-icon">🌙</span>
-        </button>
-      </div>
-    </nav>
+  <!-- Header -->
+  <header class="header">
+    <h1>🍽️ My Food Map</h1>
+    <div class="header-actions">
+      <button id="add-poi-btn" class="btn btn-primary" title="Click, then click map to add place">📍 Add Place</button>
+      <button id="locate-btn" class="btn" title="Find my location">📍 Locate Me</button>
+      <button id="analytics-btn" class="btn" title="View analytics">📊 Analytics</button>
+      <button id="export-btn" class="btn">📥 Export</button>
+      <button id="import-btn" class="btn">📤 Import</button>
+      <input type="file" id="import-input" accept=".json,.geojson" style="display: none;">
+    </div>
+  </header>
 
-    <section class="hero">
-      <div class="hero-content">
-        <h1 class="hero-title">
-          Track Every<br>
-          <span class="gradient-text">Great Meal</span>
-        </h1>
-        <p class="hero-description">
-          Your personal tracker for amazing restaurants, cafés & bars.<br>
-          Never forget a great place again.
-        </p>
-        <div class="hero-actions">
-          <button id="start-app-btn" class="btn btn-primary btn-large">
-            Start Mapping
-            <span class="btn-icon">→</span>
-          </button>
-        </div>
+  <!-- Main Container -->
+  <div class="container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <!-- Search -->
+      <div class="search-section">
+        <input 
+          type="text" 
+          id="search-input" 
+          class="search-input" 
+          placeholder="🔍 Search places..."
+        >
       </div>
-      
-      <div class="hero-visual">
-        <div class="floating-card card-1">
-          <div class="card-icon">📍</div>
-          <div class="card-text">Pin places you love</div>
-        </div>
-        <div class="floating-card card-2">
-          <div class="card-icon">🏷️</div>
-          <div class="card-text">Tag & organize</div>
-        </div>
-        <div class="floating-card card-3">
-          <div class="card-icon">💬</div>
-          <div class="card-text">Add personal notes</div>
-        </div>
-      </div>
-    </section>
 
-    <section class="features">
-      <div class="features-grid">
-        <div class="feature-card">
-          <div class="feature-icon">🗺️</div>
-          <h3>Interactive Map</h3>
-          <p>Visualize all your favorite places on a beautiful map</p>
+      <!-- Tag Filters -->
+      <div class="filter-section">
+        <h2>Filter by Tags</h2>
+        <div id="tag-filters" class="tag-filters">
+          <!-- Tags will be dynamically added here -->
         </div>
-        <div class="feature-card">
-          <div class="feature-icon">🏷️</div>
-          <h3>Smart Tags</h3>
-          <p>Organize with tags like "cheap", "fancy", "good tapas"</p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon">💾</div>
-          <h3>Your Data</h3>
-          <p>Export anytime. Your memories, your control</p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon">⚡</div>
-          <h3>Lightning Fast</h3>
-          <p>Works offline. No loading. Instant search</p>
-        </div>
+        <button id="clear-filters-btn" class="btn btn-secondary">Clear All</button>
       </div>
-    </section>
+
+      <!-- Distance Info -->
+      <div id="distance-info" class="info-section">
+        <!-- Distance info appears after using "Locate Me" -->
+      </div>
+
+      <!-- How to Use -->
+      <div class="info-section">
+        <h3>Quick Tips:</h3>
+        <ul>
+          <li>Click "📍 Add Place" then click the map</li>
+          <li>Use "Locate Me" to center on your position</li>
+          <li>Search or filter by tags</li>
+          <li>Click markers to view/edit</li>
+        </ul>
+      </div>
+    </aside>
+
+    <!-- Map -->
+    <main class="main-content">
+      <div id="map"></div>
+    </main>
   </div>
 
-  <!-- ============================================ -->
-  <!-- APP VIEW -->
-  <!-- ============================================ -->
-  <div id="app-view" class="view">
-    
-    <!-- Top Navigation -->
-    <nav class="app-nav">
-      <div class="nav-container">
-        <div class="logo">
-          <span class="logo-text">Food Tracker</span>
-        </div>
-        
-        <div class="nav-tabs">
-          <button id="tab-dashboard" class="nav-tab active" data-view="dashboard">
-            <span class="tab-icon">📊</span>
-            Dashboard
-          </button>
-          <button id="tab-map" class="nav-tab" data-view="map">
-            <span class="tab-icon">🗺️</span>
-            Map
-          </button>
-        </div>
-
-        <div class="nav-actions">
-          <button id="theme-toggle-app" class="theme-toggle" aria-label="Toggle theme">
-            <span class="theme-icon">🌙</span>
-          </button>
-        </div>
-      </div>
-    </nav>
-
-    <!-- Dashboard View -->
-    <div id="dashboard-content" class="content-view active">
-      <div class="dashboard-container">
-        
-        <!-- Stats Cards -->
-        <div class="stats-grid">
-          <div class="stat-card">
-            <div class="stat-icon">📍</div>
-            <div class="stat-info">
-              <div class="stat-value" id="stat-total">0</div>
-              <div class="stat-label">Total Places</div>
-            </div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-icon">🏷️</div>
-            <div class="stat-info">
-              <div class="stat-value" id="stat-tags">0</div>
-              <div class="stat-label">Unique Tags</div>
-            </div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-icon">⭐</div>
-            <div class="stat-info">
-              <div class="stat-value" id="stat-top">-</div>
-              <div class="stat-label">Top Tag</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Quick Actions -->
-        <div class="dashboard-section">
-          <h2 class="section-title">Quick Actions</h2>
-          <div class="actions-grid">
-            <button id="quick-add-btn" class="action-card">
-              <div class="action-icon">➕</div>
-              <div class="action-text">Add Place</div>
-            </button>
-            <button id="quick-export-btn" class="action-card">
-              <div class="action-icon">📥</div>
-              <div class="action-text">Export Data</div>
-            </button>
-            <button id="quick-import-btn" class="action-card">
-              <div class="action-icon">📤</div>
-              <div class="action-text">Import Data</div>
-            </button>
-            <button id="quick-map-btn" class="action-card">
-              <div class="action-icon">🗺️</div>
-              <div class="action-text">View Map</div>
-            </button>
-          </div>
-        </div>
-
-        <!-- Recent Places -->
-        <div class="dashboard-section">
-          <h2 class="section-title">Recent Places</h2>
-          <div id="recent-places" class="places-list">
-            <!-- Populated by JS -->
-          </div>
-        </div>
-
-      </div>
-    </div>
-
-    <!-- Map View -->
-    <div id="map-content" class="content-view">
-      <div class="map-container">
-        
-        <!-- Sidebar -->
-        <aside class="map-sidebar">
-          <div class="sidebar-section">
-            <div class="section-header">
-              <h3>Search</h3>
-            </div>
-            <input 
-              type="text" 
-              id="search-input" 
-              class="search-input" 
-              placeholder="Search places..."
-            >
-          </div>
-
-          <div class="sidebar-section">
-            <div class="section-header">
-              <h3>Filter by Tags</h3>
-              <button id="clear-filters-btn" class="btn-link">Clear</button>
-            </div>
-            <div id="tag-filters" class="tag-filters">
-              <!-- Tags populated by JS -->
-            </div>
-          </div>
-
-          <div class="sidebar-section">
-            <button id="add-poi-btn" class="btn btn-primary btn-block">
-              ➕ Add Place
-            </button>
-          </div>
-
-          <div class="sidebar-section">
-            <div class="section-header">
-              <h3>Data</h3>
-            </div>
-            <div class="data-actions">
-              <button id="export-btn" class="btn btn-secondary btn-block">📥 Export</button>
-              <button id="import-btn" class="btn btn-secondary btn-block">📤 Import</button>
-            </div>
-          </div>
-        </aside>
-
-        <!-- Map -->
-        <main class="map-main">
-          <div id="map"></div>
-          <div class="map-controls">
-            <button id="locate-btn" class="map-control-btn" title="Fit all markers">
-              <span>🎯</span>
-            </button>
-          </div>
-        </main>
-
-      </div>
-    </div>
-
-  </div>
-
-  <!-- ============================================ -->
-  <!-- POI MODAL -->
-  <!-- ============================================ -->
+  <!-- Modal for Add/Edit POI -->
   <div id="poi-modal" class="modal">
     <div class="modal-content">
-      <div class="modal-header">
-        <h2 class="modal-title">Add Place</h2>
-        <button id="modal-close" class="modal-close" aria-label="Close">×</button>
-      </div>
-      
-      <form id="poi-form" class="modal-form">
+      <h2>Add/Edit Place</h2>
+      <form id="poi-form">
         <input type="hidden" id="poi-id">
         
         <div class="form-group">
           <label for="poi-name">Name *</label>
-          <input type="text" id="poi-name" name="name" required placeholder="Restaurant name">
+          <input type="text" id="poi-name" name="name" required>
         </div>
 
         <div class="form-row">
           <div class="form-group">
             <label for="poi-lat">Latitude *</label>
-            <input type="number" id="poi-lat" name="lat" step="any" required placeholder="40.4168">
+            <input type="number" id="poi-lat" name="lat" step="any" required>
           </div>
           <div class="form-group">
             <label for="poi-lng">Longitude *</label>
-            <input type="number" id="poi-lng" name="lng" step="any" required placeholder="-3.7038">
+            <input type="number" id="poi-lng" name="lng" step="any" required>
           </div>
         </div>
 
         <div class="form-group">
-          <label for="poi-tags">Tags</label>
-          <input type="text" id="poi-tags" name="tags" placeholder="cheap, good food, tapas">
-          <small>Comma separated</small>
+          <label for="poi-rating">Rating</label>
+          <div class="rating-input">
+            <span class="star" data-rating="1">☆</span>
+            <span class="star" data-rating="2">☆</span>
+            <span class="star" data-rating="3">☆</span>
+            <span class="star" data-rating="4">☆</span>
+            <span class="star" data-rating="5">☆</span>
+          </div>
+          <input type="hidden" id="poi-rating" name="rating" value="0">
         </div>
 
         <div class="form-group">
-          <label for="poi-comments">Notes</label>
-          <textarea id="poi-comments" name="comments" rows="4" placeholder="Your notes about this place..."></textarea>
+          <label for="poi-tags">Tags (comma separated)</label>
+          <input type="text" id="poi-tags" name="tags" placeholder="e.g., cheap, good food, tapas">
+        </div>
+
+        <div class="form-group">
+          <label for="poi-comments">Quick Notes</label>
+          <textarea id="poi-comments" name="comments" rows="2" placeholder="Quick notes about this place..."></textarea>
         </div>
 
         <div class="form-actions">
           <button type="submit" class="btn btn-primary">Save</button>
+          <button type="button" id="reviews-btn" class="btn" style="display: none;">📝 Reviews</button>
+          <button type="button" id="history-btn" class="btn" style="display: none;">📅 History</button>
           <button type="button" id="cancel-btn" class="btn btn-secondary">Cancel</button>
           <button type="button" id="delete-btn" class="btn btn-danger" style="display: none;">Delete</button>
         </div>
@@ -288,8 +121,47 @@
     </div>
   </div>
 
-  <!-- Hidden file input -->
-  <input type="file" id="import-input" accept=".json,.geojson" style="display: none;">
+  <!-- Modal for Reviews -->
+  <div id="reviews-modal" class="modal">
+    <div class="modal-content modal-large">
+      <h2>Reviews</h2>
+      <div id="reviews-list"></div>
+      
+      <div class="review-form">
+        <h3>Add Review</h3>
+        <div class="form-group">
+          <label>Rating</label>
+          <div class="rating-input">
+            <span class="star review-star" data-rating="1">☆</span>
+            <span class="star review-star" data-rating="2">☆</span>
+            <span class="star review-star" data-rating="3">☆</span>
+            <span class="star review-star" data-rating="4">☆</span>
+            <span class="star review-star" data-rating="5">☆</span>
+          </div>
+          <input type="hidden" id="review-rating" value="0">
+        </div>
+        
+        <div class="form-group">
+          <label for="review-text">Review</label>
+          <textarea id="review-text" rows="4" placeholder="What did you think about this place?"></textarea>
+        </div>
+        
+        <div class="form-actions">
+          <button type="button" id="add-review-btn" class="btn btn-primary">Add Review</button>
+          <button type="button" id="close-reviews-btn" class="btn btn-secondary">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal for Timeline/History -->
+  <div id="history-modal" class="modal">
+    <div class="modal-content modal-large">
+      <h2>Visit History & Timeline</h2>
+      <div id="timeline-view"></div>
+      <button type="button" id="close-history-btn" class="btn btn-secondary">Close</button>
+    </div>
+  </div>
 
   <script type="module" src="/src/main.ts"></script>
 </body>

@@ -9,11 +9,33 @@ export interface GeoJSONGeometry {
   coordinates: number[] | number[][] | number[][][];
 }
 
+export interface Review {
+  id: string;
+  date: string;
+  rating: number;
+  text: string;
+  photos?: string[];
+}
+
+export interface POIProperties {
+  id: string;
+  name: string;
+  tags?: string[];
+  comments?: string;
+  visited_date?: string;
+  rating?: number; // Overall rating (1-5)
+  reviews?: Review[]; // Array of reviews with individual ratings
+  visit_count?: number; // How many times visited
+  last_visited?: string; // Last visit date
+  created_at?: string; // When POI was created
+  [key: string]: any; // Allow custom properties
+}
+
 export interface GeoJSONFeature {
   type: 'Feature';
   id?: string | number;
   geometry: GeoJSONGeometry;
-  properties: Record<string, any>;
+  properties: POIProperties;
 }
 
 export interface GeoJSONFeatureCollection {
