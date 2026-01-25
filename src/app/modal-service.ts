@@ -45,8 +45,6 @@ export class ModalService {
     if (options.trapFocus) {
       this.setupFocusTrap(modal);
     }
-
-    console.log('✅ Modal opened');
   }
 
   /**
@@ -74,8 +72,6 @@ export class ModalService {
     this.firstFocusable = null;
     this.lastFocusable = null;
     this.previousActiveElement = null;
-
-    console.log('✅ Modal closed');
   }
 
   /**

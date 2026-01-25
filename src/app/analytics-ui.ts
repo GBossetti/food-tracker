@@ -66,28 +66,32 @@ export class AnalyticsUI {
 
     return `
       <div class="analytics-section">
-        <h2>📊 Overview</h2>
+        <h2>Overview</h2>
         <div class="stats-grid">
           <div class="stat-card">
-            <div class="stat-icon">📍</div>
+            <!-- Add SVG icon here - see SVG_GUIDE.md -->
+            <div class="stat-icon"></div>
             <div class="stat-value">${data.totalPlaces}</div>
             <div class="stat-label">Places Tracked</div>
           </div>
           
           <div class="stat-card">
-            <div class="stat-icon">🍽️</div>
+            <!-- Add SVG icon here - see SVG_GUIDE.md -->
+            <div class="stat-icon"></div>
             <div class="stat-value">${data.totalVisits}</div>
             <div class="stat-label">Total Visits</div>
           </div>
           
           <div class="stat-card">
-            <div class="stat-icon">📝</div>
+            <!-- Add SVG icon here - see SVG_GUIDE.md -->
+            <div class="stat-icon"></div>
             <div class="stat-value">${data.totalReviews}</div>
             <div class="stat-label">Reviews Written</div>
           </div>
           
           <div class="stat-card">
-            <div class="stat-icon">⭐</div>
+            <!-- Add SVG icon here - see SVG_GUIDE.md -->
+            <div class="stat-icon"></div>
             <div class="stat-value">${data.averageRating.toFixed(1)}</div>
             <div class="stat-label">Average Rating</div>
           </div>
@@ -95,14 +99,14 @@ export class AnalyticsUI {
 
         ${data.mostVisitedPlace ? `
           <div class="highlight-box">
-            <strong>🏆 Most Visited:</strong> ${data.mostVisitedPlace.name} 
+            <strong>Most Visited:</strong> ${data.mostVisitedPlace.name} 
             (${data.mostVisitedPlace.count} visits)
           </div>
         ` : ''}
 
         ${data.highestRatedPlace ? `
           <div class="highlight-box">
-            <strong>⭐ Highest Rated:</strong> ${data.highestRatedPlace.name} 
+            <strong>Highest Rated:</strong> ${data.highestRatedPlace.name} 
             (${data.highestRatedPlace.rating.toFixed(1)} stars)
           </div>
         ` : ''}
@@ -121,10 +125,10 @@ export class AnalyticsUI {
 
     return `
       <div class="analytics-section">
-        <h2>⭐ Rating Distribution</h2>
+        <h2>Rating Distribution</h2>
         <div class="distribution-chart">
           <div class="distribution-row">
-            <span class="distribution-label">5⭐</span>
+            <span class="distribution-label">5</span>
             <div class="distribution-bar-container">
               <div class="distribution-bar" style="width: ${getBarWidth(data.fiveStar)}%"></div>
             </div>
@@ -132,7 +136,7 @@ export class AnalyticsUI {
           </div>
           
           <div class="distribution-row">
-            <span class="distribution-label">4⭐</span>
+            <span class="distribution-label">4</span>
             <div class="distribution-bar-container">
               <div class="distribution-bar" style="width: ${getBarWidth(data.fourStar)}%"></div>
             </div>
@@ -140,7 +144,7 @@ export class AnalyticsUI {
           </div>
           
           <div class="distribution-row">
-            <span class="distribution-label">3⭐</span>
+            <span class="distribution-label">3</span>
             <div class="distribution-bar-container">
               <div class="distribution-bar" style="width: ${getBarWidth(data.threeStar)}%"></div>
             </div>
@@ -148,7 +152,7 @@ export class AnalyticsUI {
           </div>
           
           <div class="distribution-row">
-            <span class="distribution-label">2⭐</span>
+            <span class="distribution-label">2</span>
             <div class="distribution-bar-container">
               <div class="distribution-bar" style="width: ${getBarWidth(data.twoStar)}%"></div>
             </div>
@@ -156,7 +160,7 @@ export class AnalyticsUI {
           </div>
           
           <div class="distribution-row">
-            <span class="distribution-label">1⭐</span>
+            <span class="distribution-label">1</span>
             <div class="distribution-bar-container">
               <div class="distribution-bar" style="width: ${getBarWidth(data.oneStar)}%"></div>
             </div>
@@ -193,7 +197,7 @@ export class AnalyticsUI {
             <div class="ranking-item">
               <span class="ranking-position">${index + 1}</span>
               <span class="ranking-name">${place.name}</span>
-              <span class="ranking-value">${place.rating.toFixed(1)}⭐</span>
+              <span class="ranking-value">${place.rating.toFixed(1)}</span>
               <span class="ranking-meta">${place.visits} visits</span>
             </div>
           `).join('')}
@@ -206,7 +210,7 @@ export class AnalyticsUI {
               <span class="ranking-position">${index + 1}</span>
               <span class="ranking-name">${place.name}</span>
               <span class="ranking-value">${place.visits} visits</span>
-              <span class="ranking-meta">${place.rating > 0 ? place.rating.toFixed(1) + '⭐' : 'Not rated'}</span>
+              <span class="ranking-meta">${place.rating > 0 ? place.rating.toFixed(1) : 'Not rated'}</span>
             </div>
           `).join('')}
         </div>
@@ -218,7 +222,7 @@ export class AnalyticsUI {
               <div class="ranking-item">
                 <span class="ranking-name">${place.name}</span>
                 <span class="ranking-meta">${new Date(place.date).toLocaleDateString()}</span>
-                <span class="ranking-value">${place.rating > 0 ? place.rating.toFixed(1) + '⭐' : 'Not rated'}</span>
+                <span class="ranking-value">${place.rating > 0 ? place.rating.toFixed(1) : 'Not rated'}</span>
               </div>
             `).join('')}
           </div>
@@ -235,7 +239,7 @@ export class AnalyticsUI {
 
     return `
       <div class="analytics-section">
-        <h2>🏷️ Tag Analytics</h2>
+        <h2>Tag Analytics</h2>
         
         <h3>Most Used Tags</h3>
         <div class="tag-cloud">
@@ -256,7 +260,7 @@ export class AnalyticsUI {
               <div class="ranking-item">
                 <span class="ranking-position">${index + 1}</span>
                 <span class="ranking-name">${tag.tag}</span>
-                <span class="ranking-value">${tag.avgRating.toFixed(1)}⭐</span>
+                <span class="ranking-value">${tag.avgRating.toFixed(1)}</span>
                 <span class="ranking-meta">${tag.count} places</span>
               </div>
             `).join('')}
@@ -275,7 +279,7 @@ export class AnalyticsUI {
     if (data.visitsByMonth.length === 0) {
       return `
         <div class="analytics-section">
-          <h2>📅 Activity Timeline</h2>
+          <h2>Activity Timeline</h2>
           <p style="text-align: center; color: #666;">No activity data yet. Start adding reviews!</p>
         </div>
       `;
@@ -285,7 +289,7 @@ export class AnalyticsUI {
 
     return `
       <div class="analytics-section">
-        <h2>📅 Activity Timeline</h2>
+        <h2>Activity Timeline</h2>
         <div class="timeline-chart">
           ${data.visitsByMonth.slice(-12).map(month => {
             const height = (month.count / maxVisits) * 100;
@@ -319,10 +323,11 @@ export class AnalyticsUI {
 
     return `
       <div class="analytics-section">
-        <h2>💡 Insights</h2>
+        <h2>Insights</h2>
         <div class="insights-grid">
           <div class="insight-card">
-            <div class="insight-icon">📅</div>
+            <!-- Add SVG icon here - see SVG_GUIDE.md -->
+            <div class="insight-icon"></div>
             <div class="insight-text">
               <strong>${mostActiveMonthFormatted}</strong>
               <span>Most Active Month</span>
@@ -330,7 +335,8 @@ export class AnalyticsUI {
           </div>
 
           <div class="insight-card">
-            <div class="insight-icon">⏰</div>
+            <!-- Add SVG icon here - see SVG_GUIDE.md -->
+            <div class="insight-icon"></div>
             <div class="insight-text">
               <strong>${data.daysSinceLastVisit} days</strong>
               <span>Since Last Visit</span>
@@ -338,7 +344,8 @@ export class AnalyticsUI {
           </div>
 
           <div class="insight-card">
-            <div class="insight-icon">🔍</div>
+            <!-- Add SVG icon here - see SVG_GUIDE.md -->
+            <div class="insight-icon"></div>
             <div class="insight-text">
               <strong>${data.discoveryRate.toFixed(1)} per month</strong>
               <span>Discovery Rate</span>
@@ -346,7 +353,8 @@ export class AnalyticsUI {
           </div>
 
           <div class="insight-card">
-            <div class="insight-icon">📈</div>
+            <!-- Add SVG icon here - see SVG_GUIDE.md -->
+            <div class="insight-icon"></div>
             <div class="insight-text">
               <strong>${data.averageVisitsPerPlace.toFixed(1)} times</strong>
               <span>Avg Visits per Place</span>
@@ -355,7 +363,8 @@ export class AnalyticsUI {
 
           ${data.favoriteTag ? `
             <div class="insight-card">
-              <div class="insight-icon">❤️</div>
+              <!-- Add SVG icon here - see SVG_GUIDE.md -->
+              <div class="insight-icon"></div>
               <div class="insight-text">
                 <strong>${data.favoriteTag}</strong>
                 <span>Favorite Tag</span>
@@ -364,7 +373,8 @@ export class AnalyticsUI {
           ` : ''}
 
           <div class="insight-card">
-            <div class="insight-icon">🎯</div>
+            <!-- Add SVG icon here - see SVG_GUIDE.md -->
+            <div class="insight-icon"></div>
             <div class="insight-text">
               <strong>${((overview.totalReviews / overview.totalPlaces) * 100).toFixed(0)}%</strong>
               <span>Places Reviewed</span>

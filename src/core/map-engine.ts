@@ -190,7 +190,7 @@ export class MapEngine {
   private createPopupContent(feature: GeoJSONFeature): string {
     const props = feature.properties;
     const rating = props.rating || 0;
-    const stars = '⭐'.repeat(Math.floor(rating)) + '☆'.repeat(5 - Math.floor(rating));
+    // Replace stars with SVG icons - see SVG_GUIDE.md
     const reviewCount = props.reviews?.length || 0;
     
     return `
@@ -198,7 +198,7 @@ export class MapEngine {
         <h3 style="margin: 0 0 8px 0;">${props.name || 'Unnamed'}</h3>
         ${rating > 0 ? `
           <div style="margin: 4px 0; font-size: 1.1em;">
-            ${stars} <span style="color: #666; font-size: 0.9em;">(${rating.toFixed(1)})</span>
+            <span style="color: #666; font-size: 0.9em;">Rating: ${rating.toFixed(1)}</span>
           </div>
         ` : ''}
         ${reviewCount > 0 ? `

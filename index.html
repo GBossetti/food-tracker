@@ -3,18 +3,98 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Food Map - My Restaurant Tracker</title>
+  <title>Food Map | Landing App</title>
 </head>
 <body>
+  <!-- Landing View -->
+  <div id="landing-view" class="landing-view active">
+    <div class="landing-background"></div>
+    <div class="landing-overlay"></div>
+    
+    <!-- Navigation -->
+    <nav class="landing-nav">
+      <div class="nav-links">
+        <a href="#" class="nav-link">Explore</a>
+        <a href="#" class="nav-link">Features</a>
+        <a href="#" class="nav-link">Sign Up</a>
+      </div>
+    </nav>
+
+      <!-- Main Content -->
+      <div class="landing-content">
+        <div class="landing-main-section">
+          <!-- Network Visualization -->
+          <svg class="network-overlay" viewBox="0 0 1000 600" preserveAspectRatio="xMidYMid meet">
+            <!-- Network Lines -->
+            <path class="network-line" d="M 150 150 Q 300 200, 450 150" />
+            <path class="network-line" d="M 450 150 Q 600 200, 750 150" />
+            <path class="network-line" d="M 200 300 Q 400 250, 600 300" />
+            <path class="network-line" d="M 600 300 Q 800 350, 900 300" />
+            <path class="network-line" d="M 300 450 Q 500 400, 700 450" />
+            <path class="network-line" d="M 150 150 L 200 300" />
+            <path class="network-line" d="M 450 150 L 300 450" />
+            <path class="network-line" d="M 750 150 L 600 300" />
+            <path class="network-line" d="M 600 300 L 700 450" />
+            
+            <!-- Network Nodes -->
+            <g class="network-node" transform="translate(150, 150)">
+              <circle r="8" fill="#ff6b35" opacity="0.8" />
+              <circle r="12" fill="none" stroke="#ff6b35" stroke-width="2" opacity="0.4" />
+              <text x="0" y="30" fill="#ffffff" font-size="12" text-anchor="middle" font-weight="500">MUSEUM</text>
+            </g>
+            <g class="network-node" transform="translate(450, 150)">
+              <circle r="8" fill="#ff6b35" opacity="0.8" />
+              <circle r="12" fill="none" stroke="#ff6b35" stroke-width="2" opacity="0.4" />
+              <text x="0" y="30" fill="#ffffff" font-size="12" text-anchor="middle" font-weight="500">THEATER</text>
+            </g>
+            <g class="network-node" transform="translate(200, 300)">
+              <circle r="8" fill="#ff6b35" opacity="0.8" />
+              <circle r="12" fill="none" stroke="#ff6b35" stroke-width="2" opacity="0.4" />
+              <text x="0" y="30" fill="#ffffff" font-size="12" text-anchor="middle" font-weight="500">PARK</text>
+            </g>
+            <g class="network-node" transform="translate(600, 300)">
+              <circle r="8" fill="#ff6b35" opacity="0.8" />
+              <circle r="12" fill="none" stroke="#ff6b35" stroke-width="2" opacity="0.4" />
+              <text x="0" y="30" fill="#ffffff" font-size="12" text-anchor="middle" font-weight="500">TRANSIT HUB</text>
+            </g>
+            <g class="network-node" transform="translate(750, 150)">
+              <circle r="8" fill="#ff6b35" opacity="0.8" />
+              <circle r="12" fill="none" stroke="#ff6b35" stroke-width="2" opacity="0.4" />
+              <text x="0" y="30" fill="#ffffff" font-size="12" text-anchor="middle" font-weight="500">RESTAURANT</text>
+            </g>
+            <g class="network-node" transform="translate(300, 450)">
+              <circle r="8" fill="#ff6b35" opacity="0.8" />
+              <circle r="12" fill="none" stroke="#ff6b35" stroke-width="2" opacity="0.4" />
+              <text x="0" y="30" fill="#ffffff" font-size="12" text-anchor="middle" font-weight="500">UNIVERSITY</text>
+            </g>
+          </svg>
+        </div>
+      
+      <div class="landing-cta-section">
+        <h2 class="landing-tagline">Navigate Your City's Hidden Connections</h2>
+        <button id="start-app-btn" class="landing-cta-btn">
+          Start Mapping
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- App View -->
+  <div id="app-view" class="app-view">
   <!-- Header -->
   <header class="header">
-    <h1>🍽️ My Food Map</h1>
+    <h1>My Food Map</h1>
     <div class="header-actions">
-      <button id="add-poi-btn" class="btn btn-primary" title="Click, then click map to add place">📍 Add Place</button>
-      <button id="locate-btn" class="btn" title="Find my location">📍 Locate Me</button>
-      <button id="analytics-btn" class="btn" title="View analytics">📊 Analytics</button>
-      <button id="export-btn" class="btn">📥 Export</button>
-      <button id="import-btn" class="btn">📤 Import</button>
+      <!-- Add SVG icon before "Add Place" text: <svg class="btn-icon">...</svg> -->
+      <button id="add-poi-btn" class="btn btn-primary" title="Click, then click map to add place">Add Place</button>
+      <!-- Add SVG icon before "Locate Me" text: <svg class="btn-icon">...</svg> -->
+      <button id="locate-btn" class="btn" title="Find my location">Locate Me</button>
+      <!-- Add SVG icon before "Analytics" text: <svg class="btn-icon">...</svg> -->
+      <button id="analytics-btn" class="btn" title="View analytics">Analytics</button>
+      <!-- Add SVG icon before "Export" text: <svg class="btn-icon">...</svg> -->
+      <button id="export-btn" class="btn">Export</button>
+      <!-- Add SVG icon before "Import" text: <svg class="btn-icon">...</svg> -->
+      <button id="import-btn" class="btn">Import</button>
       <input type="file" id="import-input" accept=".json,.geojson" style="display: none;">
     </div>
   </header>
@@ -29,7 +109,7 @@
           type="text" 
           id="search-input" 
           class="search-input" 
-          placeholder="🔍 Search places..."
+          placeholder="Search places..."
         >
       </div>
 
@@ -51,7 +131,7 @@
       <div class="info-section">
         <h3>Quick Tips:</h3>
         <ul>
-          <li>Click "📍 Add Place" then click the map</li>
+          <li>Click "Add Place" then click the map</li>
           <li>Use "Locate Me" to center on your position</li>
           <li>Search or filter by tags</li>
           <li>Click markers to view/edit</li>
@@ -112,8 +192,10 @@
 
         <div class="form-actions">
           <button type="submit" class="btn btn-primary">Save</button>
-          <button type="button" id="reviews-btn" class="btn" style="display: none;">📝 Reviews</button>
-          <button type="button" id="history-btn" class="btn" style="display: none;">📅 History</button>
+          <!-- Add SVG icon before "Reviews" text: <svg class="btn-icon">...</svg> -->
+          <button type="button" id="reviews-btn" class="btn" style="display: none;">Reviews</button>
+          <!-- Add SVG icon before "History" text: <svg class="btn-icon">...</svg> -->
+          <button type="button" id="history-btn" class="btn" style="display: none;">History</button>
           <button type="button" id="cancel-btn" class="btn btn-secondary">Cancel</button>
           <button type="button" id="delete-btn" class="btn btn-danger" style="display: none;">Delete</button>
         </div>
@@ -162,6 +244,21 @@
       <button type="button" id="close-history-btn" class="btn btn-secondary">Close</button>
     </div>
   </div>
+
+  <!-- Modal for Analytics -->
+  <div id="analytics-modal" class="modal">
+    <div class="modal-content modal-xlarge">
+      <div class="modal-header">
+        <h2>Analytics Dashboard</h2>
+        <button type="button" id="close-analytics-btn" class="btn btn-secondary">Close</button>
+      </div>
+      <div id="analytics-content" style="max-height: 80vh; overflow-y: auto;">
+        <!-- Analytics content will be rendered here -->
+      </div>
+    </div>
+  </div>
+
+  </div> <!-- End app-view -->
 
   <script type="module" src="/src/main.ts"></script>
 </body>

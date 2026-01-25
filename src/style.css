@@ -12,6 +12,336 @@ body {
   color: #333;
 }
 
+/* Landing View - UrbanConnect Style */
+.landing-view {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  z-index: 10000;
+  overflow: hidden;
+  flex-direction: column;
+}
+
+.landing-view.active {
+  display: flex;
+}
+
+/* City Background */
+.landing-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url('/city-background.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.7;
+  filter: brightness(0.4) contrast(1.2);
+}
+
+/* Fallback if image not found - create city-like pattern */
+.landing-background::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    /* City grid pattern */
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(100, 100, 100, 0.1) 2px,
+      rgba(100, 100, 100, 0.1) 4px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 2px,
+      rgba(100, 100, 100, 0.1) 2px,
+      rgba(100, 100, 100, 0.1) 4px
+    ),
+    /* Building lights */
+    radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.3) 1px, transparent 1px),
+    radial-gradient(circle at 40% 50%, rgba(255, 255, 255, 0.3) 1px, transparent 1px),
+    radial-gradient(circle at 60% 70%, rgba(255, 255, 255, 0.3) 1px, transparent 1px),
+    radial-gradient(circle at 80% 40%, rgba(255, 255, 255, 0.3) 1px, transparent 1px),
+    /* Base dark gradient */
+    linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0a0a0a 100%);
+  background-size: 
+    100% 100%,
+    100% 100%,
+    200px 200px,
+    200px 200px,
+    200px 200px,
+    200px 200px,
+    100% 100%;
+  opacity: 0.8;
+}
+
+/* Dark overlay for better contrast */
+.landing-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.3) 0%,
+    rgba(0, 0, 0, 0.5) 50%,
+    rgba(0, 0, 0, 0.8) 100%
+  );
+  pointer-events: none;
+}
+
+/* Navigation */
+.landing-nav {
+  position: relative;
+  z-index: 10;
+  padding: 2rem 3rem;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.nav-links {
+  display: flex;
+  gap: 2.5rem;
+  align-items: center;
+}
+
+.nav-link {
+  color: #ffffff;
+  text-decoration: none;
+  font-size: 0.95rem;
+  font-weight: 400;
+  letter-spacing: 0.05em;
+  transition: all 0.3s ease;
+  position: relative;
+  padding: 0.5rem 0;
+}
+
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #ffffff, transparent);
+  transition: width 0.3s ease;
+}
+
+.nav-link:hover {
+  color: #ffffff;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+.nav-link:hover::after {
+  width: 100%;
+}
+
+/* Main Content Layout */
+.landing-content {
+  position: relative;
+  z-index: 5;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+/* Main Section - Map Visualization Area */
+.landing-main-section {
+  flex: 1;
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+
+/* Network Visualization Overlay */
+.network-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.9;
+  z-index: 2;
+}
+
+.network-line {
+  stroke: #ffffff;
+  stroke-width: 2;
+  fill: none;
+  opacity: 0.6;
+  filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.8));
+  animation: lineGlow 2s ease-in-out infinite;
+}
+
+.network-line:nth-child(odd) {
+  animation-delay: 0.5s;
+}
+
+@keyframes lineGlow {
+  0%, 100% {
+    opacity: 0.4;
+    stroke-width: 2;
+  }
+  50% {
+    opacity: 0.8;
+    stroke-width: 2.5;
+  }
+}
+
+.network-node {
+  animation: nodePulse 2s ease-in-out infinite;
+}
+
+.network-node:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.network-node:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+.network-node:nth-child(4) {
+  animation-delay: 0.6s;
+}
+
+.network-node:nth-child(5) {
+  animation-delay: 0.8s;
+}
+
+.network-node:nth-child(6) {
+  animation-delay: 1s;
+}
+
+@keyframes nodePulse {
+  0%, 100% {
+    opacity: 0.8;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+}
+
+.network-node circle:first-child {
+  filter: drop-shadow(0 0 8px rgba(255, 107, 53, 0.8));
+}
+
+.network-node text {
+  filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.8));
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* CTA Section */
+.landing-cta-section {
+  background: rgba(20, 20, 20, 0.95);
+  padding: 3rem 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  min-height: 200px;
+  justify-content: center;
+}
+
+.landing-tagline {
+  font-size: 2.2rem;
+  font-weight: 300;
+  color: #ffffff;
+  text-align: center;
+  letter-spacing: 0.02em;
+  line-height: 1.3;
+  margin: 0;
+  text-shadow: 0 2px 20px rgba(0, 0, 0, 0.5);
+  max-width: 800px;
+}
+
+@media (max-width: 768px) {
+  .landing-tagline {
+    font-size: 1.8rem;
+  }
+  
+  .nav-links {
+    gap: 1.5rem;
+  }
+  
+  .nav-link {
+    font-size: 0.85rem;
+  }
+}
+
+/* Orange CTA Button */
+.landing-cta-btn {
+  background: #ff6b35;
+  color: #ffffff;
+  border: none;
+  padding: 1rem 3rem;
+  font-size: 1rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
+  text-transform: uppercase;
+  position: relative;
+  overflow: hidden;
+}
+
+.landing-cta-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s ease;
+}
+
+.landing-cta-btn:hover::before {
+  left: 100%;
+}
+
+.landing-cta-btn:hover {
+  background: #ff7d4d;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 107, 53, 0.4);
+}
+
+.landing-cta-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 10px rgba(255, 107, 53, 0.3);
+}
+
+/* App View */
+.app-view {
+  display: none;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.app-view.active {
+  display: block;
+}
+
 /* Header */
 .header {
   background: #2c3e50;
@@ -326,7 +656,7 @@ body {
 }
 
 .star.active {
-  content: '⭐';
+  /* Replace with SVG icon - see SVG_GUIDE.md */
 }
 
 /* Reviews */

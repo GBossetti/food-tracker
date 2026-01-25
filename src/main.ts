@@ -13,8 +13,8 @@ import { AppController } from './app/app-controller';
 
 // Fix Leaflet default icon paths (Vite issue)
 import L from 'leaflet';
-import icon from 'leaflet/dist/images/marker-icon.png';
-import iconShadow from 'leaflet/dist/images/marker-shadow.png';
+import icon from '/marker-icon.png';
+import iconShadow from '/marker-shadow.png';
 
 let DefaultIcon = L.icon({
   iconUrl: icon,
@@ -26,8 +26,6 @@ L.Marker.prototype.options.icon = DefaultIcon;
 
 // Initialize application
 async function initApp() {
-  console.log('🗺️ Initializing Food Map...');
-
   try {
     // 1. Create storage layer
     const storage = new StorageLayer();
@@ -70,7 +68,7 @@ async function initApp() {
           // Show notification
           const notification = document.createElement('div');
           notification.className = 'notification show';
-          notification.textContent = '✅ Data imported successfully!';
+          notification.textContent = 'Data imported successfully!';
           document.body.appendChild(notification);
           setTimeout(() => {
             notification.classList.remove('show');
@@ -80,10 +78,9 @@ async function initApp() {
           // Reset input
           importInput.value = '';
         } catch (error) {
-          console.error('Import failed:', error);
           const notification = document.createElement('div');
           notification.className = 'notification error show';
-          notification.textContent = '❌ Failed to import file';
+          notification.textContent = 'Failed to import file';
           document.body.appendChild(notification);
           setTimeout(() => {
             notification.classList.remove('show');
@@ -93,21 +90,11 @@ async function initApp() {
       });
     }
 
-    console.log('✅ Food Map ready!');
-    console.log(`📍 Loaded ${data.features.length} POIs`);
-    
-    // Show welcome message if first time
-    if (data.features.length === 0 || !localStorage.getItem('food-map-pois')) {
-      console.log('👋 Welcome! This looks like your first time. Check out the demo POIs or add your own!');
-    }
-
   } catch (error) {
-    console.error('❌ Failed to initialize app:', error);
-    
     // Show error message to user
     const errorDiv = document.createElement('div');
     errorDiv.className = 'notification error show';
-    errorDiv.textContent = '❌ Failed to initialize app. Please refresh the page.';
+    errorDiv.textContent = 'Failed to initialize app. Please refresh the page.';
     errorDiv.style.position = 'fixed';
     errorDiv.style.top = '20px';
     errorDiv.style.right = '20px';

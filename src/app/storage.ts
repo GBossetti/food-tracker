@@ -18,21 +18,18 @@ export class StorageLayer {
   async load(): Promise<GeoJSONFeatureCollection> {
     // 1. Check memory cache (instant)
     if (this.memoryCache) {
-      console.log('📦 Loaded from memory cache');
       return this.memoryCache;
     }
 
     // 2. Check localStorage (fast)
     const cached = this.getFromLocalStorage();
     if (cached) {
-      console.log('💾 Loaded from localStorage');
       this.memoryCache = cached;
 
       // 3. Sync from backend in background (if enabled)
       if (this.backendEnabled) {
         this.syncFromBackend().then((fresh) => {
           if (this.hasChanges(cached, fresh)) {
-            console.log('🔄 Backend had newer data, updating...');
             this.memoryCache = fresh;
             this.saveToLocalStorage(fresh);
             // TODO: Emit event to update UI
@@ -44,7 +41,6 @@ export class StorageLayer {
     }
 
     // 4. No cached data, return default
-    console.log('🆕 No cached data, using defaults');
     const defaultData = this.getDefaultData();
     this.memoryCache = defaultData;
     return defaultData;
@@ -54,8 +50,6 @@ export class StorageLayer {
    * Save POIs - Updates all cache layers and syncs to backend
    */
   async save(data: GeoJSONFeatureCollection): Promise<void> {
-    console.log('💾 Saving data...');
-
     // 1. Update memory cache (instant)
     this.memoryCache = data;
 
@@ -66,9 +60,7 @@ export class StorageLayer {
     if (this.backendEnabled) {
       try {
         await this.syncToBackend(data);
-        console.log('✅ Synced to backend');
       } catch (error) {
-        console.warn('⚠️ Backend sync failed, queuing for retry', error);
         this.queueForSync(data);
       }
     }
@@ -88,7 +80,6 @@ export class StorageLayer {
     a.download = `food-map-${new Date().toISOString().split('T')[0]}.geojson`;
     a.click();
     URL.revokeObjectURL(url);
-    console.log('📥 Exported to file');
   }
 
   /**
@@ -98,7 +89,6 @@ export class StorageLayer {
     const text = await file.text();
     const data = JSON.parse(text) as GeoJSONFeatureCollection;
     await this.save(data);
-    console.log('📤 Imported from file');
     return data;
   }
 
@@ -109,7 +99,6 @@ export class StorageLayer {
     this.memoryCache = null;
     localStorage.removeItem(STORAGE_KEY);
     localStorage.removeItem(SYNC_QUEUE_KEY);
-    console.log('🗑️ Cleared all data');
   }
 
   // --- PRIVATE METHODS ---

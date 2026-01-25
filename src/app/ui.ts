@@ -7,11 +7,13 @@ import { GeoJSONFeature } from '../core/types';
 import { MapEngine } from '../core/map-engine';
 import { StorageLayer } from './storage';
 import { AnalyticsUI } from './analytics-ui.ts';
+import { AppController } from './app-controller';
 
 export class UIController {
   private mapEngine: MapEngine;
   private storage: StorageLayer;
   private analyticsUI: AnalyticsUI;
+  private appController: AppController | null = null;
   private selectedTags: Set<string> = new Set();
   private allTags: Set<string> = new Set();
   private addMode: boolean = false;
@@ -28,6 +30,10 @@ export class UIController {
     this.analyticsUI = new AnalyticsUI(mapEngine);
     this.setupEventListeners();
     this.updateTagList();
+  }
+
+  public setAppController(appController: AppController): void {
+    this.appController = appController;
   }
 
   private setupEventListeners(): void {
@@ -73,7 +79,7 @@ export class UIController {
 
   private handleExport(): void {
     this.storage.exportToFile();
-    this.showNotification('✅ Data exported successfully!');
+    this.showNotification('Data exported successfully!');
   }
 
   private async handleImport(event: Event): Promise<void> {
@@ -85,38 +91,12 @@ export class UIController {
       const data = await this.storage.importFromFile(file);
       this.mapEngine.load(data);
       this.updateTagList();
-      this.showNotification('✅ Data imported successfully!');
+      this.showNotification('Data imported successfully!');
     } catch (error) {
-      this.showNotification('❌ Failed to import file', 'error');
-      console.error(error);
+      this.showNotification('Failed to import file', 'error');
     }
   }
 
-  private showAddPOIForm(): void {
-    const modal = document.getElementById('poi-modal');
-    const form = document.getElementById('poi-form') as HTMLFormElement;
-    
-    if (!modal || !form) return;
-
-    // Reset form
-    form.reset();
-    (document.getElementById('poi-id') as HTMLInputElement).value = '';
-
-    // Show modal
-    modal.style.display = 'flex';
-
-    // Setup form submission
-    form.onsubmit = (e) => {
-      e.preventDefault();
-      this.handlePOIFormSubmit();
-    };
-
-    // Setup cancel button
-    const cancelBtn = document.getElementById('cancel-btn');
-    cancelBtn!.onclick = () => {
-      modal.style.display = 'none';
-    };
-  }
 
   private handlePOIFormSubmit(): void {
     const form = document.getElementById('poi-form') as HTMLFormElement;
@@ -131,7 +111,7 @@ export class UIController {
     const rating = this.currentRating;
 
     if (!name || isNaN(lat) || isNaN(lng)) {
-      this.showNotification('❌ Please fill all required fields', 'error');
+      this.showNotification('Please fill all required fields', 'error');
       return;
     }
 
@@ -167,13 +147,13 @@ export class UIController {
       }
       
       this.mapEngine.updateFeature(id, feature.properties);
-      this.showNotification('✅ POI updated successfully!');
+      this.showNotification('POI updated successfully!');
     } else {
       // Add new
       feature.properties.reviews = [];
       feature.properties.visit_count = 1;
       this.mapEngine.addFeature(feature);
-      this.showNotification('✅ POI added successfully!');
+      this.showNotification('POI added successfully!');
     }
 
     // Save to storage
@@ -209,13 +189,13 @@ export class UIController {
     this.currentRating = Math.round(rating);
     (document.getElementById('poi-rating') as HTMLInputElement).value = this.currentRating.toString();
     
-    // Update rating stars
+    // Update rating stars - Replace with SVG icons (see SVG_GUIDE.md)
     document.querySelectorAll('.rating-input .star').forEach((star, index) => {
       if (index < this.currentRating) {
-        star.textContent = '⭐';
+        star.textContent = '';
         star.classList.add('active');
       } else {
-        star.textContent = '☆';
+        star.textContent = '';
         star.classList.remove('active');
       }
     });
@@ -235,7 +215,7 @@ export class UIController {
           this.mapEngine.removeFeature(feature.properties.id);
           this.saveCurrentState();
           modal.style.display = 'none';
-          this.showNotification('✅ POI deleted');
+          this.showNotification('POI deleted');
           this.updateTagList();
         }
       };
@@ -338,6 +318,9 @@ export class UIController {
   private async saveCurrentState(): Promise<void> {
     const data = this.mapEngine.export();
     await this.storage.save(data);
+    if (this.appController) {
+      await this.appController.refreshData();
+    }
   }
 
   private showNotification(message: string, type: 'success' | 'error' = 'success'): void {
@@ -362,7 +345,7 @@ export class UIController {
     
     if (this.addMode) {
       addBtn?.classList.add('active');
-      this.showNotification('📍 Click on the map to add a place', 'success');
+      this.showNotification('Click on the map to add a place', 'success');
     } else {
       addBtn?.classList.remove('active');
     }
@@ -395,9 +378,9 @@ export class UIController {
     (document.getElementById('poi-id') as HTMLInputElement).value = '';
     this.currentRating = 0;
 
-    // Reset rating stars
+    // Reset rating stars - Replace with SVG icons (see SVG_GUIDE.md)
     document.querySelectorAll('.rating-input .star').forEach((star) => {
-      star.textContent = '☆';
+      star.textContent = '';
       star.classList.remove('active');
     });
 
@@ -437,7 +420,7 @@ export class UIController {
    */
   private locateUser(): void {
     if (!navigator.geolocation) {
-      this.showNotification('❌ Geolocation not supported', 'error');
+      this.showNotification('Geolocation not supported', 'error');
       return;
     }
 
@@ -453,15 +436,14 @@ export class UIController {
         this.mapEngine.centerOn(lat, lng, 15);
         
         locateBtn?.classList.remove('loading');
-        this.showNotification('📍 Location found!', 'success');
+        this.showNotification('Location found!', 'success');
         
         // Update distances if displayed
         this.updateDistances();
       },
       (error) => {
         locateBtn?.classList.remove('loading');
-        this.showNotification('❌ Could not get location', 'error');
-        console.error('Geolocation error:', error);
+        this.showNotification('Could not get location', 'error');
       }
     );
   }
@@ -536,14 +518,14 @@ export class UIController {
     const ratingInput = document.getElementById('poi-rating') as HTMLInputElement;
     if (ratingInput) ratingInput.value = rating.toString();
     
-    // Update visual stars
+    // Update visual stars - Replace with SVG icons (see SVG_GUIDE.md)
     const stars = star.parentElement?.querySelectorAll('.star');
     stars?.forEach((s, index) => {
       if (index < rating) {
-        s.textContent = '⭐';
+        s.textContent = '';
         s.classList.add('active');
       } else {
-        s.textContent = '☆';
+        s.textContent = '';
         s.classList.remove('active');
       }
     });
@@ -591,13 +573,13 @@ export class UIController {
     reviewsList.innerHTML = reviews
       .sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime())
       .map((review: any) => {
-        const stars = '⭐'.repeat(review.rating) + '☆'.repeat(5 - review.rating);
+        // Replace stars with SVG icons - see SVG_GUIDE.md
         const date = new Date(review.date).toLocaleDateString();
         
         return `
           <div class="review-item" data-review-id="${review.id}">
             <div class="review-header">
-              <span class="review-rating">${stars}</span>
+              <span class="review-rating" data-rating="${review.rating}"></span>
               <span class="review-date">${date}</span>
             </div>
             <div class="review-text">${review.text}</div>
@@ -629,10 +611,10 @@ export class UIController {
     const addReviewBtn = document.getElementById('add-review-btn');
     if (addReviewBtn) addReviewBtn.textContent = 'Add Review';
     
-    // Setup rating stars for review
+    // Setup rating stars for review - Replace with SVG icons (see SVG_GUIDE.md)
     const reviewStars = document.querySelectorAll('.review-star');
     reviewStars.forEach((star) => {
-      star.textContent = '☆';
+      star.textContent = '';
       star.classList.remove('active');
       
       (star as HTMLElement).onclick = (e) => {
@@ -643,10 +625,10 @@ export class UIController {
         
         reviewStars.forEach((s, index) => {
           if (index < rating) {
-            s.textContent = '⭐';
+            s.textContent = '';
             s.classList.add('active');
           } else {
-            s.textContent = '☆';
+            s.textContent = '';
             s.classList.remove('active');
           }
         });
@@ -716,7 +698,7 @@ export class UIController {
     // Reset form
     this.setupReviewForm(feature);
     
-    this.showNotification('✅ Review added!', 'success');
+    this.showNotification('Review added!', 'success');
   }
 
   /**
@@ -744,7 +726,7 @@ export class UIController {
     // Re-render reviews
     this.renderReviews(feature);
     
-    this.showNotification('✅ Review deleted', 'success');
+    this.showNotification('Review deleted', 'success');
   }
 
   /**
@@ -765,14 +747,14 @@ export class UIController {
 
     this.currentReviewRating = review.rating;
 
-    // Update stars
+    // Update stars - Replace with SVG icons (see SVG_GUIDE.md)
     const reviewStars = document.querySelectorAll('.review-star');
     reviewStars.forEach((star, index) => {
       if (index < review.rating) {
-        star.textContent = '⭐';
+        star.textContent = '';
         star.classList.add('active');
       } else {
-        star.textContent = '☆';
+        star.textContent = '';
         star.classList.remove('active');
       }
     });
@@ -788,7 +770,7 @@ export class UIController {
     reviewText?.scrollIntoView({ behavior: 'smooth', block: 'center' });
     reviewText?.focus();
 
-    this.showNotification('✏️ Editing review...', 'success');
+    this.showNotification('Editing review...', 'success');
   }
 
   /**
@@ -798,12 +780,12 @@ export class UIController {
     const reviewText = (document.getElementById('review-text') as HTMLTextAreaElement).value.trim();
     
     if (!reviewText) {
-      this.showNotification('❌ Please write a review', 'error');
+      this.showNotification('Please write a review', 'error');
       return;
     }
     
     if (this.currentReviewRating === 0) {
-      this.showNotification('❌ Please select a rating', 'error');
+      this.showNotification('Please select a rating', 'error');
       return;
     }
 
@@ -840,7 +822,7 @@ export class UIController {
       addReviewBtn.classList.remove('btn-warning');
     }
 
-    this.showNotification('✅ Review updated!', 'success');
+    this.showNotification('Review updated!', 'success');
   }
 
   /**
@@ -884,7 +866,7 @@ export class UIController {
           <div class="stat-label">Total Visits</div>
         </div>
         <div class="stat-item">
-          <div class="stat-value">${avgRating.toFixed(1)} ⭐</div>
+          <div class="stat-value">${avgRating.toFixed(1)}</div>
           <div class="stat-label">Avg Rating</div>
         </div>
         <div class="stat-item">
@@ -900,7 +882,7 @@ export class UIController {
         ${reviews
           .sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime())
           .map((review: any) => {
-            const stars = '⭐'.repeat(review.rating);
+            // Replace stars with SVG icons - see SVG_GUIDE.md
             const date = new Date(review.date).toLocaleDateString('en-US', { 
               year: 'numeric', 
               month: 'long', 
@@ -913,7 +895,7 @@ export class UIController {
                 <div class="timeline-content">
                   <div class="timeline-date">${date}</div>
                   <div class="timeline-place">${feature.properties.name}</div>
-                  <div class="timeline-rating">${stars}</div>
+                  <div class="timeline-rating" data-rating="${review.rating}"></div>
                   <div class="timeline-text">${review.text}</div>
                 </div>
               </div>

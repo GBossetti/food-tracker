@@ -96,7 +96,6 @@ export class LeafletAdapter {
   fitBounds(): void {
     // Only fit bounds if there are markers
     if (this.markers.size === 0) {
-      console.log('No markers to fit bounds to');
       return;
     }
 
@@ -106,10 +105,9 @@ export class LeafletAdapter {
       
       if (bounds.isValid()) {
         this.map.fitBounds(bounds, { padding: [50, 50] });
-        console.log('✅ Fitted bounds to markers');
       }
     } catch (error) {
-      console.warn('Could not fit bounds:', error);
+      // Silently handle bounds fitting errors
     }
   }
 }

@@ -18,9 +18,22 @@ export class AppController {
     this.mapEngine = mapEngine;
     this.storage = storage;
 
+    this.initializeViews();
     this.setupTheme();
     this.setupNavigation();
     this.loadData();
+  }
+
+  /**
+   * Initialize view states
+   */
+  private initializeViews(): void {
+    const landingView = document.getElementById('landing-view');
+    const appView = document.getElementById('app-view');
+    
+    // Show landing, hide app by default
+    if (landingView) landingView.classList.add('active');
+    if (appView) appView.classList.remove('active');
   }
 
   /**
@@ -51,9 +64,11 @@ export class AppController {
   }
 
   private updateThemeIcons(theme: string): void {
+    // Replace with SVG icons - see SVG_GUIDE.md
     const icons = document.querySelectorAll('.theme-icon');
     icons.forEach(icon => {
-      icon.textContent = theme === 'dark' ? '☀️' : '🌙';
+      icon.textContent = '';
+      // Add SVG icon here based on theme
     });
   }
 
@@ -103,9 +118,7 @@ export class AppController {
   private async loadData(): Promise<void> {
     try {
       this.data = await this.storage.load();
-      console.log('✅ Data loaded:', this.data.features.length, 'POIs');
     } catch (error) {
-      console.error('Failed to load data:', error);
       this.data = { type: 'FeatureCollection', features: [] };
     }
   }
@@ -129,6 +142,16 @@ export class AppController {
     // Initialize stats if going to dashboard
     if (view === 'dashboard') {
       this.updateDashboard();
+    }
+
+    // Ensure map is properly sized when first shown
+    if (view === 'map') {
+      setTimeout(() => {
+        const map = (this.mapEngine as any).adapter?.getMap();
+        if (map) {
+          map.invalidateSize();
+        }
+      }, 100);
     }
   }
 
@@ -263,7 +286,6 @@ export class AppController {
         // Emit event to show this POI on map
         const id = item.getAttribute('data-id');
         // UIController will handle showing the POI
-        console.log('Show POI:', id);
       });
     });
   }
