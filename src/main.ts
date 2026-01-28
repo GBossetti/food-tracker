@@ -90,6 +90,18 @@ async function initApp() {
       });
     }
 
+    // 9. Setup sidebar toggle
+    const toggleSidebarBtn = document.getElementById('toggle-sidebar-btn');
+    const sidebar = document.querySelector('.sidebar');
+    const container = document.querySelector('.container');
+
+    if (toggleSidebarBtn && sidebar && container) {
+      toggleSidebarBtn.addEventListener('click', () => {
+        sidebar.classList.toggle('collapsed');
+        container.classList.toggle('sidebar-collapsed');
+      });
+    }
+
   } catch (error) {
     // Show error message to user
     const errorDiv = document.createElement('div');
