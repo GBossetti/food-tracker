@@ -39,3 +39,6 @@ coverage/
 # Setup and configuration files
 config/
 .vercel
+
+# ai agent
+CLAUDE.md
