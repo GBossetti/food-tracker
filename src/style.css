@@ -5,10 +5,10 @@
 
 /* CSS Variables */
 :root {
-  /* Primary - Electric Cyan */
-  --primary: #00FFFF;
-  --primary-dim: rgba(0, 255, 255, 0.7);
-  --primary-glow: rgba(0, 255, 255, 0.4);
+  /* Primary - Dark Teal */
+  --primary: #0088AA;
+  --primary-dim: rgba(0, 136, 170, 0.7);
+  --primary-glow: rgba(0, 136, 170, 0.4);
 
   /* Background - Pure Void */
   --bg-black: #000000;
@@ -166,7 +166,7 @@ body {
 }
 
 .landing-cta-btn:hover {
-  background: var(--primary);
+  background: #00AACC;
   color: var(--bg-black);
 }
 
@@ -195,6 +195,12 @@ body {
   justify-content: space-between;
   align-items: center;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.header-title {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
 }
 
 .header h1 {
@@ -411,7 +417,7 @@ body {
 }
 
 .btn-primary:hover {
-  background: var(--primary-blue-light);
+  background: #00AACC;
 }
 
 .btn-secondary {
