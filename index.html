@@ -4,79 +4,23 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Food Map | Landing App</title>
+
+  <!-- Fonts: Industrial Techno -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
 </head>
 <body>
   <!-- Landing View -->
   <div id="landing-view" class="landing-view active">
-    <div class="landing-background"></div>
-    <div class="landing-overlay"></div>
-    
-    <!-- Navigation -->
-    <nav class="landing-nav">
-      <div class="nav-links">
-        <a href="#" class="nav-link">Explore</a>
-        <a href="#" class="nav-link">Features</a>
-        <a href="#" class="nav-link">Sign Up</a>
-      </div>
-    </nav>
+    <!-- Full Bleed Logo Background -->
+    <div class="landing-logo-bg"></div>
 
-      <!-- Main Content -->
-      <div class="landing-content">
-        <div class="landing-main-section">
-          <!-- Network Visualization -->
-          <svg class="network-overlay" viewBox="0 0 1000 600" preserveAspectRatio="xMidYMid meet">
-            <!-- Network Lines -->
-            <path class="network-line" d="M 150 150 Q 300 200, 450 150" />
-            <path class="network-line" d="M 450 150 Q 600 200, 750 150" />
-            <path class="network-line" d="M 200 300 Q 400 250, 600 300" />
-            <path class="network-line" d="M 600 300 Q 800 350, 900 300" />
-            <path class="network-line" d="M 300 450 Q 500 400, 700 450" />
-            <path class="network-line" d="M 150 150 L 200 300" />
-            <path class="network-line" d="M 450 150 L 300 450" />
-            <path class="network-line" d="M 750 150 L 600 300" />
-            <path class="network-line" d="M 600 300 L 700 450" />
-            
-            <!-- Network Nodes -->
-            <g class="network-node" transform="translate(150, 150)">
-              <circle r="8" fill="#ff6b35" opacity="0.8" />
-              <circle r="12" fill="none" stroke="#ff6b35" stroke-width="2" opacity="0.4" />
-              <text x="0" y="30" fill="#ffffff" font-size="12" text-anchor="middle" font-weight="500">MUSEUM</text>
-            </g>
-            <g class="network-node" transform="translate(450, 150)">
-              <circle r="8" fill="#ff6b35" opacity="0.8" />
-              <circle r="12" fill="none" stroke="#ff6b35" stroke-width="2" opacity="0.4" />
-              <text x="0" y="30" fill="#ffffff" font-size="12" text-anchor="middle" font-weight="500">THEATER</text>
-            </g>
-            <g class="network-node" transform="translate(200, 300)">
-              <circle r="8" fill="#ff6b35" opacity="0.8" />
-              <circle r="12" fill="none" stroke="#ff6b35" stroke-width="2" opacity="0.4" />
-              <text x="0" y="30" fill="#ffffff" font-size="12" text-anchor="middle" font-weight="500">PARK</text>
-            </g>
-            <g class="network-node" transform="translate(600, 300)">
-              <circle r="8" fill="#ff6b35" opacity="0.8" />
-              <circle r="12" fill="none" stroke="#ff6b35" stroke-width="2" opacity="0.4" />
-              <text x="0" y="30" fill="#ffffff" font-size="12" text-anchor="middle" font-weight="500">TRANSIT HUB</text>
-            </g>
-            <g class="network-node" transform="translate(750, 150)">
-              <circle r="8" fill="#ff6b35" opacity="0.8" />
-              <circle r="12" fill="none" stroke="#ff6b35" stroke-width="2" opacity="0.4" />
-              <text x="0" y="30" fill="#ffffff" font-size="12" text-anchor="middle" font-weight="500">RESTAURANT</text>
-            </g>
-            <g class="network-node" transform="translate(300, 450)">
-              <circle r="8" fill="#ff6b35" opacity="0.8" />
-              <circle r="12" fill="none" stroke="#ff6b35" stroke-width="2" opacity="0.4" />
-              <text x="0" y="30" fill="#ffffff" font-size="12" text-anchor="middle" font-weight="500">UNIVERSITY</text>
-            </g>
-          </svg>
-        </div>
-      
-      <div class="landing-cta-section">
-        <h2 class="landing-tagline">Navigate Your City's Hidden Connections</h2>
-        <p class="landing-subtitle">Focusing on Madrid</p>
-        <button id="start-app-btn" class="landing-cta-btn">
-          Start Mapping
-        </button>
-      </div>
+    <!-- Minimal Overlay Content -->
+    <div class="landing-overlay-content">
+      <button id="start-app-btn" class="landing-cta-btn">
+        Enter
+      </button>
     </div>
   </div>
 
@@ -84,13 +28,15 @@
   <div id="app-view" class="app-view">
   <!-- Header -->
   <header class="header">
-    <h1>My Food Map</h1>
-    <div class="header-actions">
-      <!-- Add SVG icon before "Add Place" text: <svg class="btn-icon">...</svg> -->
-      <button id="add-poi-btn" class="btn btn-primary" title="Click, then click map to add place">Add Place</button>
+    <div class="header-title">
       <button id="toggle-sidebar-btn" class="btn" title="Toggle Sidebar">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-menu"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
       </button>
+      <h1>My Food Map</h1>
+    </div>
+    <div class="header-actions">
+      <!-- Add SVG icon before "Add Place" text: <svg class="btn-icon">...</svg> -->
+      <button id="add-poi-btn" class="btn btn-primary" title="Click, then click map to add place">Add Place</button>
       <!-- Add SVG icon before "Locate Me" text: <svg class="btn-icon">...</svg> -->
       <button id="locate-btn" class="btn" title="Find my location">Locate Me</button>
       <!-- Add SVG icon before "Analytics" text: <svg class="btn-icon">...</svg> -->
@@ -161,16 +107,8 @@
           <input type="text" id="poi-name" name="name" required>
         </div>
 
-        <div class="form-row">
-          <div class="form-group">
-            <label for="poi-lat">Latitude *</label>
-            <input type="number" id="poi-lat" name="lat" step="any" required>
-          </div>
-          <div class="form-group">
-            <label for="poi-lng">Longitude *</label>
-            <input type="number" id="poi-lng" name="lng" step="any" required>
-          </div>
-        </div>
+        <input type="hidden" id="poi-lat" name="lat">
+        <input type="hidden" id="poi-lng" name="lng">
 
         <div class="form-group">
           <label for="poi-rating">Rating</label>
