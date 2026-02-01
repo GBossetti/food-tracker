@@ -99,6 +99,10 @@ async function initApp() {
       toggleSidebarBtn.addEventListener('click', () => {
         sidebar.classList.toggle('collapsed');
         container.classList.toggle('sidebar-collapsed');
+        // Trigger map resize after CSS transition completes
+        setTimeout(() => {
+          mapEngine.getMap().invalidateSize();
+        }, 300);
       });
     }
 
