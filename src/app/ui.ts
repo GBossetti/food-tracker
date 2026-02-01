@@ -431,19 +431,24 @@ export class UIController {
       (position) => {
         const lat = position.coords.latitude;
         const lng = position.coords.longitude;
-        
+
         this.userLocation = [lat, lng];
         this.mapEngine.centerOn(lat, lng, 15);
-        
+
         locateBtn?.classList.remove('loading');
         this.showNotification('Location found!', 'success');
-        
+
         // Update distances if displayed
         this.updateDistances();
       },
       (error) => {
         locateBtn?.classList.remove('loading');
         this.showNotification('Could not get location', 'error');
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 15000,
+        maximumAge: 0
       }
     );
   }
