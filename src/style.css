@@ -121,33 +121,6 @@ body {
   50% { box-shadow: 0 0 30px rgba(59, 130, 246, 0.5); }
 }
 
-@keyframes nodeFloat {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
-}
-
-@keyframes lineGlow {
-  0%, 100% {
-    opacity: 0.3;
-    stroke-width: 2;
-  }
-  50% {
-    opacity: 0.7;
-    stroke-width: 2.5;
-  }
-}
-
-@keyframes nodePulse {
-  0%, 100% {
-    opacity: 0.8;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 1;
-    transform: scale(1.15);
-  }
-}
-
 @keyframes spin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
@@ -316,68 +289,21 @@ body {
   position: relative;
   width: 100%;
   overflow: hidden;
-}
-
-/* Network Visualization */
-.network-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 0.9;
-  z-index: 2;
-}
-
-.network-line {
-  stroke: rgba(59, 130, 246, 0.4);
-  stroke-width: 1;
-  fill: none;
-  opacity: 0.6;
-  filter: drop-shadow(0 0 4px rgba(59, 130, 246, 0.5));
-  animation: lineGlow 4s ease-in-out infinite;
-}
-
-.network-line:nth-child(odd) {
-  animation-delay: 0.5s;
-}
-
-.network-line:nth-child(3n) {
-  animation-delay: 1s;
-}
-
-.network-node {
-  animation: nodePulse 3s ease-in-out infinite;
-}
-
-.network-node:nth-child(2) { animation-delay: 0.3s; }
-.network-node:nth-child(3) { animation-delay: 0.6s; }
-.network-node:nth-child(4) { animation-delay: 0.9s; }
-.network-node:nth-child(5) { animation-delay: 1.2s; }
-.network-node:nth-child(6) { animation-delay: 1.5s; }
-
-.network-node circle:first-child {
-  filter: drop-shadow(0 0 8px rgba(59, 130, 246, 0.6));
-}
-
-.network-node text {
-  filter: drop-shadow(0 0 4px rgba(59, 130, 246, 0.4));
-  font-family: var(--font-mono);
-  font-weight: 500;
-  font-size: 10px;
-  letter-spacing: 0.15em;
+  background-image: url('/logo.png');
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 /* CTA Section - Minimal Dark */
 .landing-cta-section {
   background: transparent;
-  padding: 4rem 2rem;
+  padding: 1.5rem 2rem;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1.5rem;
+  gap: 0.75rem;
   border-top: 1px solid rgba(255, 255, 255, 0.05);
-  min-height: 240px;
   justify-content: center;
 }
 
