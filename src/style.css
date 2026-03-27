@@ -1346,3 +1346,94 @@ body {
     left: 10px;
   }
 }
+
+/* ===================================
+   Category & Status Tabs (Sidebar)
+   =================================== */
+
+.category-tabs,
+.status-tabs {
+  display: flex;
+  gap: 0.3rem;
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.category-tab,
+.status-tab {
+  flex: 1;
+  padding: 0.45rem 0.2rem;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 2px;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.category-tab:hover,
+.status-tab:hover {
+  color: var(--text-primary);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Category active colors */
+.category-tab[data-category="all"].active    { background: var(--primary); border-color: transparent; color: #000; font-weight: 700; }
+.category-tab[data-category="food"].active   { background: #0088AA; border-color: transparent; color: #000; font-weight: 700; }
+.category-tab[data-category="culture"].active { background: #AA5500; border-color: transparent; color: #000; font-weight: 700; }
+.category-tab[data-category="entertainment"].active { background: #7700AA; border-color: transparent; color: #fff; font-weight: 700; }
+.category-tab[data-category="other"].active  { background: #555555; border-color: transparent; color: #fff; font-weight: 700; }
+
+/* Status active colors */
+.status-tab[data-status="all"].active      { background: var(--primary); border-color: transparent; color: #000; font-weight: 700; }
+.status-tab[data-status="visited"].active  { background: #0088AA; border-color: transparent; color: #000; font-weight: 700; }
+.status-tab[data-status="wishlist"].active { background: #FFCC00; border-color: transparent; color: #000; font-weight: 700; }
+
+/* ===================================
+   Category & Status Selectors (Modal)
+   =================================== */
+
+.category-selector,
+.status-selector {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  margin-top: 0.35rem;
+}
+
+.category-select-btn,
+.status-select-btn {
+  padding: 0.35rem 0.8rem;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 2px;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  transition: all 0.15s ease;
+}
+
+.category-select-btn:hover,
+.status-select-btn:hover {
+  color: var(--text-primary);
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+.category-select-btn[data-category="food"].active    { background: #0088AA; border-color: transparent; color: #000; }
+.category-select-btn[data-category="culture"].active { background: #AA5500; border-color: transparent; color: #000; }
+.category-select-btn[data-category="entertainment"].active { background: #7700AA; border-color: transparent; color: #fff; }
+.category-select-btn[data-category="other"].active   { background: #555555; border-color: transparent; color: #fff; }
+
+.status-select-btn[data-status="visited"].active  { background: #0088AA; border-color: transparent; color: #000; }
+.status-select-btn[data-status="wishlist"].active { background: #FFCC00; border-color: transparent; color: #000; }

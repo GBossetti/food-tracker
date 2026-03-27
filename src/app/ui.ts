@@ -3,7 +3,8 @@
  * Handles all user interface interactions
  */
 
-import { GeoJSONFeature } from '../core/types';
+import { GeoJSONFeature, POICategory, POIStatus } from '../core/types';
+import { matchesFilters } from '../core/poi-filters';
 import { MapEngine } from '../core/map-engine';
 import { StorageLayer } from './storage';
 import { AnalyticsUI } from './analytics-ui.ts';
@@ -18,6 +19,8 @@ export class UIController {
   private allTags: Set<string> = new Set();
   private addMode: boolean = false;
   private searchTerm: string = '';
+  private activeCategory: POICategory | 'all' = 'all';
+  private activeStatus: POIStatus | 'all' = 'all';
   private userLocation: [number, number] | null = null;
   private currentPOIId: string | null = null;
   private currentRating: number = 0;
@@ -72,9 +75,74 @@ export class UIController {
       star.addEventListener('click', (e) => this.handleRatingClick(e));
     });
 
+    // Category tabs
+    document.querySelectorAll('.category-tab').forEach((tab) => {
+      tab.addEventListener('click', (e) => {
+        const cat = (e.currentTarget as HTMLElement).dataset.category as POICategory | 'all';
+        this.setActiveCategory(cat);
+      });
+    });
+
+    // Status tabs
+    document.querySelectorAll('.status-tab').forEach((tab) => {
+      tab.addEventListener('click', (e) => {
+        const status = (e.currentTarget as HTMLElement).dataset.status as POIStatus | 'all';
+        this.setActiveStatus(status);
+      });
+    });
+
+    // Category selector in modal
+    document.querySelectorAll('.category-select-btn').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        const target = e.currentTarget as HTMLElement;
+        const cat = target.dataset.category as POICategory;
+        (document.getElementById('poi-category') as HTMLInputElement).value = cat;
+        document.querySelectorAll('.category-select-btn').forEach(b => b.classList.remove('active'));
+        target.classList.add('active');
+      });
+    });
+
+    // Status selector in modal
+    document.querySelectorAll('.status-select-btn').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        const target = e.currentTarget as HTMLElement;
+        const status = target.dataset.status as POIStatus;
+        (document.getElementById('poi-status') as HTMLInputElement).value = status;
+        document.querySelectorAll('.status-select-btn').forEach(b => b.classList.remove('active'));
+        target.classList.add('active');
+        this.toggleVisitedSections(status);
+      });
+    });
+
     // Listen to map events
     this.mapEngine.on('click', (event) => this.handleFeatureClick(event.feature));
     this.mapEngine.on('map:click', (event) => this.handleMapClick(event.feature));
+  }
+
+  private setActiveCategory(category: POICategory | 'all'): void {
+    this.activeCategory = category;
+    document.querySelectorAll('.category-tab').forEach((tab) => {
+      (tab as HTMLElement).classList.toggle('active', (tab as HTMLElement).dataset.category === category);
+    });
+    this.selectedTags.clear();
+    document.querySelectorAll('.tag-btn').forEach(b => b.classList.remove('active'));
+    this.updateTagList();
+    this.applyFilters();
+  }
+
+  private setActiveStatus(status: POIStatus | 'all'): void {
+    this.activeStatus = status;
+    document.querySelectorAll('.status-tab').forEach((tab) => {
+      (tab as HTMLElement).classList.toggle('active', (tab as HTMLElement).dataset.status === status);
+    });
+    this.applyFilters();
+  }
+
+  private toggleVisitedSections(status: POIStatus | 'all'): void {
+    const isWishlist = status === 'wishlist';
+    document.querySelectorAll('.poi-visited-only').forEach((el) => {
+      (el as HTMLElement).style.display = isWishlist ? 'none' : '';
+    });
   }
 
   private handleExport(): void {
@@ -109,6 +177,8 @@ export class UIController {
     const tags = (formData.get('tags') as string).split(',').map(t => t.trim()).filter(Boolean);
     const comments = formData.get('comments') as string;
     const rating = this.currentRating;
+    const category = ((document.getElementById('poi-category') as HTMLInputElement).value || 'food') as POICategory;
+    const status = ((document.getElementById('poi-status') as HTMLInputElement).value || 'visited') as POIStatus;
 
     if (!name || isNaN(lat) || isNaN(lng)) {
       this.showNotification('Please fill all required fields', 'error');
@@ -120,12 +190,14 @@ export class UIController {
       properties: {
         id: id || `poi-${Date.now()}`,
         name,
+        category,
+        status,
         tags,
         comments,
-        rating,
-        visited_date: new Date().toISOString().split('T')[0],
+        rating: status === 'wishlist' ? 0 : rating,
+        visited_date: status === 'visited' ? new Date().toISOString().split('T')[0] : undefined,
         created_at: id ? undefined : new Date().toISOString(),
-        last_visited: new Date().toISOString(),
+        last_visited: status === 'visited' ? new Date().toISOString() : undefined,
       },
       geometry: {
         type: 'Point',
@@ -184,6 +256,21 @@ export class UIController {
     (document.getElementById('poi-tags') as HTMLInputElement).value = feature.properties.tags?.join(', ') || '';
     (document.getElementById('poi-comments') as HTMLTextAreaElement).value = feature.properties.comments || '';
 
+    // Set category
+    const cat = (feature.properties.category || 'food') as POICategory;
+    (document.getElementById('poi-category') as HTMLInputElement).value = cat;
+    document.querySelectorAll('.category-select-btn').forEach((btn) => {
+      (btn as HTMLElement).classList.toggle('active', (btn as HTMLElement).dataset.category === cat);
+    });
+
+    // Set status
+    const status = (feature.properties.status || 'visited') as POIStatus;
+    (document.getElementById('poi-status') as HTMLInputElement).value = status;
+    document.querySelectorAll('.status-select-btn').forEach((btn) => {
+      (btn as HTMLElement).classList.toggle('active', (btn as HTMLElement).dataset.status === status);
+    });
+    this.toggleVisitedSections(status);
+
     // Set rating
     const rating = feature.properties.rating || 0;
     this.currentRating = Math.round(rating);
@@ -221,16 +308,18 @@ export class UIController {
       };
     }
     
+    const isVisited = (feature.properties.status || 'visited') === 'visited';
+
     if (reviewsBtn) {
-      reviewsBtn.style.display = 'block';
+      reviewsBtn.style.display = isVisited ? 'block' : 'none';
       reviewsBtn.onclick = () => {
         modal.style.display = 'none';
         this.showReviewsModal(feature);
       };
     }
-    
+
     if (historyBtn) {
-      historyBtn.style.display = 'block';
+      historyBtn.style.display = isVisited ? 'block' : 'none';
       historyBtn.onclick = () => {
         modal.style.display = 'none';
         this.showTimelineModal(feature);
@@ -239,13 +328,21 @@ export class UIController {
   }
 
   private updateTagList(): void {
-    // Collect all unique tags
+    // Collect unique tags scoped to active category and status
     this.allTags.clear();
-    this.mapEngine.getAllFeatures().forEach((feature) => {
-      feature.properties.tags?.forEach((tag: string) => {
-        this.allTags.add(tag);
+    this.mapEngine.getAllFeatures()
+      .filter(f => {
+        const cat = f.properties.category || 'food';
+        const status = f.properties.status || 'visited';
+        const catMatch = this.activeCategory === 'all' || cat === this.activeCategory;
+        const statusMatch = this.activeStatus === 'all' || status === this.activeStatus;
+        return catMatch && statusMatch;
+      })
+      .forEach((feature) => {
+        feature.properties.tags?.forEach((tag: string) => {
+          this.allTags.add(tag);
+        });
       });
-    });
 
     // Render tag filter buttons
     const tagContainer = document.getElementById('tag-filters');
@@ -291,28 +388,14 @@ export class UIController {
   }
 
   private applyFilters(): void {
-    // Combine tag filters and search
-    this.mapEngine.showFeatures((feature) => {
-      // Check tag filter
-      let matchesTags = true;
-      if (this.selectedTags.size > 0) {
-        const featureTags = feature.properties.tags || [];
-        matchesTags = featureTags.some((tag: string) => this.selectedTags.has(tag));
-      }
-
-      // Check search filter
-      let matchesSearch = true;
-      if (this.searchTerm) {
-        const name = (feature.properties.name || '').toLowerCase();
-        const comments = (feature.properties.comments || '').toLowerCase();
-        const tags = (feature.properties.tags || []).join(' ').toLowerCase();
-        matchesSearch = name.includes(this.searchTerm) || 
-                       comments.includes(this.searchTerm) ||
-                       tags.includes(this.searchTerm);
-      }
-
-      return matchesTags && matchesSearch;
-    });
+    this.mapEngine.showFeatures((feature) =>
+      matchesFilters(feature, {
+        category: this.activeCategory,
+        status: this.activeStatus,
+        selectedTags: this.selectedTags,
+        searchTerm: this.searchTerm,
+      })
+    );
   }
 
   private async saveCurrentState(): Promise<void> {
@@ -383,6 +466,21 @@ export class UIController {
       star.textContent = '';
       star.classList.remove('active');
     });
+
+    // Default category to active tab (or 'food' if 'all')
+    const defaultCat = (this.activeCategory === 'all' ? 'food' : this.activeCategory) as POICategory;
+    (document.getElementById('poi-category') as HTMLInputElement).value = defaultCat;
+    document.querySelectorAll('.category-select-btn').forEach((btn) => {
+      (btn as HTMLElement).classList.toggle('active', (btn as HTMLElement).dataset.category === defaultCat);
+    });
+
+    // Default status to active tab (or 'visited' if 'all')
+    const defaultStatus = (this.activeStatus === 'all' ? 'visited' : this.activeStatus) as POIStatus;
+    (document.getElementById('poi-status') as HTMLInputElement).value = defaultStatus;
+    document.querySelectorAll('.status-select-btn').forEach((btn) => {
+      (btn as HTMLElement).classList.toggle('active', (btn as HTMLElement).dataset.status === defaultStatus);
+    });
+    this.toggleVisitedSections(defaultStatus);
 
     // Pre-fill coordinates if provided
     if (lat !== undefined && lng !== undefined) {

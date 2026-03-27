@@ -3,9 +3,15 @@
  * Uses localStorage as cache, with hooks for future backend integration
  */
 
-import { GeoJSONFeatureCollection } from '../core/types';
+import { GeoJSONFeature, GeoJSONFeatureCollection } from '../core/types';
 
 const STORAGE_KEY = 'food-map-pois';
+
+export function normalizePOI(feature: GeoJSONFeature): GeoJSONFeature {
+  if (!feature.properties.category) feature.properties.category = 'food';
+  if (!feature.properties.status) feature.properties.status = 'visited';
+  return feature;
+}
 const SYNC_QUEUE_KEY = 'food-map-sync-queue';
 
 export class StorageLayer {
@@ -24,6 +30,7 @@ export class StorageLayer {
     // 2. Check localStorage (fast)
     const cached = this.getFromLocalStorage();
     if (cached) {
+      cached.features = cached.features.map(normalizePOI);
       this.memoryCache = cached;
 
       // 3. Sync from backend in background (if enabled)
@@ -40,8 +47,9 @@ export class StorageLayer {
       return cached;
     }
 
-    // 4. No cached data, return default
-    const defaultData = this.getDefaultData();
+    // 4. No cached data, load from ddbb.json
+    const defaultData = await this.loadFromDB();
+    defaultData.features = defaultData.features.map(normalizePOI);
     this.memoryCache = defaultData;
     return defaultData;
   }
@@ -70,7 +78,7 @@ export class StorageLayer {
    * Export data as downloadable GeoJSON file
    */
   exportToFile(): void {
-    const data = this.memoryCache || this.getFromLocalStorage() || this.getDefaultData();
+    const data = this.memoryCache || this.getFromLocalStorage() || { type: 'FeatureCollection' as const, features: [] };
     const blob = new Blob([JSON.stringify(data, null, 2)], {
       type: 'application/json',
     });
@@ -103,6 +111,17 @@ export class StorageLayer {
 
   // --- PRIVATE METHODS ---
 
+  private async loadFromDB(): Promise<GeoJSONFeatureCollection> {
+    try {
+      const res = await fetch('/ddbb.json');
+      if (!res.ok) throw new Error(`Failed to fetch ddbb.json: ${res.status}`);
+      return await res.json() as GeoJSONFeatureCollection;
+    } catch (error) {
+      console.error('Failed to load ddbb.json, returning empty collection', error);
+      return { type: 'FeatureCollection', features: [] };
+    }
+  }
+
   private getFromLocalStorage(): GeoJSONFeatureCollection | null {
     try {
       const stored = localStorage.getItem(STORAGE_KEY);
@@ -119,105 +138,6 @@ export class StorageLayer {
     } catch (error) {
       console.error('Failed to save to localStorage', error);
     }
-  }
-
-  private getDefaultData(): GeoJSONFeatureCollection {
-    // Sample data for Madrid - you can replace this with your own
-    return {
-      type: 'FeatureCollection',
-      features: [
-        {
-          type: 'Feature',
-          properties: {
-            id: 'poi-1',
-            name: 'Casa Lucio',
-            tags: ['fancy', 'good food', 'traditional'],
-            comments: 'Famous for huevos rotos. Book in advance!',
-            visited_date: '2024-10-15',
-            rating: 4.5,
-            visit_count: 3,
-            created_at: '2024-08-20T10:00:00Z',
-            last_visited: '2024-10-15T20:30:00Z',
-            reviews: [
-              {
-                id: 'review-1',
-                date: '2024-10-15T20:30:00Z',
-                rating: 5,
-                text: 'Amazing huevos rotos! The atmosphere is traditional and cozy. Service was excellent.'
-              },
-              {
-                id: 'review-2',
-                date: '2024-09-10T21:00:00Z',
-                rating: 4,
-                text: 'Great food but a bit pricey. Worth it for special occasions.'
-              }
-            ]
-          },
-          geometry: {
-            type: 'Point',
-            coordinates: [-3.7082, 40.4138],
-          },
-        },
-        {
-          type: 'Feature',
-          properties: {
-            id: 'poi-2',
-            name: 'Mercado de San Miguel',
-            tags: ['tapas', 'tourist-friendly', 'good food'],
-            comments: 'Great variety of tapas. Can be crowded.',
-            visited_date: '2024-09-20',
-            rating: 4,
-            visit_count: 5,
-            created_at: '2024-07-15T12:00:00Z',
-            last_visited: '2024-09-20T19:00:00Z',
-            reviews: [
-              {
-                id: 'review-3',
-                date: '2024-09-20T19:00:00Z',
-                rating: 4,
-                text: 'Love the variety! Try the jamón ibérico. Gets very crowded on weekends.'
-              }
-            ]
-          },
-          geometry: {
-            type: 'Point',
-            coordinates: [-3.7088, 40.4154],
-          },
-        },
-        {
-          type: 'Feature',
-          properties: {
-            id: 'poi-3',
-            name: 'La Carmencita',
-            tags: ['cheap', 'local', 'good tapas'],
-            comments: 'Hidden gem! Amazing menu del día.',
-            visited_date: '2024-08-10',
-            rating: 5,
-            visit_count: 2,
-            created_at: '2024-06-05T14:00:00Z',
-            last_visited: '2024-08-10T14:30:00Z',
-            reviews: [
-              {
-                id: 'review-4',
-                date: '2024-08-10T14:30:00Z',
-                rating: 5,
-                text: 'Best menu del día in the neighborhood! Locals only, authentic Spanish food.'
-              },
-              {
-                id: 'review-5',
-                date: '2024-06-25T13:00:00Z',
-                rating: 5,
-                text: 'Found this by accident. Amazing! Will definitely come back.'
-              }
-            ]
-          },
-          geometry: {
-            type: 'Point',
-            coordinates: [-3.6987, 40.4260],
-          },
-        },
-      ],
-    };
   }
 
   // --- FUTURE BACKEND METHODS (not implemented yet) ---

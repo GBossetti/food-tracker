@@ -1,7 +1,11 @@
-import { defineConfig } from 'vite';
+import { defineConfig } from 'vitest/config';
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  test: {
+    environment: 'jsdom',
+    globals: true,
+  },
   // Set this to your repo name when deploying to GitHub Pages
   // Example: If your repo is github.com/username/food-map
   // Set base to '/food-map/'

@@ -63,6 +63,22 @@
         >
       </div>
 
+      <!-- Category Tabs -->
+      <div class="category-tabs" id="category-tabs">
+        <button class="category-tab active" data-category="all">All</button>
+        <button class="category-tab" data-category="food">Food</button>
+        <button class="category-tab" data-category="culture">Culture</button>
+        <button class="category-tab" data-category="entertainment">Shows</button>
+        <button class="category-tab" data-category="other">Other</button>
+      </div>
+
+      <!-- Status Tabs -->
+      <div class="status-tabs" id="status-tabs">
+        <button class="status-tab active" data-status="all">All</button>
+        <button class="status-tab" data-status="visited">Visited</button>
+        <button class="status-tab" data-status="wishlist">Wishlist</button>
+      </div>
+
       <!-- Tag Filters -->
       <div class="filter-section">
         <h2>Filter by Tags</h2>
@@ -111,6 +127,26 @@
         <input type="hidden" id="poi-lng" name="lng">
 
         <div class="form-group">
+          <label>Category</label>
+          <div class="category-selector" id="poi-category-selector">
+            <button type="button" class="category-select-btn active" data-category="food">Food</button>
+            <button type="button" class="category-select-btn" data-category="culture">Culture</button>
+            <button type="button" class="category-select-btn" data-category="entertainment">Shows</button>
+            <button type="button" class="category-select-btn" data-category="other">Other</button>
+          </div>
+          <input type="hidden" id="poi-category" name="category" value="food">
+        </div>
+
+        <div class="form-group">
+          <label>Status</label>
+          <div class="status-selector" id="poi-status-selector">
+            <button type="button" class="status-select-btn active" data-status="visited">Visited</button>
+            <button type="button" class="status-select-btn" data-status="wishlist">Wishlist</button>
+          </div>
+          <input type="hidden" id="poi-status" name="status" value="visited">
+        </div>
+
+        <div class="form-group poi-visited-only">
           <label for="poi-rating">Rating</label>
           <div class="rating-input">
             <span class="star" data-rating="1">☆</span>
@@ -122,7 +158,7 @@
           <input type="hidden" id="poi-rating" name="rating" value="0">
         </div>
 
-        <div class="form-group">
+        <div class="form-group poi-visited-only">
           <label for="poi-tags">Tags (comma separated)</label>
           <input type="text" id="poi-tags" name="tags" placeholder="e.g., cheap, good food, tapas">
         </div>
@@ -135,9 +171,9 @@
         <div class="form-actions">
           <button type="submit" class="btn btn-primary">Save</button>
           <!-- Add SVG icon before "Reviews" text: <svg class="btn-icon">...</svg> -->
-          <button type="button" id="reviews-btn" class="btn" style="display: none;">Reviews</button>
+          <button type="button" id="reviews-btn" class="btn poi-visited-only" style="display: none;">Reviews</button>
           <!-- Add SVG icon before "History" text: <svg class="btn-icon">...</svg> -->
-          <button type="button" id="history-btn" class="btn" style="display: none;">History</button>
+          <button type="button" id="history-btn" class="btn poi-visited-only" style="display: none;">History</button>
           <button type="button" id="cancel-btn" class="btn btn-secondary">Cancel</button>
           <button type="button" id="delete-btn" class="btn btn-danger" style="display: none;">Delete</button>
         </div>
