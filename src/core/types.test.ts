@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { CATEGORY_CONFIG, POICategory } from './types';
 
 describe('CATEGORY_CONFIG', () => {
-  const categories: POICategory[] = ['food', 'culture', 'entertainment', 'other'];
+  const categories: POICategory[] = ['food', 'monuments', 'entertainment', 'museums', 'other'];
 
   it('has an entry for every category', () => {
     categories.forEach(cat => {

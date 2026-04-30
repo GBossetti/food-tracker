@@ -65,7 +65,7 @@ describe('LeafletAdapter — marker icons', () => {
     const { LeafletAdapter } = await import('./leaflet-adapter');
     const adapter = new LeafletAdapter('map', { center: [40.4, -3.7], zoom: 13 });
 
-    const categories = ['food', 'culture', 'entertainment', 'other'] as const;
+    const categories = ['food', 'monuments', 'entertainment', 'museums', 'other'] as const;
     for (const cat of categories) {
       mockDivIcon.mockClear();
       adapter.addMarker(makeFeature({ category: cat, status: 'visited' }));

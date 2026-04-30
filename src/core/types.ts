@@ -4,13 +4,14 @@
  */
 
 // POI Categories
-export type POICategory = 'food' | 'culture' | 'entertainment' | 'other';
+export type POICategory = 'food' | 'monuments' | 'entertainment' |'museums' | 'other';
 export type POIStatus = 'visited' | 'wishlist';
 
 export const CATEGORY_CONFIG: Record<POICategory, { label: string; color: string; symbol: string }> = {
   food:          { label: 'Food',    color: '#0088AA', symbol: 'F' },
-  culture:       { label: 'Culture', color: '#AA5500', symbol: 'C' },
-  entertainment: { label: 'Shows',   color: '#7700AA', symbol: 'S' },
+  monuments:       { label: 'Monuments', color: '#AA5500', symbol: 'M' },
+  entertainment: { label: 'Shows',   color: '#7700AA', symbol: 'E' },
+  museums:         { label: 'Museums',   color: '#006633', symbol: 'U' },
   other:         { label: 'Other',   color: '#555555', symbol: 'O' },
 };
 

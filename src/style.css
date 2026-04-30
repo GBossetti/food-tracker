@@ -1385,11 +1385,12 @@ body {
 }
 
 /* Category active colors */
-.category-tab[data-category="all"].active    { background: var(--primary); border-color: transparent; color: #000; font-weight: 700; }
-.category-tab[data-category="food"].active   { background: #0088AA; border-color: transparent; color: #000; font-weight: 700; }
-.category-tab[data-category="culture"].active { background: #AA5500; border-color: transparent; color: #000; font-weight: 700; }
+.category-tab[data-category="all"].active          { background: var(--primary); border-color: transparent; color: #000; font-weight: 700; }
+.category-tab[data-category="food"].active         { background: #0088AA; border-color: transparent; color: #000; font-weight: 700; }
+.category-tab[data-category="monuments"].active    { background: #AA5500; border-color: transparent; color: #000; font-weight: 700; }
 .category-tab[data-category="entertainment"].active { background: #7700AA; border-color: transparent; color: #fff; font-weight: 700; }
-.category-tab[data-category="other"].active  { background: #555555; border-color: transparent; color: #fff; font-weight: 700; }
+.category-tab[data-category="museums"].active      { background: #006633; border-color: transparent; color: #fff; font-weight: 700; }
+.category-tab[data-category="other"].active        { background: #555555; border-color: transparent; color: #fff; font-weight: 700; }
 
 /* Status active colors */
 .status-tab[data-status="all"].active      { background: var(--primary); border-color: transparent; color: #000; font-weight: 700; }
@@ -1430,10 +1431,12 @@ body {
   border-color: rgba(255, 255, 255, 0.25);
 }
 
-.category-select-btn[data-category="food"].active    { background: #0088AA; border-color: transparent; color: #000; }
-.category-select-btn[data-category="culture"].active { background: #AA5500; border-color: transparent; color: #000; }
+.category-select-btn[data-category="food"].active         { background: #0088AA; border-color: transparent; color: #000; }
+.category-select-btn[data-category="monuments"].active    { background: #AA5500; border-color: transparent; color: #000; }
 .category-select-btn[data-category="entertainment"].active { background: #7700AA; border-color: transparent; color: #fff; }
-.category-select-btn[data-category="other"].active   { background: #555555; border-color: transparent; color: #fff; }
+.category-select-btn[data-category="museums"].active      { background: #006633; border-color: transparent; color: #fff; }
+.category-select-btn[data-category="other"].active        { background: #555555; border-color: transparent; color: #fff; }
 
 .status-select-btn[data-status="visited"].active  { background: #0088AA; border-color: transparent; color: #000; }
 .status-select-btn[data-status="wishlist"].active { background: #FFCC00; border-color: transparent; color: #000; }
+
