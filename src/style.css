@@ -933,6 +933,20 @@ body {
 }
 
 /* ===================================
+   Analytics Bar Animations
+   =================================== */
+
+@keyframes growX {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+
+@keyframes growY {
+  from { transform: scaleY(0); }
+  to   { transform: scaleY(1); }
+}
+
+/* ===================================
    Analytics Dashboard - Glass Panels
    =================================== */
 
@@ -979,28 +993,24 @@ body {
 .stat-card {
   background: var(--bg-surface);
   color: var(--text-primary);
-  padding: 1.5rem;
+  padding: 1.25rem 1.5rem;
   border-radius: 4px;
   text-align: center;
   border: 1px solid rgba(255, 255, 255, 0.05);
-  transition: all 0.3s ease;
+  border-left: 3px solid var(--card-accent, var(--primary));
+  transition: background 0.2s ease;
 }
 
 .stat-card:hover {
-  border-color: rgba(59, 130, 246, 0.3);
-}
-
-.stat-icon {
-  font-size: 2rem;
-  margin-bottom: 0.5rem;
+  background: rgba(255, 255, 255, 0.02);
 }
 
 .stat-card .stat-value {
   font-family: var(--font-display);
-  font-size: 3rem;
+  font-size: 2.6rem;
   font-weight: 700;
-  margin: 0.5rem 0;
-  color: var(--primary-blue);
+  margin: 0.4rem 0 0.2rem;
+  color: var(--card-accent, var(--primary));
 }
 
 .stat-card .stat-label {
@@ -1012,16 +1022,41 @@ body {
   color: var(--text-muted);
 }
 
-/* Highlight Box */
-.highlight-box {
-  background: rgba(59, 130, 246, 0.1);
-  padding: 1rem 1.25rem;
-  border-radius: 4px;
-  border-left: 2px solid var(--primary-blue);
-  margin-top: 1rem;
-  color: var(--text-primary);
+/* Highlight rows — overview facts */
+.highlight-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.55rem 0;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.highlight-row:last-of-type { border-bottom: none; }
+
+.highlight-key {
+  min-width: 100px;
   font-family: var(--font-mono);
-  font-size: var(--text-body);
+  font-size: var(--text-micro);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.highlight-val {
+  flex: 1;
+  font-family: var(--font-mono);
+  font-size: var(--text-small);
+  font-weight: 500;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.highlight-meta {
+  font-family: var(--font-display);
+  font-size: var(--text-small);
+  font-weight: 700;
+  color: var(--primary);
 }
 
 /* Distribution Chart - Purple Gradient Bars */
@@ -1055,17 +1090,11 @@ body {
 
 .distribution-bar {
   height: 100%;
-  background: var(--primary-blue);
-  transition: width 0.5s ease;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  padding-right: 10px;
+  width: var(--bar-pct, 0%);
   border-radius: 2px;
-}
-
-.distribution-bar.unrated {
-  background: rgba(148, 163, 184, 0.5);
+  transform: scaleX(0);
+  transform-origin: left center;
+  animation: growX 0.55s ease forwards;
 }
 
 .distribution-count {
@@ -1107,29 +1136,25 @@ body {
 }
 
 .ranking-position {
-  min-width: 28px;
-  height: 28px;
+  min-width: 24px;
+  height: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--primary-blue);
-  color: white;
-  border-radius: 4px;
+  background: rgba(255,255,255,0.08);
+  color: var(--text-primary);
+  border-radius: 3px;
   font-weight: 700;
-  font-size: var(--text-small);
+  font-size: var(--text-micro);
+  flex-shrink: 0;
 }
 
-/* Top 3 styling */
-.ranking-item:nth-child(1) .ranking-position {
-  background: var(--primary-blue-light);
-}
-
-.ranking-item:nth-child(2) .ranking-position {
-  background: var(--primary-blue);
-}
-
-.ranking-item:nth-child(3) .ranking-position {
-  background: var(--primary-blue-dark);
+/* Top-places two-column grid */
+.top-places-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 1.25rem;
 }
 
 .ranking-name {
@@ -1152,30 +1177,53 @@ body {
   letter-spacing: 0.05em;
 }
 
-/* Tag Cloud - Gradient Bubbles */
-.tag-cloud {
+/* Tag bar chart */
+.tag-bar-chart { margin: 0.5rem 0; }
+
+.tag-bar-row {
   display: flex;
-  flex-wrap: wrap;
+  align-items: center;
   gap: 0.75rem;
-  margin: 1rem 0;
+  margin-bottom: 0.5rem;
 }
 
-.tag-bubble {
-  padding: 0.5rem 1rem;
-  background: var(--primary-blue);
-  color: white;
-  border-radius: 4px;
+.tag-bar-label {
+  min-width: 88px;
   font-family: var(--font-mono);
-  font-weight: 500;
   font-size: var(--text-micro);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  transition: all 0.3s ease;
-  display: inline-block;
+  color: var(--text-secondary);
+  text-align: right;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.tag-bubble:hover {
-  background: var(--primary-blue-light);
+.tag-bar-track {
+  flex: 1;
+  height: 16px;
+  background: rgba(255,255,255,0.04);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.tag-bar-fill {
+  height: 100%;
+  width: var(--bar-pct, 0%);
+  background: var(--primary);
+  opacity: 0.75;
+  transform: scaleX(0);
+  transform-origin: left center;
+  animation: growX 0.5s ease forwards;
+  border-radius: 2px;
+}
+
+.tag-bar-count {
+  min-width: 26px;
+  text-align: right;
+  font-family: var(--font-display);
+  font-size: var(--text-small);
+  font-weight: 700;
+  color: var(--text-primary);
 }
 
 /* Timeline Chart - Purple Bars */
@@ -1201,14 +1249,17 @@ body {
 
 .timeline-bar-fill {
   width: 100%;
-  background: var(--primary-blue);
-  border-radius: 2px 2px 0 0;
+  height: var(--bar-pct, 10%);
   min-height: 20px;
+  background: var(--primary);
+  border-radius: 2px 2px 0 0;
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  padding-top: 0.35rem;
-  transition: height 0.5s ease;
+  padding-top: 0.3rem;
+  transform: scaleY(0);
+  transform-origin: bottom center;
+  animation: growY 0.5s ease forwards;
 }
 
 .timeline-bar-value {
@@ -1238,20 +1289,25 @@ body {
 .insight-card {
   background: var(--bg-surface);
   border: 1px solid rgba(255, 255, 255, 0.05);
+  border-left: 3px solid var(--card-accent, var(--primary));
   border-radius: 4px;
-  padding: 1.5rem;
+  padding: 1.25rem;
   display: flex;
   align-items: center;
-  gap: 1rem;
-  transition: all 0.3s ease;
+  gap: 0.875rem;
+  transition: background 0.2s ease;
 }
 
 .insight-card:hover {
-  border-color: rgba(59, 130, 246, 0.3);
+  background: rgba(255, 255, 255, 0.02);
 }
 
 .insight-icon {
-  font-size: 2.5rem;
+  flex-shrink: 0;
+  color: var(--card-accent, var(--primary));
+  opacity: 0.9;
+  display: flex;
+  align-items: center;
 }
 
 .insight-text {
@@ -1389,6 +1445,10 @@ body {
   }
 
   .insights-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .top-places-grid {
     grid-template-columns: 1fr;
   }
 
