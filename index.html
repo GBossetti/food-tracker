@@ -28,23 +28,37 @@
   <div id="app-view" class="app-view">
   <!-- Header -->
   <header class="header">
-    <div class="header-title">
-      <button id="toggle-sidebar-btn" class="btn" title="Toggle Sidebar">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-menu"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+    <div class="header-brand">
+      <button id="toggle-sidebar-btn" class="btn btn-icon" title="Toggle Sidebar">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
       </button>
       <h1>My Food Map</h1>
     </div>
     <div class="header-actions">
-      <!-- Add SVG icon before "Add Place" text: <svg class="btn-icon">...</svg> -->
-      <button id="add-poi-btn" class="btn btn-primary" title="Click, then click map to add place">Add Place</button>
-      <!-- Add SVG icon before "Locate Me" text: <svg class="btn-icon">...</svg> -->
-      <button id="locate-btn" class="btn" title="Find my location">Locate Me</button>
-      <!-- Add SVG icon before "Analytics" text: <svg class="btn-icon">...</svg> -->
-      <button id="analytics-btn" class="btn" title="View analytics">Analytics</button>
-      <!-- Add SVG icon before "Export" text: <svg class="btn-icon">...</svg> -->
-      <button id="export-btn" class="btn">Export</button>
-      <!-- Add SVG icon before "Import" text: <svg class="btn-icon">...</svg> -->
-      <button id="import-btn" class="btn">Import</button>
+      <button id="add-poi-btn" class="btn btn-primary header-add-btn" title="Click, then click map to add place">
+        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        <span>Add Place</span>
+      </button>
+      <div class="header-divider"></div>
+      <div class="header-group">
+        <button id="locate-btn" class="btn header-icon-btn" title="Find my location">
+          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/></svg>
+          <span>Locate</span>
+        </button>
+        <button id="analytics-btn" class="btn header-icon-btn" title="View analytics">
+          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="12" width="4" height="9"/><rect x="10" y="7" width="4" height="14"/><rect x="17" y="3" width="4" height="18"/></svg>
+          <span>Analytics</span>
+        </button>
+      </div>
+      <div class="header-divider"></div>
+      <div class="header-group">
+        <button id="export-btn" class="btn btn-icon" title="Export data">
+          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        </button>
+        <button id="import-btn" class="btn btn-icon" title="Import data">
+          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        </button>
+      </div>
       <input type="file" id="import-input" accept=".json,.geojson" style="display: none;">
     </div>
   </header>
@@ -65,19 +79,19 @@
 
       <!-- Category Tabs -->
       <div class="category-tabs" id="category-tabs">
-        <button class="category-tab active" data-category="all">All</button>
-        <button class="category-tab" data-category="food">Food</button>
-        <button class="category-tab" data-category="monuments">Monuments</button>
-        <button class="category-tab" data-category="entertainment">Shows</button>
-        <button class="category-tab" data-category="museums">Museums</button>
-        <button class="category-tab" data-category="other">Other</button>
+        <button class="category-tab active" data-category="all">All <span class="tab-count"></span></button>
+        <button class="category-tab" data-category="food">Food <span class="tab-count"></span></button>
+        <button class="category-tab" data-category="monuments">Monuments <span class="tab-count"></span></button>
+        <button class="category-tab" data-category="entertainment">Shows <span class="tab-count"></span></button>
+        <button class="category-tab" data-category="museums">Museums <span class="tab-count"></span></button>
+        <button class="category-tab" data-category="other">Other <span class="tab-count"></span></button>
       </div>
 
       <!-- Status Tabs -->
       <div class="status-tabs" id="status-tabs">
-        <button class="status-tab active" data-status="all">All</button>
-        <button class="status-tab" data-status="visited">Visited</button>
-        <button class="status-tab" data-status="wishlist">Wishlist</button>
+        <button class="status-tab active" data-status="all">All <span class="tab-count"></span></button>
+        <button class="status-tab" data-status="visited">Visited <span class="tab-count"></span></button>
+        <button class="status-tab" data-status="wishlist">Wishlist <span class="tab-count"></span></button>
       </div>
 
       <!-- Tag Filters -->
@@ -89,20 +103,15 @@
         <button id="clear-filters-btn" class="btn btn-secondary">Clear All</button>
       </div>
 
+      <!-- POI List -->
+      <div class="poi-list-section" id="poi-list-section">
+        <h2 class="sidebar-section-heading">Places <span id="poi-list-count" class="tab-count"></span></h2>
+        <div id="poi-list-items" class="poi-list-items"></div>
+      </div>
+
       <!-- Distance Info -->
       <div id="distance-info" class="info-section">
         <!-- Distance info appears after using "Locate Me" -->
-      </div>
-
-      <!-- How to Use -->
-      <div class="info-section">
-        <h3>Quick Tips:</h3>
-        <ul>
-          <li>Click "Add Place" then click the map</li>
-          <li>Use "Locate Me" to center on your position</li>
-          <li>Search or filter by tags</li>
-          <li>Click markers to view/edit</li>
-        </ul>
       </div>
     </aside>
 
@@ -161,8 +170,12 @@
         </div>
 
         <div class="form-group poi-visited-only">
-          <label for="poi-tags">Tags (comma separated)</label>
-          <input type="text" id="poi-tags" name="tags" placeholder="e.g., cheap, good food, tapas">
+          <label>Tags</label>
+          <div class="tag-chip-input" id="tag-chip-container">
+            <input type="text" id="tag-chip-text" class="tag-chip-text" placeholder="Add tag…" autocomplete="off">
+          </div>
+          <input type="hidden" id="poi-tags" name="tags">
+          <div id="tag-suggestions" class="tag-suggestions" style="display:none"></div>
         </div>
 
         <div class="form-group">

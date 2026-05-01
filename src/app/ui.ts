@@ -3,7 +3,7 @@
  * Handles all user interface interactions
  */
 
-import { GeoJSONFeature, POICategory, POIStatus } from '../core/types';
+import { GeoJSONFeature, POICategory, POIStatus, CATEGORY_CONFIG } from '../core/types';
 import { matchesFilters } from '../core/poi-filters';
 import { MapEngine } from '../core/map-engine';
 import { StorageLayer } from './storage';
@@ -253,7 +253,7 @@ export class UIController {
     const coords = feature.geometry.coordinates as [number, number];
     (document.getElementById('poi-lat') as HTMLInputElement).value = coords[1].toString();
     (document.getElementById('poi-lng') as HTMLInputElement).value = coords[0].toString();
-    (document.getElementById('poi-tags') as HTMLInputElement).value = feature.properties.tags?.join(', ') || '';
+    this.setupTagChipInput(feature.properties.tags || []);
     (document.getElementById('poi-comments') as HTMLTextAreaElement).value = feature.properties.comments || '';
 
     // Set category
@@ -279,10 +279,10 @@ export class UIController {
     // Update rating stars - Replace with SVG icons (see SVG_GUIDE.md)
     document.querySelectorAll('.rating-input .star').forEach((star, index) => {
       if (index < this.currentRating) {
-        star.textContent = '';
+        star.textContent = '★';
         star.classList.add('active');
       } else {
-        star.textContent = '';
+        star.textContent = '☆';
         star.classList.remove('active');
       }
     });
@@ -396,6 +396,85 @@ export class UIController {
         searchTerm: this.searchTerm,
       })
     );
+    this.updateTabCounts();
+    this.renderPOIList();
+  }
+
+  private updateTabCounts(): void {
+    const all = this.mapEngine.getAllFeatures();
+
+    document.querySelectorAll('.category-tab').forEach((btn) => {
+      const cat = (btn as HTMLElement).dataset.category!;
+      const count = all.filter(f =>
+        matchesFilters(f, {
+          category: cat === 'all' ? 'all' : cat as POICategory,
+          status: this.activeStatus,
+          selectedTags: this.selectedTags,
+          searchTerm: this.searchTerm,
+        })
+      ).length;
+      const badge = btn.querySelector('.tab-count');
+      if (badge) badge.textContent = count > 0 ? String(count) : '';
+    });
+
+    document.querySelectorAll('.status-tab').forEach((btn) => {
+      const st = (btn as HTMLElement).dataset.status!;
+      const count = all.filter(f =>
+        matchesFilters(f, {
+          category: this.activeCategory,
+          status: st === 'all' ? 'all' : st as POIStatus,
+          selectedTags: this.selectedTags,
+          searchTerm: this.searchTerm,
+        })
+      ).length;
+      const badge = btn.querySelector('.tab-count');
+      if (badge) badge.textContent = count > 0 ? String(count) : '';
+    });
+  }
+
+  private renderPOIList(): void {
+    const items = document.getElementById('poi-list-items');
+    const countEl = document.getElementById('poi-list-count');
+    if (!items) return;
+
+    const filtered = this.mapEngine.getAllFeatures()
+      .filter(f => matchesFilters(f, {
+        category: this.activeCategory,
+        status: this.activeStatus,
+        selectedTags: this.selectedTags,
+        searchTerm: this.searchTerm,
+      }))
+      .sort((a, b) => a.properties.name.localeCompare(b.properties.name));
+
+    if (countEl) countEl.textContent = String(filtered.length);
+
+    if (filtered.length === 0) {
+      items.innerHTML = '<p class="poi-list-empty">No places match the current filters.</p>';
+      return;
+    }
+
+    items.innerHTML = filtered.map(f => {
+      const p = f.properties;
+      const cfg = CATEGORY_CONFIG[p.category as POICategory] ?? CATEGORY_CONFIG['other'];
+      const rating = p.rating ?? 0;
+      const stars = rating > 0
+        ? '★'.repeat(Math.round(rating)) + '☆'.repeat(5 - Math.round(rating))
+        : '';
+      const [lng, lat] = f.geometry.coordinates;
+      return `<div class="poi-list-item" data-lat="${lat}" data-lng="${lng}">
+        <span class="poi-list-dot" style="background:${cfg.color}"></span>
+        <span class="poi-list-name">${p.name}</span>
+        ${stars ? `<span class="poi-list-stars">${stars}</span>` : ''}
+      </div>`;
+    }).join('');
+
+    items.querySelectorAll<HTMLElement>('.poi-list-item').forEach(el => {
+      el.addEventListener('click', () => {
+        const lat = parseFloat(el.dataset.lat!);
+        const lng = parseFloat(el.dataset.lng!);
+        this.mapEngine.centerOn(lat, lng, 16);
+      });
+    });
   }
 
   private async saveCurrentState(): Promise<void> {
@@ -425,12 +504,14 @@ export class UIController {
   private toggleAddMode(): void {
     this.addMode = !this.addMode;
     const addBtn = document.getElementById('add-poi-btn');
-    
+    const header = document.querySelector('.header');
+
     if (this.addMode) {
       addBtn?.classList.add('active');
-      this.showNotification('Click on the map to add a place', 'success');
+      header?.classList.add('adding');
     } else {
       addBtn?.classList.remove('active');
+      header?.classList.remove('adding');
     }
   }
 
@@ -439,11 +520,10 @@ export class UIController {
    */
   private handleMapClick(feature: GeoJSONFeature): void {
     if (this.addMode) {
-      // Pre-fill form with coordinates from map click
       this.showAddPOIForm(feature.properties.lat, feature.properties.lng);
       this.addMode = false;
-      const addBtn = document.getElementById('add-poi-btn');
-      addBtn?.classList.remove('active');
+      document.getElementById('add-poi-btn')?.classList.remove('active');
+      document.querySelector('.header')?.classList.remove('adding');
     }
   }
 
@@ -460,10 +540,11 @@ export class UIController {
     form.reset();
     (document.getElementById('poi-id') as HTMLInputElement).value = '';
     this.currentRating = 0;
+    this.setupTagChipInput([]);
 
     // Reset rating stars - Replace with SVG icons (see SVG_GUIDE.md)
     document.querySelectorAll('.rating-input .star').forEach((star) => {
-      star.textContent = '';
+      star.textContent = '☆';
       star.classList.remove('active');
     });
 
@@ -625,10 +706,10 @@ export class UIController {
     const stars = star.parentElement?.querySelectorAll('.star');
     stars?.forEach((s, index) => {
       if (index < rating) {
-        s.textContent = '';
+        s.textContent = '★';
         s.classList.add('active');
       } else {
-        s.textContent = '';
+        s.textContent = '☆';
         s.classList.remove('active');
       }
     });
@@ -676,13 +757,13 @@ export class UIController {
     reviewsList.innerHTML = reviews
       .sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime())
       .map((review: any) => {
-        // Replace stars with SVG icons - see SVG_GUIDE.md
         const date = new Date(review.date).toLocaleDateString();
-        
+        const stars = '★'.repeat(review.rating) + '☆'.repeat(5 - review.rating);
+
         return `
           <div class="review-item" data-review-id="${review.id}">
             <div class="review-header">
-              <span class="review-rating" data-rating="${review.rating}"></span>
+              <span class="review-rating">${stars}</span>
               <span class="review-date">${date}</span>
             </div>
             <div class="review-text">${review.text}</div>
@@ -717,21 +798,21 @@ export class UIController {
     // Setup rating stars for review - Replace with SVG icons (see SVG_GUIDE.md)
     const reviewStars = document.querySelectorAll('.review-star');
     reviewStars.forEach((star) => {
-      star.textContent = '';
+      star.textContent = '☆';
       star.classList.remove('active');
-      
+
       (star as HTMLElement).onclick = (e) => {
         const rating = parseInt((e.target as HTMLElement).dataset.rating || '0');
         this.currentReviewRating = rating;
-        
+
         if (reviewRating) reviewRating.value = rating.toString();
-        
+
         reviewStars.forEach((s, index) => {
           if (index < rating) {
-            s.textContent = '';
+            s.textContent = '★';
             s.classList.add('active');
           } else {
-            s.textContent = '';
+            s.textContent = '☆';
             s.classList.remove('active');
           }
         });
@@ -854,10 +935,10 @@ export class UIController {
     const reviewStars = document.querySelectorAll('.review-star');
     reviewStars.forEach((star, index) => {
       if (index < review.rating) {
-        star.textContent = '';
+        star.textContent = '★';
         star.classList.add('active');
       } else {
-        star.textContent = '';
+        star.textContent = '☆';
         star.classList.remove('active');
       }
     });
@@ -1009,5 +1090,85 @@ export class UIController {
     ` : '<p style="text-align: center; color: #666;">No visit history yet. Add reviews to build your timeline!</p>';
 
     timelineView.innerHTML = statsHTML + timelineHTML;
+  }
+
+  private setupTagChipInput(existingTags: string[]): void {
+    const container = document.getElementById('tag-chip-container');
+    const textInput = document.getElementById('tag-chip-text') as HTMLInputElement;
+    const hiddenInput = document.getElementById('poi-tags') as HTMLInputElement;
+    const suggestions = document.getElementById('tag-suggestions');
+    if (!container || !textInput || !hiddenInput || !suggestions) return;
+
+    let chipTags: string[] = [...existingTags];
+
+    const syncHidden = () => {
+      hiddenInput.value = chipTags.join(', ');
+    };
+
+    const renderChips = () => {
+      container.querySelectorAll('.tag-chip').forEach(c => c.remove());
+      chipTags.forEach(tag => {
+        const chip = document.createElement('span');
+        chip.className = 'tag-chip';
+        chip.innerHTML = `${tag}<span class="tag-chip-remove" data-tag="${tag}">×</span>`;
+        chip.querySelector('.tag-chip-remove')!.addEventListener('click', () => {
+          chipTags = chipTags.filter(t => t !== tag);
+          renderChips();
+          syncHidden();
+        });
+        container.insertBefore(chip, textInput);
+      });
+    };
+
+    const addTag = (raw: string) => {
+      const tag = raw.trim().toLowerCase();
+      if (tag && !chipTags.includes(tag)) {
+        chipTags.push(tag);
+        renderChips();
+        syncHidden();
+      }
+      textInput.value = '';
+      suggestions.style.display = 'none';
+    };
+
+    const renderSuggestions = (query: string) => {
+      const q = query.toLowerCase();
+      const matches = [...this.allTags]
+        .filter(t => t.includes(q) && !chipTags.includes(t))
+        .slice(0, 8);
+      if (!q || matches.length === 0) {
+        suggestions.style.display = 'none';
+        return;
+      }
+      suggestions.innerHTML = matches.map(t =>
+        `<div class="tag-suggestion-item">${t}</div>`
+      ).join('');
+      suggestions.style.display = 'block';
+      suggestions.querySelectorAll<HTMLElement>('.tag-suggestion-item').forEach(el => {
+        el.addEventListener('mousedown', (e) => {
+          e.preventDefault();
+          addTag(el.textContent!);
+        });
+      });
+    };
+
+    textInput.addEventListener('input', () => renderSuggestions(textInput.value));
+    textInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ',') {
+        e.preventDefault();
+        addTag(textInput.value);
+      } else if (e.key === 'Backspace' && textInput.value === '' && chipTags.length > 0) {
+        chipTags.pop();
+        renderChips();
+        syncHidden();
+      }
+    });
+    textInput.addEventListener('blur', () => {
+      setTimeout(() => { suggestions.style.display = 'none'; }, 150);
+    });
+    container.addEventListener('click', () => textInput.focus());
+
+    renderChips();
+    syncHidden();
   }
 }
