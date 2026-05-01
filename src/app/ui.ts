@@ -25,6 +25,7 @@ export class UIController {
   private currentPOIId: string | null = null;
   private currentRating: number = 0;
   private currentReviewRating: number = 0;
+  private currentFeature: GeoJSONFeature | null = null;
   private editingReviewId: string | null = null;
 
   constructor(mapEngine: MapEngine, storage: StorageLayer) {
@@ -91,26 +92,43 @@ export class UIController {
       });
     });
 
-    // Category selector in modal
-    document.querySelectorAll('.category-select-btn').forEach((btn) => {
+    // Category tile selector in modal
+    document.querySelectorAll('.cat-tile').forEach((btn) => {
       btn.addEventListener('click', (e) => {
         const target = e.currentTarget as HTMLElement;
         const cat = target.dataset.category as POICategory;
         (document.getElementById('poi-category') as HTMLInputElement).value = cat;
-        document.querySelectorAll('.category-select-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.cat-tile').forEach(b => b.classList.remove('active'));
         target.classList.add('active');
+        this.updateHeroAccent(cat);
       });
     });
 
-    // Status selector in modal
-    document.querySelectorAll('.status-select-btn').forEach((btn) => {
+    // Status tile selector in modal
+    document.querySelectorAll('.status-tile').forEach((btn) => {
       btn.addEventListener('click', (e) => {
         const target = e.currentTarget as HTMLElement;
         const status = target.dataset.status as POIStatus;
         (document.getElementById('poi-status') as HTMLInputElement).value = status;
-        document.querySelectorAll('.status-select-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.status-tile').forEach(b => b.classList.remove('active'));
         target.classList.add('active');
         this.toggleVisitedSections(status);
+      });
+    });
+
+    // POI modal tab switching
+    document.querySelectorAll('.poi-tab').forEach((tab) => {
+      tab.addEventListener('click', (e) => {
+        const target = e.currentTarget as HTMLElement;
+        const tabName = target.dataset.tab!;
+        this.switchPOITab(tabName);
+        if (tabName === 'reviews' && this.currentFeature) {
+          this.renderReviews(this.currentFeature);
+          this.setupReviewForm(this.currentFeature);
+        }
+        if (tabName === 'history' && this.currentFeature) {
+          this.renderTimeline(this.currentFeature);
+        }
       });
     });
 
@@ -240,61 +258,59 @@ export class UIController {
   }
 
   private handleFeatureClick(feature: GeoJSONFeature): void {
-    // Show edit form with feature data
     const modal = document.getElementById('poi-modal');
     const form = document.getElementById('poi-form') as HTMLFormElement;
-    
     if (!modal || !form) return;
+
+    this.currentFeature = feature;
 
     // Populate form
     (document.getElementById('poi-id') as HTMLInputElement).value = feature.properties.id;
     (document.getElementById('poi-name') as HTMLInputElement).value = feature.properties.name;
-    
     const coords = feature.geometry.coordinates as [number, number];
     (document.getElementById('poi-lat') as HTMLInputElement).value = coords[1].toString();
     (document.getElementById('poi-lng') as HTMLInputElement).value = coords[0].toString();
     this.setupTagChipInput(feature.properties.tags || []);
     (document.getElementById('poi-comments') as HTMLTextAreaElement).value = feature.properties.comments || '';
 
-    // Set category
+    // Set category tiles
     const cat = (feature.properties.category || 'food') as POICategory;
     (document.getElementById('poi-category') as HTMLInputElement).value = cat;
-    document.querySelectorAll('.category-select-btn').forEach((btn) => {
+    document.querySelectorAll('.cat-tile').forEach((btn) => {
       (btn as HTMLElement).classList.toggle('active', (btn as HTMLElement).dataset.category === cat);
     });
 
-    // Set status
+    // Set status tiles
     const status = (feature.properties.status || 'visited') as POIStatus;
     (document.getElementById('poi-status') as HTMLInputElement).value = status;
-    document.querySelectorAll('.status-select-btn').forEach((btn) => {
+    document.querySelectorAll('.status-tile').forEach((btn) => {
       (btn as HTMLElement).classList.toggle('active', (btn as HTMLElement).dataset.status === status);
     });
     this.toggleVisitedSections(status);
 
-    // Set rating
+    // Set rating stars
     const rating = feature.properties.rating || 0;
     this.currentRating = Math.round(rating);
     (document.getElementById('poi-rating') as HTMLInputElement).value = this.currentRating.toString();
-    
-    // Update rating stars - Replace with SVG icons (see SVG_GUIDE.md)
     document.querySelectorAll('.rating-input .star').forEach((star, index) => {
-      if (index < this.currentRating) {
-        star.textContent = '★';
-        star.classList.add('active');
-      } else {
-        star.textContent = '☆';
-        star.classList.remove('active');
-      }
+      star.textContent = index < this.currentRating ? '★' : '☆';
+      star.classList.toggle('active', index < this.currentRating);
     });
 
-    // Show modal
-    modal.style.display = 'flex';
+    // Hero
+    (document.getElementById('poi-hero-title') as HTMLElement).textContent = feature.properties.name;
+    this.updateHeroAccent(cat);
 
-    // Show extra buttons for existing POIs
+    // Tabs — show reviews/history only for visited places
+    const isVisited = status === 'visited';
+    const tabReviews = document.getElementById('poi-tab-reviews');
+    const tabHistory = document.getElementById('poi-tab-history');
+    if (tabReviews) tabReviews.style.display = isVisited ? '' : 'none';
+    if (tabHistory) tabHistory.style.display = isVisited ? '' : 'none';
+    this.switchPOITab('details');
+
+    // Delete button
     const deleteBtn = document.getElementById('delete-btn');
-    const reviewsBtn = document.getElementById('reviews-btn');
-    const historyBtn = document.getElementById('history-btn');
-    
     if (deleteBtn) {
       deleteBtn.style.display = 'block';
       deleteBtn.onclick = () => {
@@ -307,24 +323,8 @@ export class UIController {
         }
       };
     }
-    
-    const isVisited = (feature.properties.status || 'visited') === 'visited';
 
-    if (reviewsBtn) {
-      reviewsBtn.style.display = isVisited ? 'block' : 'none';
-      reviewsBtn.onclick = () => {
-        modal.style.display = 'none';
-        this.showReviewsModal(feature);
-      };
-    }
-
-    if (historyBtn) {
-      historyBtn.style.display = isVisited ? 'block' : 'none';
-      historyBtn.onclick = () => {
-        modal.style.display = 'none';
-        this.showTimelineModal(feature);
-      };
-    }
+    modal.style.display = 'flex';
   }
 
   private updateTagList(): void {
@@ -548,17 +548,19 @@ export class UIController {
       star.classList.remove('active');
     });
 
-    // Default category to active tab (or 'food' if 'all')
+    this.currentFeature = null;
+
+    // Default category tiles
     const defaultCat = (this.activeCategory === 'all' ? 'food' : this.activeCategory) as POICategory;
     (document.getElementById('poi-category') as HTMLInputElement).value = defaultCat;
-    document.querySelectorAll('.category-select-btn').forEach((btn) => {
+    document.querySelectorAll('.cat-tile').forEach((btn) => {
       (btn as HTMLElement).classList.toggle('active', (btn as HTMLElement).dataset.category === defaultCat);
     });
 
-    // Default status to active tab (or 'visited' if 'all')
+    // Default status tiles
     const defaultStatus = (this.activeStatus === 'all' ? 'visited' : this.activeStatus) as POIStatus;
     (document.getElementById('poi-status') as HTMLInputElement).value = defaultStatus;
-    document.querySelectorAll('.status-select-btn').forEach((btn) => {
+    document.querySelectorAll('.status-tile').forEach((btn) => {
       (btn as HTMLElement).classList.toggle('active', (btn as HTMLElement).dataset.status === defaultStatus);
     });
     this.toggleVisitedSections(defaultStatus);
@@ -569,29 +571,32 @@ export class UIController {
       (document.getElementById('poi-lng') as HTMLInputElement).value = lng.toFixed(6);
     }
 
+    // Hero
+    (document.getElementById('poi-hero-title') as HTMLElement).textContent = 'New Place';
+    this.updateHeroAccent(defaultCat);
+
+    // Hide reviews/history tabs, reset to details
+    const tabReviews = document.getElementById('poi-tab-reviews');
+    const tabHistory = document.getElementById('poi-tab-history');
+    if (tabReviews) tabReviews.style.display = 'none';
+    if (tabHistory) tabHistory.style.display = 'none';
+    this.switchPOITab('details');
+
+    // Hide delete button for new places
+    const deleteBtn = document.getElementById('delete-btn');
+    if (deleteBtn) deleteBtn.style.display = 'none';
+
     // Show modal
     modal.style.display = 'flex';
 
-    // Setup form submission
+    // Form handlers
     form.onsubmit = (e) => {
       e.preventDefault();
       this.handlePOIFormSubmit();
     };
-
-    // Setup cancel button
-    const cancelBtn = document.getElementById('cancel-btn');
-    cancelBtn!.onclick = () => {
+    document.getElementById('cancel-btn')!.onclick = () => {
       modal.style.display = 'none';
     };
-
-    // Hide extra buttons for new POIs
-    const deleteBtn = document.getElementById('delete-btn');
-    const reviewsBtn = document.getElementById('reviews-btn');
-    const historyBtn = document.getElementById('history-btn');
-    
-    if (deleteBtn) deleteBtn.style.display = 'none';
-    if (reviewsBtn) reviewsBtn.style.display = 'none';
-    if (historyBtn) historyBtn.style.display = 'none';
   }
 
   /**
@@ -718,26 +723,24 @@ export class UIController {
   /**
    * Show reviews modal
    */
-  private showReviewsModal(feature: GeoJSONFeature): void {
-    const modal = document.getElementById('reviews-modal');
-    if (!modal) return;
+  private switchPOITab(tab: string): void {
+    document.querySelectorAll('.poi-tab').forEach((t) => {
+      t.classList.toggle('active', (t as HTMLElement).dataset.tab === tab);
+    });
+    document.querySelectorAll('.poi-panel').forEach((p) => {
+      (p as HTMLElement).classList.toggle('active', p.id === `poi-panel-${tab}`);
+    });
+  }
 
+  private updateHeroAccent(cat: POICategory): void {
+    const bar = document.getElementById('poi-hero-bar');
+    if (bar) bar.style.background = CATEGORY_CONFIG[cat]?.color ?? '#0088AA';
+  }
+
+  private showReviewsModal(feature: GeoJSONFeature): void {
     this.currentPOIId = feature.properties.id;
-    
-    // Render existing reviews
     this.renderReviews(feature);
-    
-    // Setup review form
     this.setupReviewForm(feature);
-    
-    // Show modal
-    modal.style.display = 'flex';
-    
-    // Close button
-    const closeBtn = document.getElementById('close-reviews-btn');
-    closeBtn!.onclick = () => {
-      modal.style.display = 'none';
-    };
   }
 
   /**
@@ -1013,20 +1016,7 @@ export class UIController {
    * Show timeline/history modal
    */
   private showTimelineModal(feature: GeoJSONFeature): void {
-    const modal = document.getElementById('history-modal');
-    if (!modal) return;
-    
-    // Render timeline
     this.renderTimeline(feature);
-    
-    // Show modal
-    modal.style.display = 'flex';
-    
-    // Close button
-    const closeBtn = document.getElementById('close-history-btn');
-    closeBtn!.onclick = () => {
-      modal.style.display = 'none';
-    };
   }
 
   /**

@@ -1689,3 +1689,190 @@ body {
   color: var(--text-primary);
 }
 
+/* ===================================
+   POI Modal redesign
+   =================================== */
+
+.poi-modal-content {
+  padding: 0;
+  overflow: hidden;
+}
+
+.poi-modal-content > form {
+  padding: 0 1.75rem 1.75rem;
+}
+
+/* Hero header */
+.poi-hero {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem 1.75rem 1rem;
+  position: relative;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.poi-hero-bar {
+  width: 4px;
+  height: 36px;
+  border-radius: 2px;
+  background: var(--primary);
+  flex-shrink: 0;
+  transition: background 0.25s ease;
+}
+
+.poi-hero-title {
+  flex: 1;
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.poi-hero-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  cursor: pointer;
+  color: var(--text-muted);
+  flex-shrink: 0;
+  transition: all 0.15s ease;
+}
+
+.poi-hero-close:hover {
+  color: var(--text-primary);
+  border-color: rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* Tabs */
+.poi-tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  margin: 0 -1.75rem 1.25rem;
+  padding: 0 1.75rem;
+}
+
+.poi-tab {
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 0.65rem 1rem 0.6rem;
+  font-family: var(--font-mono);
+  font-size: var(--text-micro);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  margin-bottom: -1px;
+}
+
+.poi-tab:hover {
+  color: var(--text-primary);
+}
+
+.poi-tab.active {
+  color: var(--primary);
+  border-bottom-color: var(--primary);
+}
+
+/* Panels */
+.poi-panel {
+  display: none;
+}
+
+.poi-panel.active {
+  display: block;
+}
+
+/* Category tile grid */
+.cat-tile-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.4rem;
+  margin-top: 0.35rem;
+}
+
+.cat-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.65rem 0.3rem 0.55rem;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  cursor: pointer;
+  color: var(--text-muted);
+  transition: all 0.15s ease;
+}
+
+.cat-tile span {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+.cat-tile:hover {
+  color: var(--text-primary);
+  border-color: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.cat-tile[data-category="food"].active         { background: rgba(0, 136, 170, 0.15);   border-color: #0088AA; color: #0088AA; }
+.cat-tile[data-category="monuments"].active    { background: rgba(170, 85, 0, 0.15);    border-color: #AA5500; color: #AA5500; }
+.cat-tile[data-category="entertainment"].active{ background: rgba(119, 0, 170, 0.15);   border-color: #7700AA; color: #BB66EE; }
+.cat-tile[data-category="museums"].active      { background: rgba(0, 102, 51, 0.2);     border-color: #006633; color: #00AA55; }
+.cat-tile[data-category="other"].active        { background: rgba(85, 85, 85, 0.2);     border-color: #555555; color: #999999; }
+
+/* Status tile row */
+.status-tile-row {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.35rem;
+}
+
+.status-tile {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.55rem 1.1rem;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: var(--text-small);
+  font-weight: 500;
+  color: var(--text-muted);
+  transition: all 0.15s ease;
+  flex: 1;
+  justify-content: center;
+}
+
+.status-tile:hover {
+  color: var(--text-primary);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.status-tile[data-status="visited"].active  { background: rgba(0, 136, 170, 0.15);  border-color: #0088AA; color: #0088AA; }
+.status-tile[data-status="wishlist"].active { background: rgba(255, 204, 0, 0.12);  border-color: #FFCC00; color: #FFCC00; }
+
+@media (max-width: 600px) {
+  .cat-tile-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
