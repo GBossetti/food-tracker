@@ -4,15 +4,12 @@
  */
 
 // POI Categories
-export type POICategory = 'food' | 'monuments' | 'entertainment' |'museums' | 'other';
+export type POICategory = 'food' | 'other';
 export type POIStatus = 'visited' | 'wishlist';
 
 export const CATEGORY_CONFIG: Record<POICategory, { label: string; color: string; symbol: string }> = {
-  food:          { label: 'Food',    color: '#0088AA', symbol: 'F' },
-  monuments:       { label: 'Monuments', color: '#AA5500', symbol: 'M' },
-  entertainment: { label: 'Shows',   color: '#7700AA', symbol: 'E' },
-  museums:         { label: 'Museums',   color: '#006633', symbol: 'U' },
-  other:         { label: 'Other',   color: '#555555', symbol: 'O' },
+  food:  { label: 'Food',  color: '#0088AA', symbol: '' },
+  other: { label: 'Other', color: '#556677', symbol: '' },
 };
 
 // Standard GeoJSON types

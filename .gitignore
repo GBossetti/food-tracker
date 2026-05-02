@@ -42,3 +42,6 @@ config/
 
 # ai agent
 CLAUDE.md
+
+# Personal notes
+.notes/

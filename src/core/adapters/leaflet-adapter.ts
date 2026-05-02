@@ -33,32 +33,31 @@ export class LeafletAdapter {
     const coords = feature.geometry.coordinates as [number, number];
     const latLng: L.LatLngExpression = [coords[1], coords[0]]; // GeoJSON is [lng, lat], Leaflet is [lat, lng]
 
-    const category = (feature.properties.category || 'food') as POICategory;
+    const rawCat = (feature.properties.category || 'food') as POICategory;
+    const category: POICategory = CATEGORY_CONFIG[rawCat] ? rawCat : 'other';
     const status = (feature.properties.status || 'visited') as POIStatus;
-    const { color, symbol } = CATEGORY_CONFIG[category];
+    const { color } = CATEGORY_CONFIG[category];
     const isWishlist = status === 'wishlist';
+
+    const innerDot = isWishlist ? '' : `<div style="width:8px;height:8px;border-radius:50%;background:#fff;opacity:0.6;"></div>`;
 
     const icon = L.divIcon({
       className: '',
       html: `<div style="
-        width: 28px;
-        height: 28px;
+        width: 26px;
+        height: 26px;
         border-radius: 50%;
         background: ${isWishlist ? 'transparent' : color};
         border: 2px ${isWishlist ? 'dashed' : 'solid'} ${color};
         display: flex;
         align-items: center;
         justify-content: center;
-        font-family: 'Orbitron', sans-serif;
-        font-size: 10px;
-        font-weight: 700;
-        color: ${isWishlist ? color : '#000'};
-        box-shadow: ${isWishlist ? 'none' : `0 0 8px ${color}88`};
+        box-shadow: ${isWishlist ? 'none' : `0 2px 8px ${color}88`};
         cursor: pointer;
         box-sizing: border-box;
-      ">${symbol}</div>`,
-      iconSize: [28, 28],
-      iconAnchor: [14, 14],
+      ">${innerDot}</div>`,
+      iconSize: [26, 26],
+      iconAnchor: [13, 13],
       popupAnchor: [0, -16],
     });
 

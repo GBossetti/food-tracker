@@ -65,23 +65,22 @@ describe('LeafletAdapter — marker icons', () => {
     const { LeafletAdapter } = await import('./leaflet-adapter');
     const adapter = new LeafletAdapter('map', { center: [40.4, -3.7], zoom: 13 });
 
-    const categories = ['food', 'monuments', 'entertainment', 'museums', 'other'] as const;
+    const categories = ['food', 'other'] as const;
     for (const cat of categories) {
       mockDivIcon.mockClear();
       adapter.addMarker(makeFeature({ category: cat, status: 'visited' }));
       const iconHtml: string = mockDivIcon.mock.calls[0][0].html;
       expect(iconHtml).toContain(CATEGORY_CONFIG[cat].color);
-      expect(iconHtml).toContain(CATEGORY_CONFIG[cat].symbol);
     }
   });
 
-  it('sets iconSize to 28x28', async () => {
+  it('sets iconSize to 26x26', async () => {
     const { LeafletAdapter } = await import('./leaflet-adapter');
     const adapter = new LeafletAdapter('map', { center: [40.4, -3.7], zoom: 13 });
     adapter.addMarker(makeFeature());
 
     const iconOptions = mockDivIcon.mock.calls[0][0];
-    expect(iconOptions.iconSize).toEqual([28, 28]);
+    expect(iconOptions.iconSize).toEqual([26, 26]);
   });
 
   it('centers the icon on the coordinate point', async () => {
@@ -90,7 +89,7 @@ describe('LeafletAdapter — marker icons', () => {
     adapter.addMarker(makeFeature());
 
     const iconOptions = mockDivIcon.mock.calls[0][0];
-    expect(iconOptions.iconAnchor).toEqual([14, 14]);
+    expect(iconOptions.iconAnchor).toEqual([13, 13]);
   });
 
   it('defaults missing category to food color', async () => {

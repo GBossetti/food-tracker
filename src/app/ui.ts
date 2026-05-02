@@ -19,7 +19,6 @@ export class UIController {
   private allTags: Set<string> = new Set();
   private addMode: boolean = false;
   private searchTerm: string = '';
-  private activeCategory: POICategory | 'all' = 'all';
   private activeStatus: POIStatus | 'all' = 'all';
   private userLocation: [number, number] | null = null;
   private currentPOIId: string | null = null;
@@ -34,6 +33,7 @@ export class UIController {
     this.analyticsUI = new AnalyticsUI(mapEngine);
     this.setupEventListeners();
     this.updateTagList();
+    this.applyFilters();
   }
 
   public setAppController(appController: AppController): void {
@@ -76,31 +76,11 @@ export class UIController {
       star.addEventListener('click', (e) => this.handleRatingClick(e));
     });
 
-    // Category tabs
-    document.querySelectorAll('.category-tab').forEach((tab) => {
-      tab.addEventListener('click', (e) => {
-        const cat = (e.currentTarget as HTMLElement).dataset.category as POICategory | 'all';
-        this.setActiveCategory(cat);
-      });
-    });
-
     // Status tabs
     document.querySelectorAll('.status-tab').forEach((tab) => {
       tab.addEventListener('click', (e) => {
         const status = (e.currentTarget as HTMLElement).dataset.status as POIStatus | 'all';
         this.setActiveStatus(status);
-      });
-    });
-
-    // Category tile selector in modal
-    document.querySelectorAll('.cat-tile').forEach((btn) => {
-      btn.addEventListener('click', (e) => {
-        const target = e.currentTarget as HTMLElement;
-        const cat = target.dataset.category as POICategory;
-        (document.getElementById('poi-category') as HTMLInputElement).value = cat;
-        document.querySelectorAll('.cat-tile').forEach(b => b.classList.remove('active'));
-        target.classList.add('active');
-        this.updateHeroAccent(cat);
       });
     });
 
@@ -132,20 +112,34 @@ export class UIController {
       });
     });
 
+    // Escape key: close modal and cancel add mode
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        this.closeModal();
+        if (this.addMode) this.cancelAddMode();
+      }
+    });
+
+    // Backdrop click: close modal
+    document.getElementById('poi-modal')?.addEventListener('click', (e) => {
+      if (e.target === document.getElementById('poi-modal')) this.closeModal();
+    });
+
     // Listen to map events
     this.mapEngine.on('click', (event) => this.handleFeatureClick(event.feature));
     this.mapEngine.on('map:click', (event) => this.handleMapClick(event.feature));
   }
 
-  private setActiveCategory(category: POICategory | 'all'): void {
-    this.activeCategory = category;
-    document.querySelectorAll('.category-tab').forEach((tab) => {
-      (tab as HTMLElement).classList.toggle('active', (tab as HTMLElement).dataset.category === category);
-    });
-    this.selectedTags.clear();
-    document.querySelectorAll('.tag-btn').forEach(b => b.classList.remove('active'));
-    this.updateTagList();
-    this.applyFilters();
+  private closeModal(): void {
+    const modal = document.getElementById('poi-modal');
+    if (modal) modal.style.display = 'none';
+  }
+
+  private cancelAddMode(): void {
+    this.addMode = false;
+    document.getElementById('add-poi-btn')?.classList.remove('active');
+    document.querySelector('.header')?.classList.remove('adding');
+    document.getElementById('map')?.classList.remove('adding-mode');
   }
 
   private setActiveStatus(status: POIStatus | 'all'): void {
@@ -273,12 +267,9 @@ export class UIController {
     this.setupTagChipInput(feature.properties.tags || []);
     (document.getElementById('poi-comments') as HTMLTextAreaElement).value = feature.properties.comments || '';
 
-    // Set category tiles
+    // Set category (hidden, not shown in form)
     const cat = (feature.properties.category || 'food') as POICategory;
     (document.getElementById('poi-category') as HTMLInputElement).value = cat;
-    document.querySelectorAll('.cat-tile').forEach((btn) => {
-      (btn as HTMLElement).classList.toggle('active', (btn as HTMLElement).dataset.category === cat);
-    });
 
     // Set status tiles
     const status = (feature.properties.status || 'visited') as POIStatus;
@@ -328,15 +319,11 @@ export class UIController {
   }
 
   private updateTagList(): void {
-    // Collect unique tags scoped to active category and status
     this.allTags.clear();
     this.mapEngine.getAllFeatures()
       .filter(f => {
-        const cat = f.properties.category || 'food';
         const status = f.properties.status || 'visited';
-        const catMatch = this.activeCategory === 'all' || cat === this.activeCategory;
-        const statusMatch = this.activeStatus === 'all' || status === this.activeStatus;
-        return catMatch && statusMatch;
+        return this.activeStatus === 'all' || status === this.activeStatus;
       })
       .forEach((feature) => {
         feature.properties.tags?.forEach((tag: string) => {
@@ -390,7 +377,7 @@ export class UIController {
   private applyFilters(): void {
     this.mapEngine.showFeatures((feature) =>
       matchesFilters(feature, {
-        category: this.activeCategory,
+        category: 'all',
         status: this.activeStatus,
         selectedTags: this.selectedTags,
         searchTerm: this.searchTerm,
@@ -403,25 +390,11 @@ export class UIController {
   private updateTabCounts(): void {
     const all = this.mapEngine.getAllFeatures();
 
-    document.querySelectorAll('.category-tab').forEach((btn) => {
-      const cat = (btn as HTMLElement).dataset.category!;
-      const count = all.filter(f =>
-        matchesFilters(f, {
-          category: cat === 'all' ? 'all' : cat as POICategory,
-          status: this.activeStatus,
-          selectedTags: this.selectedTags,
-          searchTerm: this.searchTerm,
-        })
-      ).length;
-      const badge = btn.querySelector('.tab-count');
-      if (badge) badge.textContent = count > 0 ? String(count) : '';
-    });
-
     document.querySelectorAll('.status-tab').forEach((btn) => {
       const st = (btn as HTMLElement).dataset.status!;
       const count = all.filter(f =>
         matchesFilters(f, {
-          category: this.activeCategory,
+          category: 'all',
           status: st === 'all' ? 'all' : st as POIStatus,
           selectedTags: this.selectedTags,
           searchTerm: this.searchTerm,
@@ -439,7 +412,7 @@ export class UIController {
 
     const filtered = this.mapEngine.getAllFeatures()
       .filter(f => matchesFilters(f, {
-        category: this.activeCategory,
+        category: 'all',
         status: this.activeStatus,
         selectedTags: this.selectedTags,
         searchTerm: this.searchTerm,
@@ -505,25 +478,23 @@ export class UIController {
     this.addMode = !this.addMode;
     const addBtn = document.getElementById('add-poi-btn');
     const header = document.querySelector('.header');
+    const mapEl = document.getElementById('map');
 
     if (this.addMode) {
       addBtn?.classList.add('active');
       header?.classList.add('adding');
+      mapEl?.classList.add('adding-mode');
     } else {
       addBtn?.classList.remove('active');
       header?.classList.remove('adding');
+      mapEl?.classList.remove('adding-mode');
     }
   }
 
-  /**
-   * Handle map click - either add POI or ignore
-   */
   private handleMapClick(feature: GeoJSONFeature): void {
     if (this.addMode) {
       this.showAddPOIForm(feature.properties.lat, feature.properties.lng);
-      this.addMode = false;
-      document.getElementById('add-poi-btn')?.classList.remove('active');
-      document.querySelector('.header')?.classList.remove('adding');
+      this.cancelAddMode();
     }
   }
 
@@ -550,12 +521,7 @@ export class UIController {
 
     this.currentFeature = null;
 
-    // Default category tiles
-    const defaultCat = (this.activeCategory === 'all' ? 'food' : this.activeCategory) as POICategory;
-    (document.getElementById('poi-category') as HTMLInputElement).value = defaultCat;
-    document.querySelectorAll('.cat-tile').forEach((btn) => {
-      (btn as HTMLElement).classList.toggle('active', (btn as HTMLElement).dataset.category === defaultCat);
-    });
+    (document.getElementById('poi-category') as HTMLInputElement).value = 'food';
 
     // Default status tiles
     const defaultStatus = (this.activeStatus === 'all' ? 'visited' : this.activeStatus) as POIStatus;
@@ -573,7 +539,8 @@ export class UIController {
 
     // Hero
     (document.getElementById('poi-hero-title') as HTMLElement).textContent = 'New Place';
-    this.updateHeroAccent(defaultCat);
+    const heroBar = document.getElementById('poi-hero-bar');
+    if (heroBar) heroBar.style.background = 'rgba(255,255,255,0.08)';
 
     // Hide reviews/history tabs, reset to details
     const tabReviews = document.getElementById('poi-tab-reviews');
