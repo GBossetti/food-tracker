@@ -1546,6 +1546,7 @@ body {
 .category-tab[data-category="bar"].active        { background: #7700AA; border-color: transparent; color: #fff; font-weight: 700; }
 .category-tab[data-category="bakery"].active     { background: #CC5500; border-color: transparent; color: #000; font-weight: 700; }
 .category-tab[data-category="market"].active     { background: #007744; border-color: transparent; color: #fff; font-weight: 700; }
+.category-tab[data-category="heladeria"].active  { background: #0066BB; border-color: transparent; color: #fff; font-weight: 700; }
 .category-tab[data-category="other"].active      { background: #556677; border-color: transparent; color: #fff; font-weight: 700; }
 
 /* ===================================
@@ -1928,6 +1929,7 @@ body {
 .cat-tile[data-category="bar"].active        { background: rgba(119,0,170,0.15);   border-color: #7700AA; color: #AA44DD; }
 .cat-tile[data-category="bakery"].active     { background: rgba(204,85,0,0.15);    border-color: #CC5500; color: #CC5500; }
 .cat-tile[data-category="market"].active     { background: rgba(0,119,68,0.15);    border-color: #007744; color: #00AA66; }
+.cat-tile[data-category="heladeria"].active  { background: rgba(0,102,187,0.15);   border-color: #0066BB; color: #4499DD; }
 .cat-tile[data-category="other"].active      { background: rgba(85,102,119,0.15);  border-color: #556677; color: #889aaa; }
 
 
