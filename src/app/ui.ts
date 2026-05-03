@@ -21,7 +21,6 @@ export class UIController {
   private searchTerm: string = '';
   private activeStatus: POIStatus | 'all' = 'all';
   private userLocation: [number, number] | null = null;
-  private currentPOIId: string | null = null;
   private currentRating: number = 0;
   private currentReviewRating: number = 0;
   private currentFeature: GeoJSONFeature | null = null;
@@ -510,7 +509,6 @@ export class UIController {
     this.currentRating = 0;
     this.setupTagChipInput([]);
 
-    // Reset rating stars - Replace with SVG icons (see SVG_GUIDE.md)
     document.querySelectorAll('.rating-input .star').forEach((star) => {
       star.textContent = '☆';
       star.classList.remove('active');
@@ -671,7 +669,6 @@ export class UIController {
     const ratingInput = document.getElementById('poi-rating') as HTMLInputElement;
     if (ratingInput) ratingInput.value = rating.toString();
     
-    // Update visual stars - Replace with SVG icons (see SVG_GUIDE.md)
     const stars = star.parentElement?.querySelectorAll('.star');
     stars?.forEach((s, index) => {
       if (index < rating) {
@@ -701,15 +698,6 @@ export class UIController {
     if (bar) bar.style.background = CATEGORY_CONFIG[cat]?.color ?? '#0088AA';
   }
 
-  private showReviewsModal(feature: GeoJSONFeature): void {
-    this.currentPOIId = feature.properties.id;
-    this.renderReviews(feature);
-    this.setupReviewForm(feature);
-  }
-
-  /**
-   * Render reviews list
-   */
   private renderReviews(feature: GeoJSONFeature): void {
     const reviewsList = document.getElementById('reviews-list');
     if (!reviewsList) return;
@@ -762,7 +750,6 @@ export class UIController {
     const addReviewBtn = document.getElementById('add-review-btn');
     if (addReviewBtn) addReviewBtn.textContent = 'Add Review';
     
-    // Setup rating stars for review - Replace with SVG icons (see SVG_GUIDE.md)
     const reviewStars = document.querySelectorAll('.review-star');
     reviewStars.forEach((star) => {
       star.textContent = '☆';
@@ -898,7 +885,6 @@ export class UIController {
 
     this.currentReviewRating = review.rating;
 
-    // Update stars - Replace with SVG icons (see SVG_GUIDE.md)
     const reviewStars = document.querySelectorAll('.review-star');
     reviewStars.forEach((star, index) => {
       if (index < review.rating) {
@@ -976,16 +962,6 @@ export class UIController {
     this.showNotification('Review updated!', 'success');
   }
 
-  /**
-   * Show timeline/history modal
-   */
-  private showTimelineModal(feature: GeoJSONFeature): void {
-    this.renderTimeline(feature);
-  }
-
-  /**
-   * Render timeline view
-   */
   private renderTimeline(feature: GeoJSONFeature): void {
     const timelineView = document.getElementById('timeline-view');
     if (!timelineView) return;
@@ -1020,7 +996,6 @@ export class UIController {
         ${reviews
           .sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime())
           .map((review: any) => {
-            // Replace stars with SVG icons - see SVG_GUIDE.md
             const date = new Date(review.date).toLocaleDateString('en-US', { 
               year: 'numeric', 
               month: 'long', 
