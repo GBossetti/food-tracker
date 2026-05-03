@@ -22,8 +22,8 @@ describe('normalizePOI', () => {
   });
 
   it('preserves existing category', () => {
-    const result = normalizePOI(makeFeature({ category: 'culture' }));
-    expect(result.properties.category).toBe('culture');
+    const result = normalizePOI(makeFeature({ category: 'other' }));
+    expect(result.properties.category).toBe('other');
   });
 
   it('preserves existing status', () => {
@@ -32,8 +32,8 @@ describe('normalizePOI', () => {
   });
 
   it('does not modify features that already have both fields', () => {
-    const result = normalizePOI(makeFeature({ category: 'entertainment', status: 'wishlist' }));
-    expect(result.properties.category).toBe('entertainment');
+    const result = normalizePOI(makeFeature({ category: 'other', status: 'wishlist' }));
+    expect(result.properties.category).toBe('other');
     expect(result.properties.status).toBe('wishlist');
   });
 

@@ -377,7 +377,6 @@ export class UIController {
   private applyFilters(): void {
     this.mapEngine.showFeatures((feature) =>
       matchesFilters(feature, {
-        category: 'all',
         status: this.activeStatus,
         selectedTags: this.selectedTags,
         searchTerm: this.searchTerm,
@@ -394,7 +393,6 @@ export class UIController {
       const st = (btn as HTMLElement).dataset.status!;
       const count = all.filter(f =>
         matchesFilters(f, {
-          category: 'all',
           status: st === 'all' ? 'all' : st as POIStatus,
           selectedTags: this.selectedTags,
           searchTerm: this.searchTerm,
@@ -412,7 +410,6 @@ export class UIController {
 
     const filtered = this.mapEngine.getAllFeatures()
       .filter(f => matchesFilters(f, {
-        category: 'all',
         status: this.activeStatus,
         selectedTags: this.selectedTags,
         searchTerm: this.searchTerm,

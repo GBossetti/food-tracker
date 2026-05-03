@@ -7,9 +7,9 @@
 export type POICategory = 'food' | 'other';
 export type POIStatus = 'visited' | 'wishlist';
 
-export const CATEGORY_CONFIG: Record<POICategory, { label: string; color: string; symbol: string }> = {
-  food:  { label: 'Food',  color: '#0088AA', symbol: '' },
-  other: { label: 'Other', color: '#556677', symbol: '' },
+export const CATEGORY_CONFIG: Record<POICategory, { label: string; color: string }> = {
+  food:  { label: 'Food',  color: '#0088AA' },
+  other: { label: 'Other', color: '#556677' },
 };
 
 // Standard GeoJSON types
