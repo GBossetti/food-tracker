@@ -1,13 +1,19 @@
-import { GeoJSONFeature, POIStatus } from './types';
+import { GeoJSONFeature, POICategory, POIStatus } from './types';
 
 export interface FilterOptions {
+  category: POICategory | 'all';
   status: POIStatus | 'all';
   selectedTags: Set<string>;
   searchTerm: string;
 }
 
 export function matchesFilters(feature: GeoJSONFeature, options: FilterOptions): boolean {
-  const { status, selectedTags, searchTerm } = options;
+  const { category, status, selectedTags, searchTerm } = options;
+
+  if (category !== 'all') {
+    const cat = feature.properties.category || 'restaurant';
+    if (cat !== category) return false;
+  }
 
   if (status !== 'all') {
     const st = feature.properties.status || 'visited';

@@ -7,8 +7,11 @@ import { GeoJSONFeature, GeoJSONFeatureCollection } from '../core/types';
 
 const STORAGE_KEY = 'food-map-pois';
 
+const LEGACY_CATEGORY_MAP: Record<string, string> = { food: 'restaurant' };
+
 export function normalizePOI(feature: GeoJSONFeature): GeoJSONFeature {
-  if (!feature.properties.category) feature.properties.category = 'food';
+  if (!feature.properties.category) feature.properties.category = 'restaurant';
+  feature.properties.category = LEGACY_CATEGORY_MAP[feature.properties.category] ?? feature.properties.category;
   if (!feature.properties.status) feature.properties.status = 'visited';
   return feature;
 }

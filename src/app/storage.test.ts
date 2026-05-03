@@ -11,9 +11,14 @@ function makeFeature(overrides: Partial<GeoJSONFeature['properties']> = {}): Geo
 }
 
 describe('normalizePOI', () => {
-  it('sets category to "food" when missing', () => {
+  it('sets category to "restaurant" when missing', () => {
     const result = normalizePOI(makeFeature());
-    expect(result.properties.category).toBe('food');
+    expect(result.properties.category).toBe('restaurant');
+  });
+
+  it('migrates legacy "food" category to "restaurant"', () => {
+    const result = normalizePOI(makeFeature({ category: 'food' }));
+    expect(result.properties.category).toBe('restaurant');
   });
 
   it('sets status to "visited" when missing', () => {
@@ -22,8 +27,8 @@ describe('normalizePOI', () => {
   });
 
   it('preserves existing category', () => {
-    const result = normalizePOI(makeFeature({ category: 'other' }));
-    expect(result.properties.category).toBe('other');
+    const result = normalizePOI(makeFeature({ category: 'cafe' }));
+    expect(result.properties.category).toBe('cafe');
   });
 
   it('preserves existing status', () => {
@@ -32,8 +37,8 @@ describe('normalizePOI', () => {
   });
 
   it('does not modify features that already have both fields', () => {
-    const result = normalizePOI(makeFeature({ category: 'other', status: 'wishlist' }));
-    expect(result.properties.category).toBe('other');
+    const result = normalizePOI(makeFeature({ category: 'bar', status: 'wishlist' }));
+    expect(result.properties.category).toBe('bar');
     expect(result.properties.status).toBe('wishlist');
   });
 

@@ -1501,6 +1501,54 @@ body {
 }
 
 /* ===================================
+   Category Tabs (Sidebar)
+   =================================== */
+
+.category-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.3rem;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.category-tab-all {
+  grid-column: 1 / -1;
+}
+
+.category-tab {
+  padding: 0.4rem 0.2rem;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 2px;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.category-tab:hover {
+  color: var(--text-primary);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.category-tab[data-category="all"].active        { background: var(--primary); border-color: transparent; color: #000; font-weight: 700; }
+.category-tab[data-category="restaurant"].active { background: #0088AA; border-color: transparent; color: #000; font-weight: 700; }
+.category-tab[data-category="cafe"].active       { background: #CC8800; border-color: transparent; color: #000; font-weight: 700; }
+.category-tab[data-category="bar"].active        { background: #7700AA; border-color: transparent; color: #fff; font-weight: 700; }
+.category-tab[data-category="bakery"].active     { background: #CC5500; border-color: transparent; color: #000; font-weight: 700; }
+.category-tab[data-category="market"].active     { background: #007744; border-color: transparent; color: #fff; font-weight: 700; }
+.category-tab[data-category="other"].active      { background: #556677; border-color: transparent; color: #fff; font-weight: 700; }
+
+/* ===================================
    Status Tabs (Sidebar)
    =================================== */
 
@@ -1842,5 +1890,44 @@ body {
 
 .status-tile[data-status="visited"].active  { background: rgba(0, 136, 170, 0.15);  border-color: #0088AA; color: #0088AA; }
 .status-tile[data-status="wishlist"].active { background: rgba(255, 204, 0, 0.12);  border-color: #FFCC00; color: #FFCC00; }
+
+/* Category tile grid (modal) */
+.cat-tile-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.4rem;
+  margin-top: 0.35rem;
+}
+
+.cat-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.6rem 0.4rem;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  transition: all 0.15s ease;
+}
+
+.cat-tile:hover {
+  color: var(--text-primary);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.cat-tile[data-category="restaurant"].active { background: rgba(0,136,170,0.15);   border-color: #0088AA; color: #0088AA; }
+.cat-tile[data-category="cafe"].active       { background: rgba(204,136,0,0.15);   border-color: #CC8800; color: #CC8800; }
+.cat-tile[data-category="bar"].active        { background: rgba(119,0,170,0.15);   border-color: #7700AA; color: #AA44DD; }
+.cat-tile[data-category="bakery"].active     { background: rgba(204,85,0,0.15);    border-color: #CC5500; color: #CC5500; }
+.cat-tile[data-category="market"].active     { background: rgba(0,119,68,0.15);    border-color: #007744; color: #00AA66; }
+.cat-tile[data-category="other"].active      { background: rgba(85,102,119,0.15);  border-color: #556677; color: #889aaa; }
 
 

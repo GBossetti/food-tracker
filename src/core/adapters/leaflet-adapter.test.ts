@@ -44,10 +44,10 @@ describe('LeafletAdapter — marker icons', () => {
   it('visited marker HTML contains solid background color', async () => {
     const { LeafletAdapter } = await import('./leaflet-adapter');
     const adapter = new LeafletAdapter('map', { center: [40.4, -3.7], zoom: 13 });
-    adapter.addMarker(makeFeature({ category: 'food', status: 'visited' }));
+    adapter.addMarker(makeFeature({ category: 'restaurant', status: 'visited' }));
 
     const iconHtml: string = mockDivIcon.mock.calls[0][0].html;
-    expect(iconHtml).toContain(`background: ${CATEGORY_CONFIG.food.color}`);
+    expect(iconHtml).toContain(`background: ${CATEGORY_CONFIG.restaurant.color}`);
     expect(iconHtml).not.toContain('background: transparent');
   });
 
@@ -65,7 +65,7 @@ describe('LeafletAdapter — marker icons', () => {
     const { LeafletAdapter } = await import('./leaflet-adapter');
     const adapter = new LeafletAdapter('map', { center: [40.4, -3.7], zoom: 13 });
 
-    const categories = ['food', 'other'] as const;
+    const categories = ['restaurant', 'cafe', 'bar', 'bakery', 'market', 'other'] as const;
     for (const cat of categories) {
       mockDivIcon.mockClear();
       adapter.addMarker(makeFeature({ category: cat, status: 'visited' }));
@@ -92,7 +92,7 @@ describe('LeafletAdapter — marker icons', () => {
     expect(iconOptions.iconAnchor).toEqual([13, 13]);
   });
 
-  it('defaults missing category to food color', async () => {
+  it('defaults missing category to restaurant color', async () => {
     const { LeafletAdapter } = await import('./leaflet-adapter');
     const adapter = new LeafletAdapter('map', { center: [40.4, -3.7], zoom: 13 });
     const feature = makeFeature();
@@ -100,6 +100,6 @@ describe('LeafletAdapter — marker icons', () => {
     adapter.addMarker(feature);
 
     const iconHtml: string = mockDivIcon.mock.calls[0][0].html;
-    expect(iconHtml).toContain(CATEGORY_CONFIG.food.color);
+    expect(iconHtml).toContain(CATEGORY_CONFIG.restaurant.color);
   });
 });

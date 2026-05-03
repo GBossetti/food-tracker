@@ -8,7 +8,7 @@ function makeFeature(overrides: Partial<GeoJSONFeature['properties']> = {}): Geo
     properties: {
       id: 'test-1',
       name: 'Test Place',
-      category: 'food',
+      category: 'restaurant',
       status: 'visited',
       tags: ['tapas', 'local'],
       comments: 'Great spot',
@@ -19,10 +19,35 @@ function makeFeature(overrides: Partial<GeoJSONFeature['properties']> = {}): Geo
 }
 
 const baseOptions: FilterOptions = {
+  category: 'all',
   status: 'all',
   selectedTags: new Set(),
   searchTerm: '',
 };
+
+describe('matchesFilters — category', () => {
+  it('passes when category is "all"', () => {
+    expect(matchesFilters(makeFeature({ category: 'restaurant' }), { ...baseOptions, category: 'all' })).toBe(true);
+    expect(matchesFilters(makeFeature({ category: 'cafe' }), { ...baseOptions, category: 'all' })).toBe(true);
+  });
+
+  it('passes when category matches', () => {
+    expect(matchesFilters(makeFeature({ category: 'restaurant' }), { ...baseOptions, category: 'restaurant' })).toBe(true);
+    expect(matchesFilters(makeFeature({ category: 'bar' }), { ...baseOptions, category: 'bar' })).toBe(true);
+  });
+
+  it('fails when category does not match', () => {
+    expect(matchesFilters(makeFeature({ category: 'restaurant' }), { ...baseOptions, category: 'cafe' })).toBe(false);
+    expect(matchesFilters(makeFeature({ category: 'bakery' }), { ...baseOptions, category: 'market' })).toBe(false);
+  });
+
+  it('defaults missing category to "restaurant"', () => {
+    const feature = makeFeature();
+    delete feature.properties.category;
+    expect(matchesFilters(feature, { ...baseOptions, category: 'restaurant' })).toBe(true);
+    expect(matchesFilters(feature, { ...baseOptions, category: 'cafe' })).toBe(false);
+  });
+});
 
 describe('matchesFilters — status', () => {
   it('passes when status is "all"', () => {
@@ -93,26 +118,26 @@ describe('matchesFilters — search', () => {
 
 describe('matchesFilters — combined filters', () => {
   it('all filters must pass simultaneously', () => {
-    const feature = makeFeature({ status: 'visited', tags: ['tapas'], name: 'Bar X' });
+    const feature = makeFeature({ category: 'restaurant', status: 'visited', tags: ['tapas'], name: 'Bar X' });
 
-    // All passing
     expect(matchesFilters(feature, {
-      status: 'visited', selectedTags: new Set(['tapas']), searchTerm: 'bar',
+      category: 'restaurant', status: 'visited', selectedTags: new Set(['tapas']), searchTerm: 'bar',
     })).toBe(true);
 
-    // Status fails
     expect(matchesFilters(feature, {
-      status: 'wishlist', selectedTags: new Set(['tapas']), searchTerm: 'bar',
+      category: 'cafe', status: 'visited', selectedTags: new Set(['tapas']), searchTerm: 'bar',
     })).toBe(false);
 
-    // Tag fails
     expect(matchesFilters(feature, {
-      status: 'visited', selectedTags: new Set(['fancy']), searchTerm: 'bar',
+      category: 'restaurant', status: 'wishlist', selectedTags: new Set(['tapas']), searchTerm: 'bar',
     })).toBe(false);
 
-    // Search fails
     expect(matchesFilters(feature, {
-      status: 'visited', selectedTags: new Set(['tapas']), searchTerm: 'museum',
+      category: 'restaurant', status: 'visited', selectedTags: new Set(['fancy']), searchTerm: 'bar',
+    })).toBe(false);
+
+    expect(matchesFilters(feature, {
+      category: 'restaurant', status: 'visited', selectedTags: new Set(['tapas']), searchTerm: 'museum',
     })).toBe(false);
   });
 });

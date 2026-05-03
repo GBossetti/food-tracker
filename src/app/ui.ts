@@ -19,6 +19,7 @@ export class UIController {
   private allTags: Set<string> = new Set();
   private addMode: boolean = false;
   private searchTerm: string = '';
+  private activeCategory: POICategory | 'all' = 'all';
   private activeStatus: POIStatus | 'all' = 'all';
   private userLocation: [number, number] | null = null;
   private currentRating: number = 0;
@@ -73,6 +74,26 @@ export class UIController {
     // Rating stars in main form
     document.querySelectorAll('.rating-input .star').forEach((star) => {
       star.addEventListener('click', (e) => this.handleRatingClick(e));
+    });
+
+    // Category tabs
+    document.querySelectorAll('.category-tab').forEach((tab) => {
+      tab.addEventListener('click', (e) => {
+        const cat = (e.currentTarget as HTMLElement).dataset.category as POICategory | 'all';
+        this.setActiveCategory(cat);
+      });
+    });
+
+    // Category tile selector in modal
+    document.querySelectorAll('.cat-tile').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        const target = e.currentTarget as HTMLElement;
+        const cat = target.dataset.category as POICategory;
+        (document.getElementById('poi-category') as HTMLInputElement).value = cat;
+        document.querySelectorAll('.cat-tile').forEach(b => b.classList.remove('active'));
+        target.classList.add('active');
+        this.updateHeroAccent(cat);
+      });
     });
 
     // Status tabs
@@ -141,6 +162,14 @@ export class UIController {
     document.getElementById('map')?.classList.remove('adding-mode');
   }
 
+  private setActiveCategory(category: POICategory | 'all'): void {
+    this.activeCategory = category;
+    document.querySelectorAll('.category-tab').forEach((tab) => {
+      (tab as HTMLElement).classList.toggle('active', (tab as HTMLElement).dataset.category === category);
+    });
+    this.applyFilters();
+  }
+
   private setActiveStatus(status: POIStatus | 'all'): void {
     this.activeStatus = status;
     document.querySelectorAll('.status-tab').forEach((tab) => {
@@ -188,7 +217,7 @@ export class UIController {
     const tags = (formData.get('tags') as string).split(',').map(t => t.trim()).filter(Boolean);
     const comments = formData.get('comments') as string;
     const rating = this.currentRating;
-    const category = ((document.getElementById('poi-category') as HTMLInputElement).value || 'food') as POICategory;
+    const category = ((document.getElementById('poi-category') as HTMLInputElement).value || 'restaurant') as POICategory;
     const status = ((document.getElementById('poi-status') as HTMLInputElement).value || 'visited') as POIStatus;
 
     if (!name || isNaN(lat) || isNaN(lng)) {
@@ -266,9 +295,12 @@ export class UIController {
     this.setupTagChipInput(feature.properties.tags || []);
     (document.getElementById('poi-comments') as HTMLTextAreaElement).value = feature.properties.comments || '';
 
-    // Set category (hidden, not shown in form)
-    const cat = (feature.properties.category || 'food') as POICategory;
+    // Set category tiles
+    const cat = (feature.properties.category || 'restaurant') as POICategory;
     (document.getElementById('poi-category') as HTMLInputElement).value = cat;
+    document.querySelectorAll('.cat-tile').forEach((b) => {
+      (b as HTMLElement).classList.toggle('active', (b as HTMLElement).dataset.category === cat);
+    });
 
     // Set status tiles
     const status = (feature.properties.status || 'visited') as POIStatus;
@@ -376,6 +408,7 @@ export class UIController {
   private applyFilters(): void {
     this.mapEngine.showFeatures((feature) =>
       matchesFilters(feature, {
+        category: this.activeCategory,
         status: this.activeStatus,
         selectedTags: this.selectedTags,
         searchTerm: this.searchTerm,
@@ -392,6 +425,7 @@ export class UIController {
       const st = (btn as HTMLElement).dataset.status!;
       const count = all.filter(f =>
         matchesFilters(f, {
+          category: this.activeCategory,
           status: st === 'all' ? 'all' : st as POIStatus,
           selectedTags: this.selectedTags,
           searchTerm: this.searchTerm,
@@ -409,6 +443,7 @@ export class UIController {
 
     const filtered = this.mapEngine.getAllFeatures()
       .filter(f => matchesFilters(f, {
+        category: this.activeCategory,
         status: this.activeStatus,
         selectedTags: this.selectedTags,
         searchTerm: this.searchTerm,
@@ -516,7 +551,10 @@ export class UIController {
 
     this.currentFeature = null;
 
-    (document.getElementById('poi-category') as HTMLInputElement).value = 'food';
+    (document.getElementById('poi-category') as HTMLInputElement).value = 'restaurant';
+    document.querySelectorAll('.cat-tile').forEach((b) => {
+      (b as HTMLElement).classList.toggle('active', (b as HTMLElement).dataset.category === 'restaurant');
+    });
 
     // Default status tiles
     const defaultStatus = (this.activeStatus === 'all' ? 'visited' : this.activeStatus) as POIStatus;

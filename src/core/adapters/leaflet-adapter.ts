@@ -33,7 +33,7 @@ export class LeafletAdapter {
     const coords = feature.geometry.coordinates as [number, number];
     const latLng: L.LatLngExpression = [coords[1], coords[0]]; // GeoJSON is [lng, lat], Leaflet is [lat, lng]
 
-    const rawCat = (feature.properties.category || 'food') as POICategory;
+    const rawCat = (feature.properties.category || 'restaurant') as POICategory;
     const category: POICategory = CATEGORY_CONFIG[rawCat] ? rawCat : 'other';
     const status = (feature.properties.status || 'visited') as POIStatus;
     const { color } = CATEGORY_CONFIG[category];
