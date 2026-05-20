@@ -3,7 +3,7 @@
  * Calculates statistics and insights from POI data
  */
 
-import { GeoJSONFeature } from '../core/types';
+import { GeoJSONFeature, Review } from '../core/types';
 
 export interface AnalyticsData {
   overview: {
@@ -235,7 +235,7 @@ export class AnalyticsEngine {
     this.features.forEach(f => {
       const reviews = f.properties.reviews || [];
       
-      reviews.forEach((review: any) => {
+      reviews.forEach((review: Review) => {
         const date = new Date(review.date);
         const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
         
@@ -292,7 +292,7 @@ export class AnalyticsEngine {
 
     // Days since last visit
     const allDates = this.features
-      .flatMap(f => f.properties.reviews?.map((r: any) => new Date(r.date)) || [])
+      .flatMap(f => f.properties.reviews?.map((r: Review) => new Date(r.date)) || [])
       .concat(
         this.features
           .filter(f => f.properties.last_visited)

@@ -5,7 +5,7 @@
 - [x] Remove unused `ModalService` — instantiated in `main.ts` but `UIController` never accepts it
 - [x] Fix XSS vulnerability — `review.text` and `review.id` interpolated directly into `innerHTML` at `ui.ts:762–765`
 - [x] Remove global `window` pollution — `window.editReview` / `window.deleteReview` set inline
-- [ ] Replace ~24 `any` casts across `ui.ts`, `analytics.ts`, `app-controller.ts`
+- [x] Replace ~24 `any` casts across `ui.ts`, `analytics.ts`, `app-controller.ts`
 - [ ] Add DOM existence check before Leaflet init in `leaflet-adapter.ts:17`
 
 ## High

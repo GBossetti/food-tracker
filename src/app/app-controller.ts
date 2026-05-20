@@ -147,7 +147,7 @@ export class AppController {
     // Ensure map is properly sized when first shown
     if (view === 'map') {
       setTimeout(() => {
-        const map = (this.mapEngine as any).adapter?.getMap();
+        const map = this.mapEngine.getAdapter().getMap();
         if (map) {
           map.invalidateSize();
         }
@@ -185,7 +185,7 @@ export class AppController {
       
       // Invalidate map size (Leaflet needs this after showing)
       setTimeout(() => {
-        const map = (this.mapEngine as any).adapter?.getMap();
+        const map = this.mapEngine.getAdapter().getMap();
         if (map) {
           map.invalidateSize();
         }

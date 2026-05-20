@@ -3,7 +3,7 @@
  * Handles all user interface interactions
  */
 
-import { GeoJSONFeature, POICategory, POIStatus, CATEGORY_CONFIG } from '../core/types';
+import { GeoJSONFeature, POICategory, POIStatus, CATEGORY_CONFIG, Review } from '../core/types';
 import { matchesFilters } from '../core/poi-filters';
 import { MapEngine } from '../core/map-engine';
 import { StorageLayer } from './storage';
@@ -750,8 +750,8 @@ export class UIController {
     reviewsList.innerHTML = '';
 
     [...reviews]
-      .sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime())
-      .forEach((review: any) => {
+      .sort((a: Review, b: Review) => new Date(b.date).getTime() - new Date(a.date).getTime())
+      .forEach((review: Review) => {
         const item = document.createElement('div');
         item.className = 'review-item';
         item.dataset.reviewId = review.id;
@@ -880,7 +880,7 @@ export class UIController {
     feature.properties.reviews.push(newReview);
     
     // Update average rating
-    const avgRating = feature.properties.reviews.reduce((sum: number, r: any) => sum + r.rating, 0) / feature.properties.reviews.length;
+    const avgRating = feature.properties.reviews.reduce((sum: number, r: Review) => sum + r.rating, 0) / feature.properties.reviews.length;
     feature.properties.rating = avgRating;
     
     // Update last visited
@@ -908,11 +908,11 @@ export class UIController {
   private deleteReview(feature: GeoJSONFeature, reviewId: string): void {
     if (!confirm('Delete this review?')) return;
     
-    feature.properties.reviews = feature.properties.reviews.filter((r: any) => r.id !== reviewId);
+    feature.properties.reviews = feature.properties.reviews.filter((r: Review) => r.id !== reviewId);
     
     // Recalculate average rating
     if (feature.properties.reviews.length > 0) {
-      const avgRating = feature.properties.reviews.reduce((sum: number, r: any) => sum + r.rating, 0) / feature.properties.reviews.length;
+      const avgRating = feature.properties.reviews.reduce((sum: number, r: Review) => sum + r.rating, 0) / feature.properties.reviews.length;
       feature.properties.rating = avgRating;
     } else {
       feature.properties.rating = 0;
@@ -934,7 +934,7 @@ export class UIController {
    * Start editing a review
    */
   private startEditReview(feature: GeoJSONFeature, reviewId: string): void {
-    const review = feature.properties.reviews.find((r: any) => r.id === reviewId);
+    const review = feature.properties.reviews.find((r: Review) => r.id === reviewId);
     if (!review) return;
 
     this.editingReviewId = reviewId;
@@ -990,7 +990,7 @@ export class UIController {
     }
 
     // Find and update the review
-    const reviewIndex = feature.properties.reviews.findIndex((r: any) => r.id === this.editingReviewId);
+    const reviewIndex = feature.properties.reviews.findIndex((r: Review) => r.id === this.editingReviewId);
     if (reviewIndex === -1) return;
 
     feature.properties.reviews[reviewIndex] = {
@@ -1001,7 +1001,7 @@ export class UIController {
     };
 
     // Recalculate average rating
-    const avgRating = feature.properties.reviews.reduce((sum: number, r: any) => sum + r.rating, 0) / feature.properties.reviews.length;
+    const avgRating = feature.properties.reviews.reduce((sum: number, r: Review) => sum + r.rating, 0) / feature.properties.reviews.length;
     feature.properties.rating = avgRating;
 
     // Update map
@@ -1057,8 +1057,8 @@ export class UIController {
     const timelineHTML = reviews.length > 0 ? `
       <div class="timeline">
         ${reviews
-          .sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime())
-          .map((review: any) => {
+          .sort((a: Review, b: Review) => new Date(b.date).getTime() - new Date(a.date).getTime())
+          .map((review: Review) => {
             const date = new Date(review.date).toLocaleDateString('en-US', { 
               year: 'numeric', 
               month: 'long', 
