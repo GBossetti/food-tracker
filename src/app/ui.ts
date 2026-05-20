@@ -741,33 +741,61 @@ export class UIController {
     if (!reviewsList) return;
 
     const reviews = feature.properties.reviews || [];
-    
+
     if (reviews.length === 0) {
       reviewsList.innerHTML = '<p style="color: #666; text-align: center;">No reviews yet. Be the first!</p>';
       return;
     }
 
-    reviewsList.innerHTML = reviews
-      .sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime())
-      .map((review: any) => {
-        const date = new Date(review.date).toLocaleDateString();
-        const stars = '★'.repeat(review.rating) + '☆'.repeat(5 - review.rating);
+    reviewsList.innerHTML = '';
 
-        return `
-          <div class="review-item" data-review-id="${review.id}">
-            <div class="review-header">
-              <span class="review-rating">${stars}</span>
-              <span class="review-date">${date}</span>
-            </div>
-            <div class="review-text">${review.text}</div>
-            <div class="review-actions">
-              <button class="review-edit" onclick="window.editReview('${review.id}')">Edit</button>
-              <button class="review-delete" onclick="window.deleteReview('${review.id}')">Delete</button>
-            </div>
-          </div>
-        `;
-      })
-      .join('');
+    [...reviews]
+      .sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime())
+      .forEach((review: any) => {
+        const item = document.createElement('div');
+        item.className = 'review-item';
+        item.dataset.reviewId = review.id;
+
+        const header = document.createElement('div');
+        header.className = 'review-header';
+
+        const ratingSpan = document.createElement('span');
+        ratingSpan.className = 'review-rating';
+        ratingSpan.textContent = '★'.repeat(review.rating) + '☆'.repeat(5 - review.rating);
+
+        const dateSpan = document.createElement('span');
+        dateSpan.className = 'review-date';
+        dateSpan.textContent = new Date(review.date).toLocaleDateString();
+
+        header.appendChild(ratingSpan);
+        header.appendChild(dateSpan);
+
+        const textDiv = document.createElement('div');
+        textDiv.className = 'review-text';
+        textDiv.textContent = review.text;
+
+        const actions = document.createElement('div');
+        actions.className = 'review-actions';
+
+        const editBtn = document.createElement('button');
+        editBtn.className = 'review-edit';
+        editBtn.textContent = 'Edit';
+        editBtn.addEventListener('click', () => this.startEditReview(feature, review.id));
+
+        const deleteBtn = document.createElement('button');
+        deleteBtn.className = 'review-delete';
+        deleteBtn.textContent = 'Delete';
+        deleteBtn.addEventListener('click', () => this.deleteReview(feature, review.id));
+
+        actions.appendChild(editBtn);
+        actions.appendChild(deleteBtn);
+
+        item.appendChild(header);
+        item.appendChild(textDiv);
+        item.appendChild(actions);
+
+        reviewsList.appendChild(item);
+      });
   }
 
   /**
@@ -820,9 +848,6 @@ export class UIController {
       }
     };
     
-    // Make functions globally accessible
-    (window as any).deleteReview = (reviewId: string) => this.deleteReview(feature, reviewId);
-    (window as any).editReview = (reviewId: string) => this.startEditReview(feature, reviewId);
   }
 
   /**

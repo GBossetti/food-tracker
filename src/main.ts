@@ -8,7 +8,6 @@ import './style.css';
 import { MapEngine } from './core/map-engine';
 import { StorageLayer } from './app/storage';
 import { UIController } from './app/ui';
-import { ModalService } from './app/modal-service';
 import { AppController } from './app/app-controller';
 
 // Fix Leaflet default icon paths (Vite issue)
@@ -30,10 +29,7 @@ async function initApp() {
     // 1. Create storage layer
     const storage = new StorageLayer();
 
-    // 2. Create modal service
-    const modalService = new ModalService();
-
-    // 3. Create map engine
+    // 2. Create map engine
     const mapEngine = new MapEngine({
       containerId: 'map',
       center: [40.4168, -3.7038], // Madrid center
@@ -48,7 +44,7 @@ async function initApp() {
     const appController = new AppController(mapEngine, storage);
 
     // 6. Initialize UI controller (handles map interactions, POIs)
-    const uiController = new UIController(mapEngine, storage, modalService);
+    const uiController = new UIController(mapEngine, storage);
     
     // 7. Link controllers
     uiController.setAppController(appController);
