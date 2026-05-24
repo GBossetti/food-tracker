@@ -45,3 +45,7 @@ CLAUDE.md
 
 # Personal notes
 .notes/
+
+# Claude Code (local config and docs, stay on this machine)
+.claude/
+docs/
