@@ -10,6 +10,10 @@ import { StorageLayer } from './storage';
 import { AnalyticsUI } from './analytics-ui.ts';
 import { AppController } from './app-controller';
 
+function escapeHtml(str: string): string {
+  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
 export class UIController {
   private mapEngine: MapEngine;
   private storage: StorageLayer;
@@ -1070,9 +1074,9 @@ export class UIController {
                 <div class="timeline-marker"></div>
                 <div class="timeline-content">
                   <div class="timeline-date">${date}</div>
-                  <div class="timeline-place">${feature.properties.name}</div>
+                  <div class="timeline-place">${escapeHtml(feature.properties.name)}</div>
                   <div class="timeline-rating" data-rating="${review.rating}"></div>
-                  <div class="timeline-text">${review.text}</div>
+                  <div class="timeline-text">${escapeHtml(review.text)}</div>
                 </div>
               </div>
             `;
