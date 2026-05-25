@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Food Map — Design Prototypes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700&family=DM+Sans:opsz,wght@9..40,400;9..40,500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #1A1714;
+      min-height: 100vh;
+      font-family: 'DM Sans', sans-serif;
+      color: #F2EDE8;
+      padding: 60px 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .page-eyebrow {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(242,237,232,0.4);
+      margin-bottom: 12px;
+    }
+    .page-title {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 32px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 8px;
+      text-align: center;
+    }
+    .page-sub {
+      font-size: 14px;
+      color: rgba(242,237,232,0.5);
+      text-align: center;
+      max-width: 420px;
+      line-height: 1.6;
+      margin-bottom: 56px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 300px);
+      gap: 24px;
+      max-width: 984px;
+      width: 100%;
+    }
+    .card {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px;
+      overflow: hidden;
+      text-decoration: none;
+      color: inherit;
+      transition: transform 0.2s ease, border-color 0.2s ease;
+      display: block;
+    }
+    .card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(255,255,255,0.18);
+    }
+    .card-swatch {
+      height: 160px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .swatch-1 { background: #FAF7F4; }
+    .swatch-2 { background: #FFF8EC; }
+    .swatch-3 { background: #F2E8D8; }
+    .swatch-inner {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+    .swatch-phone-mini {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    .swatch-dots { display: flex; gap: 5px; align-items: center; }
+    .swatch-dot {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+    }
+    .swatch-bar {
+      height: 6px; border-radius: 3px; background: rgba(0,0,0,0.10);
+    }
+    .swatch-bar-short { width: 70px; }
+    .swatch-bar-long { width: 110px; }
+    .swatch-label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      opacity: 0.45;
+    }
+    .card-body { padding: 20px; }
+    .card-num {
+      font-size: 10px; font-weight: 600;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: rgba(242,237,232,0.35);
+      margin-bottom: 6px;
+    }
+    .card-name {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 17px; font-weight: 700;
+      letter-spacing: -0.01em;
+      margin-bottom: 6px;
+    }
+    .card-desc {
+      font-size: 12px;
+      color: rgba(242,237,232,0.5);
+      line-height: 1.55;
+      margin-bottom: 16px;
+    }
+    .card-pills { display: flex; flex-wrap: wrap; gap: 5px; }
+    .pill {
+      font-size: 10px; font-weight: 600;
+      letter-spacing: 0.04em;
+      padding: 3px 8px;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.08);
+      color: rgba(242,237,232,0.6);
+    }
+    .card-cta {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 20px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      font-size: 12px;
+      font-weight: 600;
+      color: rgba(242,237,232,0.4);
+    }
+    .card:hover .card-cta { color: rgba(242,237,232,0.7); }
+
+    /* color swatches per prototype */
+    .dots-1 .swatch-dot:nth-child(1) { background: #DC4C2F; }
+    .dots-1 .swatch-dot:nth-child(2) { background: #F5A623; }
+    .dots-1 .swatch-dot:nth-child(3) { background: #1C1917; }
+
+    .dots-2 .swatch-dot:nth-child(1) { background: #E84B2C; }
+    .dots-2 .swatch-dot:nth-child(2) { background: #F5A623; }
+    .dots-2 .swatch-dot:nth-child(3) { background: #6BB239; }
+
+    .dots-3 .swatch-dot:nth-child(1) { background: #C75B39; }
+    .dots-3 .swatch-dot:nth-child(2) { background: #6B8F52; }
+    .dots-3 .swatch-dot:nth-child(3) { background: #3A2E22; }
+
+    .type-1 {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-size: 22px; font-weight: 700;
+      color: #1C1917;
+      letter-spacing: -0.02em;
+    }
+    .type-2 {
+      font-size: 22px; font-weight: 800;
+      color: #1A110A;
+      letter-spacing: -0.02em;
+    }
+    .type-3 {
+      font-size: 20px; font-weight: 600;
+      color: #3A2E22;
+      font-style: italic;
+      font-family: Georgia, serif;
+    }
+  </style>
+</head>
+<body>
+  <p class="page-eyebrow">Phase 1a — Visual exploration</p>
+  <h1 class="page-title">Pick the look</h1>
+  <p class="page-sub">Three distinct identities for the same app. Open each, switch between Map and Decide tabs, and choose the one that feels right.</p>
+
+  <div class="grid">
+
+    <a href="clean-appetite.html" class="card">
+      <div class="card-swatch swatch-1">
+        <div class="swatch-inner">
+          <div class="swatch-dots dots-1">
+            <div class="swatch-dot"></div>
+            <div class="swatch-dot"></div>
+            <div class="swatch-dot"></div>
+          </div>
+          <div class="swatch-phone-mini">
+            <div class="swatch-bar swatch-bar-long"></div>
+            <div class="swatch-bar swatch-bar-short"></div>
+          </div>
+          <div class="type-1">Food Map</div>
+          <div class="swatch-label">Bricolage Grotesque · DM Sans</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="card-num">01</div>
+        <div class="card-name">Clean & Appetite-Driven</div>
+        <div class="card-desc">Light, crisp, utility-first. One bold tomato accent. Feels fast and trustworthy — never toy-like.</div>
+        <div class="card-pills">
+          <span class="pill">Light</span>
+          <span class="pill">Sans-serif</span>
+          <span class="pill">Minimal</span>
+          <span class="pill">Tomato accent</span>
+        </div>
+      </div>
+      <div class="card-cta">
+        Open prototype <span>→</span>
+      </div>
+    </a>
+
+    <a href="playful-vibrant.html" class="card">
+      <div class="card-swatch swatch-2">
+        <div class="swatch-inner">
+          <div class="swatch-dots dots-2">
+            <div class="swatch-dot"></div>
+            <div class="swatch-dot"></div>
+            <div class="swatch-dot"></div>
+          </div>
+          <div class="swatch-phone-mini">
+            <div class="swatch-bar swatch-bar-long" style="background:rgba(232,75,44,0.15)"></div>
+            <div class="swatch-bar swatch-bar-short" style="background:rgba(245,166,35,0.2)"></div>
+          </div>
+          <div class="type-2" style="font-family:sans-serif">Food Map</div>
+          <div class="swatch-label" style="color:rgba(26,17,10,0.4)">Syne · Nunito</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="card-num">02</div>
+        <div class="card-name">Playful & Vibrant</div>
+        <div class="card-desc">Saturated, appetizing, alive. Chunky shapes and multi-color energy. The gamification feels at home here.</div>
+        <div class="card-pills">
+          <span class="pill">Light</span>
+          <span class="pill">Bold type</span>
+          <span class="pill">Multi-color</span>
+          <span class="pill">Chunky</span>
+        </div>
+      </div>
+      <div class="card-cta">
+        Open prototype <span>→</span>
+      </div>
+    </a>
+
+    <a href="cozy-characterful.html" class="card">
+      <div class="card-swatch swatch-3">
+        <div class="swatch-inner">
+          <div class="swatch-dots dots-3">
+            <div class="swatch-dot"></div>
+            <div class="swatch-dot"></div>
+            <div class="swatch-dot"></div>
+          </div>
+          <div class="swatch-phone-mini">
+            <div class="swatch-bar swatch-bar-long" style="background:rgba(58,46,34,0.12)"></div>
+            <div class="swatch-bar swatch-bar-short" style="background:rgba(58,46,34,0.08)"></div>
+          </div>
+          <div class="type-3">Food Map</div>
+          <div class="swatch-label" style="color:rgba(58,46,34,0.4)">Fraunces · Lora</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="card-num">03</div>
+        <div class="card-name">Cozy & Characterful</div>
+        <div class="card-desc">Warm paper, serif type, hand-crafted details. Personal and inviting — badges feel like passport stamps.</div>
+        <div class="card-pills">
+          <span class="pill">Warm light</span>
+          <span class="pill">Serif</span>
+          <span class="pill">Illustrated</span>
+          <span class="pill">Clay accent</span>
+        </div>
+      </div>
+      <div class="card-cta">
+        Open prototype <span>→</span>
+      </div>
+    </a>
+
+  </div>
+</body>
+</html>
