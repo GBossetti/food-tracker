@@ -164,6 +164,8 @@ export class UIController {
     document.getElementById('add-poi-btn')?.classList.remove('active');
     document.querySelector('.header')?.classList.remove('adding');
     document.getElementById('map')?.classList.remove('adding-mode');
+    const hint = document.getElementById('add-mode-hint');
+    if (hint) hint.style.display = 'none';
   }
 
   private setActiveCategory(category: POICategory | 'all'): void {
@@ -335,17 +337,28 @@ export class UIController {
     if (tabHistory) tabHistory.style.display = isVisited ? '' : 'none';
     this.switchPOITab('details');
 
-    // Delete button
+    // Delete button — inline confirmation
     const deleteBtn = document.getElementById('delete-btn');
     if (deleteBtn) {
       deleteBtn.style.display = 'block';
+      deleteBtn.textContent = 'Delete';
+      deleteBtn.classList.remove('confirming');
       deleteBtn.onclick = () => {
-        if (confirm('Are you sure you want to delete this POI?')) {
+        if (deleteBtn.classList.contains('confirming')) {
           this.mapEngine.removeFeature(feature.properties.id);
           this.saveCurrentState();
           modal.style.display = 'none';
           this.showNotification('POI deleted');
           this.updateTagList();
+        } else {
+          deleteBtn.classList.add('confirming');
+          deleteBtn.textContent = 'Confirm delete?';
+          setTimeout(() => {
+            if (deleteBtn.classList.contains('confirming')) {
+              deleteBtn.classList.remove('confirming');
+              deleteBtn.textContent = 'Delete';
+            }
+          }, 3000);
         }
       };
     }
@@ -514,15 +527,18 @@ export class UIController {
     const addBtn = document.getElementById('add-poi-btn');
     const header = document.querySelector('.header');
     const mapEl = document.getElementById('map');
+    const hint = document.getElementById('add-mode-hint');
 
     if (this.addMode) {
       addBtn?.classList.add('active');
       header?.classList.add('adding');
       mapEl?.classList.add('adding-mode');
+      if (hint) hint.style.display = 'flex';
     } else {
       addBtn?.classList.remove('active');
       header?.classList.remove('adding');
       mapEl?.classList.remove('adding-mode');
+      if (hint) hint.style.display = 'none';
     }
   }
 
@@ -789,7 +805,8 @@ export class UIController {
         const deleteBtn = document.createElement('button');
         deleteBtn.className = 'review-delete';
         deleteBtn.textContent = 'Delete';
-        deleteBtn.addEventListener('click', () => this.deleteReview(feature, review.id));
+        deleteBtn.dataset.reviewId = review.id;
+        deleteBtn.addEventListener('click', (e) => this.deleteReview(feature, review.id, e.currentTarget as HTMLElement));
 
         actions.appendChild(editBtn);
         actions.appendChild(deleteBtn);
@@ -909,8 +926,19 @@ export class UIController {
   /**
    * Delete a review
    */
-  private deleteReview(feature: GeoJSONFeature, reviewId: string): void {
-    if (!confirm('Delete this review?')) return;
+  private deleteReview(feature: GeoJSONFeature, reviewId: string, btn?: HTMLElement): void {
+    if (btn && !btn.dataset.confirming) {
+      btn.dataset.confirming = '1';
+      btn.textContent = 'Confirm?';
+      setTimeout(() => {
+        if (btn.dataset.confirming) {
+          delete btn.dataset.confirming;
+          btn.textContent = 'Delete';
+        }
+      }, 3000);
+      return;
+    }
+    if (btn) delete btn.dataset.confirming;
     
     feature.properties.reviews = feature.properties.reviews.filter((r: Review) => r.id !== reviewId);
     

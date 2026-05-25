@@ -8,13 +8,13 @@ export type POICategory = 'restaurant' | 'cafe' | 'bar' | 'bakery' | 'market' | 
 export type POIStatus = 'visited' | 'wishlist';
 
 export const CATEGORY_CONFIG: Record<POICategory, { label: string; color: string; textColor: string }> = {
-  restaurant: { label: 'Restaurant', color: '#0088AA', textColor: '#000' },
-  cafe:       { label: 'Café',       color: '#CC8800', textColor: '#000' },
-  bar:        { label: 'Bar',        color: '#7700AA', textColor: '#fff' },
-  bakery:     { label: 'Bakery',     color: '#CC5500', textColor: '#000' },
-  market:     { label: 'Market',     color: '#007744', textColor: '#fff' },
-  heladeria:  { label: 'Ice Cream',  color: '#0066BB', textColor: '#fff' },
-  other:      { label: 'Other',      color: '#556677', textColor: '#fff' },
+  restaurant: { label: 'Restaurant', color: '#C9603F', textColor: '#1A1208' },
+  cafe:       { label: 'Café',       color: '#CD942F', textColor: '#1A1208' },
+  bar:        { label: 'Bar',        color: '#9B5C6E', textColor: '#F2E9DB' },
+  bakery:     { label: 'Bakery',     color: '#B8822E', textColor: '#1A1208' },
+  market:     { label: 'Market',     color: '#8A9A4E', textColor: '#1A1208' },
+  heladeria:  { label: 'Ice Cream',  color: '#5E9A93', textColor: '#1A1208' },
+  other:      { label: 'Other',      color: '#9A8B79', textColor: '#1A1208' },
 };
 
 // Standard GeoJSON types

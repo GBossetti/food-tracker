@@ -42,10 +42,10 @@ export class AnalyticsUI {
     const d = this.analyticsData!.overview;
 
     const cards = [
-      { value: d.totalPlaces,              label: 'Places Tracked',  accent: 'var(--primary)' },
-      { value: d.totalVisits,              label: 'Total Visits',     accent: '#7700AA' },
-      { value: d.totalReviews,             label: 'Reviews Written',  accent: '#AA5500' },
-      { value: d.averageRating.toFixed(1), label: 'Average Rating',   accent: '#FFCC00' },
+      { value: d.totalPlaces,              label: 'Places Tracked',  accent: 'var(--accent)' },
+      { value: d.totalVisits,              label: 'Total Visits',     accent: '#9B5C6E' },
+      { value: d.totalReviews,             label: 'Reviews Written',  accent: '#CD942F' },
+      { value: d.averageRating.toFixed(1), label: 'Average Rating',   accent: '#D49A4E' },
     ];
 
     return `
@@ -82,13 +82,13 @@ export class AnalyticsUI {
 
     const pct = (n: number) => total > 0 ? Math.round((n / total) * 100) : 0;
     const rows: Array<{ label: string; count: number; color: string }> = [
-      { label: '★★★★★', count: d.fiveStar,  color: '#FFCC00' },
-      { label: '★★★★',  count: d.fourStar,  color: '#FFB300' },
-      { label: '★★★',   count: d.threeStar, color: '#FF8C00' },
-      { label: '★★',    count: d.twoStar,   color: '#FF5500' },
-      { label: '★',     count: d.oneStar,   color: '#FF3366' },
+      { label: '★★★★★', count: d.fiveStar,  color: '#D49A4E' },
+      { label: '★★★★',  count: d.fourStar,  color: '#C9803A' },
+      { label: '★★★',   count: d.threeStar, color: '#B8822E' },
+      { label: '★★',    count: d.twoStar,   color: '#9B6A3A' },
+      { label: '★',     count: d.oneStar,   color: '#C9603F' },
     ];
-    if (d.unrated > 0) rows.push({ label: '—', count: d.unrated, color: '#444' });
+    if (d.unrated > 0) rows.push({ label: '—', count: d.unrated, color: '#5C5045' });
 
     return `
       <div class="analytics-section">
@@ -115,9 +115,9 @@ export class AnalyticsUI {
     if (d.byRating.length === 0 && d.byVisits.length === 0) return '';
 
     const rankBadge = (i: number) => {
-      const colors = ['#FFCC00', '#AAAAAA', '#CD7F32'];
-      const bg = colors[i] ?? 'rgba(255,255,255,0.08)';
-      return `<span class="ranking-position" style="background:${bg};color:${i < 3 ? '#000' : 'var(--text-primary)'}">${i + 1}</span>`;
+      const colors = ['#D49A4E', '#B6A892', '#9A8B79'];
+      const bg = colors[i] ?? 'rgba(242,233,219,0.08)';
+      return `<span class="ranking-position" style="background:${bg};color:${i < 3 ? '#1A1208' : 'var(--text-primary)'}">${i + 1}</span>`;
     };
 
     return `
@@ -253,12 +253,12 @@ export class AnalyticsUI {
     const svgStar    = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`;
 
     const cards = [
-      { icon: svgCalendar, value: activeMonth,                          label: 'Most Active Month',      accent: 'var(--primary)' },
-      { icon: svgClock,    value: `${d.daysSinceLastVisit}d`,           label: 'Since Last Visit',       accent: '#7700AA' },
-      { icon: svgCompass,  value: `${d.discoveryRate.toFixed(1)}/mo`,   label: 'Discovery Rate',         accent: '#AA5500' },
-      { icon: svgRepeat,   value: `${d.averageVisitsPerPlace.toFixed(1)}×`, label: 'Avg Visits / Place', accent: '#006633' },
-      ...(d.favoriteTag ? [{ icon: svgTag, value: d.favoriteTag, label: 'Favourite Tag', accent: '#0088AA' }] : []),
-      { icon: svgStar,     value: `${reviewedPct}%`,                    label: 'Places Reviewed',        accent: '#FFCC00' },
+      { icon: svgCalendar, value: activeMonth,                          label: 'Most Active Month',      accent: 'var(--accent)' },
+      { icon: svgClock,    value: `${d.daysSinceLastVisit}d`,           label: 'Since Last Visit',       accent: '#9B5C6E' },
+      { icon: svgCompass,  value: `${d.discoveryRate.toFixed(1)}/mo`,   label: 'Discovery Rate',         accent: '#CD942F' },
+      { icon: svgRepeat,   value: `${d.averageVisitsPerPlace.toFixed(1)}×`, label: 'Avg Visits / Place', accent: '#8A9A4E' },
+      ...(d.favoriteTag ? [{ icon: svgTag, value: d.favoriteTag, label: 'Favourite Tag', accent: '#5E9A93' }] : []),
+      { icon: svgStar,     value: `${reviewedPct}%`,                    label: 'Places Reviewed',        accent: '#D49A4E' },
     ];
 
     return `

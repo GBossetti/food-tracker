@@ -26,8 +26,8 @@ describe('CATEGORY_CONFIG', () => {
     });
   });
 
-  it('restaurant uses the primary teal color', () => {
-    expect(CATEGORY_CONFIG.restaurant.color).toBe('#0088AA');
+  it('restaurant uses the warm terracotta color', () => {
+    expect(CATEGORY_CONFIG.restaurant.color).toBe('#C9603F');
   });
 
   it('each category has a distinct color', () => {
