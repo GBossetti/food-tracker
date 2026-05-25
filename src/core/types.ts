@@ -36,6 +36,7 @@ export interface POIProperties {
   name: string;
   category?: POICategory;
   status?: POIStatus;
+  priceLevel?: '€' | '€€' | '€€€';
   tags?: string[];
   comments?: string;
   visited_date?: string;

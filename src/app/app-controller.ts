@@ -35,10 +35,43 @@ export class AppController {
     if (landingView) landingView.classList.remove('active');
     if (appView) appView.classList.add('active');
 
+    this.initTabs();
+
     setTimeout(() => {
       const map = this.mapEngine.getAdapter().getMap();
       if (map) map.invalidateSize();
     }, 100);
+  }
+
+  private activateTab(tab: string): void {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+
+    const btn = document.querySelector<HTMLElement>(`.tab-btn[data-tab="${tab}"]`);
+    const panel = document.getElementById(`tab-${tab}`);
+    if (btn) btn.classList.add('active');
+    if (panel) panel.classList.add('active');
+
+    if (tab === 'map') {
+      setTimeout(() => {
+        const map = this.mapEngine.getAdapter().getMap();
+        if (map) map.invalidateSize();
+      }, 50);
+    }
+  }
+
+  private initTabs(): void {
+    document.querySelectorAll<HTMLElement>('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const tab = btn.dataset.tab;
+        if (tab) this.activateTab(tab);
+      });
+    });
+
+    // Switch to map tab automatically when add-mode is triggered
+    document.getElementById('add-poi-btn')?.addEventListener('click', () => {
+      this.activateTab('map');
+    });
   }
 
   private async loadData(): Promise<void> {
