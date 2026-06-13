@@ -10,6 +10,7 @@
 
 ## High
 
+- [x] Add "Log visit" flow — one-tap "I went" button on wishlist place cards/modal that flips status to `visited`, captures optional note + rating, and appends to the history record (currently requires manually changing the status tile in the form)
 - [ ] Implement or gracefully stub backend methods — `storage.ts:148–163` throws hard on `syncToBackend()`
 - [ ] Fix async race in storage sync — `syncFromBackend()` can overwrite concurrent writes (`storage.ts:39–47`)
 - [ ] Remove dead navigation code — `app-controller.ts` references `#landing-view`, `#dashboard-content`, `.nav-tab` that don't exist in `index.html`
@@ -18,6 +19,7 @@
 
 ## Medium
 
+- [ ] Polish Decide tab UX — add sort toggle (distance / rating / recently added) to `renderPOIList()` (`ui.ts:456`), and smarter empty states that distinguish "you have no places yet" from "filters are hiding results"
 - [ ] Break up `UIController` god object — 1,140 lines handling search, filters, forms, reviews, analytics, import/export, modals, tags
 - [ ] Add `MapEngine.off()` method — events can be subscribed but never unsubscribed
 - [ ] Guard `feature.properties.reviews` before `.sort()` — null ref at `ui.ts:751`

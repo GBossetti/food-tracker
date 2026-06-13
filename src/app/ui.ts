@@ -9,6 +9,8 @@ import { MapEngine } from '../core/map-engine';
 import { StorageLayer } from './storage';
 import { AnalyticsUI } from './analytics-ui.ts';
 import { AppController } from './app-controller';
+import { logVisit, attachVisitReview } from './visit';
+import { QuickVisitSheet } from './quick-visit-sheet';
 
 function escapeHtml(str: string): string {
   return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -30,11 +32,13 @@ export class UIController {
   private currentReviewRating: number = 0;
   private currentFeature: GeoJSONFeature | null = null;
   private editingReviewId: string | null = null;
+  private quickVisitSheet: QuickVisitSheet;
 
   constructor(mapEngine: MapEngine, storage: StorageLayer) {
     this.mapEngine = mapEngine;
     this.storage = storage;
     this.analyticsUI = new AnalyticsUI(mapEngine);
+    this.quickVisitSheet = new QuickVisitSheet();
     this.setupEventListeners();
     this.updateTagList();
     this.applyFilters();
@@ -188,6 +192,9 @@ export class UIController {
     const isWishlist = status === 'wishlist';
     document.querySelectorAll('.poi-visited-only').forEach((el) => {
       (el as HTMLElement).style.display = isWishlist ? 'none' : '';
+    });
+    document.querySelectorAll('.poi-wishlist-only').forEach((el) => {
+      (el as HTMLElement).style.display = isWishlist ? '' : 'none';
     });
   }
 
@@ -363,6 +370,12 @@ export class UIController {
       };
     }
 
+    // Wire up "I went" modal button
+    const logVisitBtn = document.getElementById('log-visit-btn');
+    if (logVisitBtn) {
+      logVisitBtn.onclick = () => this.handleLogVisit(feature);
+    }
+
     modal.style.display = 'flex';
   }
 
@@ -482,10 +495,14 @@ export class UIController {
         ? '★'.repeat(Math.round(rating)) + '☆'.repeat(5 - Math.round(rating))
         : '';
       const [lng, lat] = f.geometry.coordinates;
-      return `<div class="poi-list-item" data-lat="${lat}" data-lng="${lng}">
+      const isWishlist = p.status === 'wishlist';
+      return `<div class="poi-list-item" data-lat="${lat}" data-lng="${lng}" data-id="${escapeHtml(p.id)}">
         <span class="poi-list-dot" style="background:${cfg.color}"></span>
-        <span class="poi-list-name">${p.name}</span>
+        <span class="poi-list-name">${escapeHtml(p.name)}</span>
         ${stars ? `<span class="poi-list-stars">${stars}</span>` : ''}
+        ${isWishlist ? `<button type="button" class="log-visit-btn" data-id="${escapeHtml(p.id)}" title="Log visit">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        </button>` : ''}
       </div>`;
     }).join('');
 
@@ -494,6 +511,15 @@ export class UIController {
         const lat = parseFloat(el.dataset.lat!);
         const lng = parseFloat(el.dataset.lng!);
         this.mapEngine.centerOn(lat, lng, 16);
+      });
+    });
+
+    items.querySelectorAll<HTMLElement>('.log-visit-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const id = btn.dataset.id!;
+        const feature = this.mapEngine.getAllFeatures().find(f => f.properties.id === id);
+        if (feature) this.handleLogVisit(feature);
       });
     });
   }
@@ -515,6 +541,43 @@ export class UIController {
     setTimeout(() => {
       notification.remove();
     }, 3000);
+  }
+
+  private async handleLogVisit(feature: GeoJSONFeature): Promise<void> {
+    logVisit(feature.properties);
+    this.mapEngine.updateFeature(feature.properties.id, feature.properties);
+    await this.saveCurrentState();
+    this.renderPOIList();
+    this.showNotification('Visit logged!');
+
+    if (this.currentFeature?.properties.id === feature.properties.id) {
+      this.syncModalToVisited(feature);
+    }
+
+    this.quickVisitSheet.open(feature.properties.name, (rating, text) => {
+      if (rating > 0 || text) {
+        attachVisitReview(feature.properties, rating, text);
+        this.mapEngine.updateFeature(feature.properties.id, feature.properties);
+        this.saveCurrentState();
+        this.renderPOIList();
+        if (this.currentFeature?.properties.id === feature.properties.id) {
+          this.renderReviews(feature);
+        }
+      }
+    });
+  }
+
+  private syncModalToVisited(feature: GeoJSONFeature): void {
+    (document.getElementById('poi-status') as HTMLInputElement).value = 'visited';
+    document.querySelectorAll('.status-tile').forEach((btn) => {
+      (btn as HTMLElement).classList.toggle('active', (btn as HTMLElement).dataset.status === 'visited');
+    });
+    this.toggleVisitedSections('visited');
+    const tabReviews = document.getElementById('poi-tab-reviews');
+    const tabHistory = document.getElementById('poi-tab-history');
+    if (tabReviews) tabReviews.style.display = '';
+    if (tabHistory) tabHistory.style.display = '';
+    (document.getElementById('poi-hero-title') as HTMLElement).textContent = feature.properties.name;
   }
 
   // --- NEW FEATURES ---
@@ -887,24 +950,7 @@ export class UIController {
       return;
     }
     
-    const newReview = {
-      id: `review-${Date.now()}`,
-      date: new Date().toISOString(),
-      rating: this.currentReviewRating,
-      text: reviewText,
-    };
-    
-    // Add to feature
-    if (!feature.properties.reviews) {
-      feature.properties.reviews = [];
-    }
-    feature.properties.reviews.push(newReview);
-    
-    // Update average rating
-    const avgRating = feature.properties.reviews.reduce((sum: number, r: Review) => sum + r.rating, 0) / feature.properties.reviews.length;
-    feature.properties.rating = avgRating;
-    
-    // Update last visited
+    attachVisitReview(feature.properties, this.currentReviewRating, reviewText);
     feature.properties.last_visited = new Date().toISOString();
     feature.properties.visit_count = (feature.properties.visit_count || 0) + 1;
     

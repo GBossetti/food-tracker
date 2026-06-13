@@ -2053,3 +2053,134 @@ body {
   left: 0;
   color: var(--accent);
 }
+
+/* ===================================
+   Log Visit — card button
+   =================================== */
+
+.log-visit-btn {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 1.5px solid var(--success);
+  background: transparent;
+  color: var(--success);
+  cursor: pointer;
+  transition: background var(--transition-speed) ease, color var(--transition-speed) ease;
+  padding: 0;
+}
+
+.log-visit-btn:hover {
+  background: var(--success);
+  color: #fff;
+}
+
+.log-visit-btn-modal {
+  width: 100%;
+  gap: 6px;
+  justify-content: center;
+}
+
+/* ===================================
+   Quick Visit Sheet
+   =================================== */
+
+.quick-visit-sheet {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.qvs-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(28, 25, 23, 0.45);
+}
+
+.qvs-panel {
+  position: relative;
+  background: var(--surface);
+  border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;
+  padding: 24px 20px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  animation: sheetSlideUp 0.22s ease;
+}
+
+@keyframes sheetSlideUp {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+
+.qvs-label {
+  font-size: var(--text-micro);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  margin: 0;
+}
+
+.qvs-place-name {
+  font-family: var(--font-display);
+  font-size: var(--text-heading);
+  font-weight: 700;
+  color: var(--ink);
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.qvs-stars {
+  display: flex;
+  gap: 6px;
+}
+
+.qvs-star {
+  font-size: 1.6rem;
+  color: var(--ink-3);
+  cursor: pointer;
+  line-height: 1;
+  transition: color var(--transition-speed) ease;
+  user-select: none;
+}
+
+.qvs-star.active,
+.qvs-star:hover {
+  color: var(--accent);
+}
+
+.qvs-note {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1.5px solid var(--border-strong);
+  border-radius: var(--border-radius);
+  padding: 10px 12px;
+  font-family: var(--font-body);
+  font-size: var(--text-small);
+  color: var(--ink);
+  background: var(--surface);
+  resize: none;
+  outline: none;
+  transition: border-color var(--transition-speed) ease;
+}
+
+.qvs-note:focus {
+  border-color: var(--accent);
+}
+
+.qvs-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.qvs-actions .btn {
+  flex: 1;
+}
