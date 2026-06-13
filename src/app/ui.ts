@@ -33,6 +33,7 @@ export class UIController {
   private currentFeature: GeoJSONFeature | null = null;
   private editingReviewId: string | null = null;
   private quickVisitSheet: QuickVisitSheet;
+  private sortMode: 'name' | 'rating' | 'recent' | 'distance' = 'name';
 
   constructor(mapEngine: MapEngine, storage: StorageLayer) {
     this.mapEngine = mapEngine;
@@ -109,6 +110,20 @@ export class UIController {
       tab.addEventListener('click', (e) => {
         const status = (e.currentTarget as HTMLElement).dataset.status as POIStatus | 'all';
         this.setActiveStatus(status);
+      });
+    });
+
+    // Sort chips in Decide tab
+    document.querySelectorAll('.sort-chip').forEach((chip) => {
+      chip.addEventListener('click', (e) => {
+        const target = e.currentTarget as HTMLElement;
+        this.sortMode = target.dataset.sort as typeof this.sortMode;
+        document.querySelectorAll('.sort-chip').forEach(c => c.classList.toggle('active', c === target));
+        if (this.sortMode === 'distance' && !this.userLocation) {
+          this.locateUser();
+        } else {
+          this.renderPOIList();
+        }
       });
     });
 
@@ -478,12 +493,38 @@ export class UIController {
         selectedTags: this.selectedTags,
         searchTerm: this.searchTerm,
       }))
-      .sort((a, b) => a.properties.name.localeCompare(b.properties.name));
+      .sort((a, b) => {
+        switch (this.sortMode) {
+          case 'rating':
+            return (b.properties.rating ?? 0) - (a.properties.rating ?? 0);
+          case 'recent':
+            return new Date(b.properties.created_at ?? 0).getTime()
+                 - new Date(a.properties.created_at ?? 0).getTime();
+          case 'distance': {
+            if (!this.userLocation) return 0;
+            const [aLng, aLat] = a.geometry.coordinates as [number, number];
+            const [bLng, bLat] = b.geometry.coordinates as [number, number];
+            return this.calculateDistance(this.userLocation[0], this.userLocation[1], aLat, aLng)
+                 - this.calculateDistance(this.userLocation[0], this.userLocation[1], bLat, bLng);
+          }
+          default:
+            return a.properties.name.localeCompare(b.properties.name);
+        }
+      });
 
     if (countEl) countEl.textContent = String(filtered.length);
 
     if (filtered.length === 0) {
-      items.innerHTML = '<p class="poi-list-empty">No places match the current filters.</p>';
+      const total = this.mapEngine.getAllFeatures().length;
+      let message: string;
+      if (total === 0) {
+        message = 'No places saved yet. Tap + on the map to add your first.';
+      } else if (this.searchTerm) {
+        message = `No results for &ldquo;${escapeHtml(this.searchTerm)}&rdquo;.`;
+      } else {
+        message = 'No places match these filters. Try clearing some.';
+      }
+      items.innerHTML = `<p class="poi-list-empty">${message}</p>`;
       return;
     }
 
@@ -705,8 +746,8 @@ export class UIController {
         locateBtn?.classList.remove('loading');
         this.showNotification('Location found!', 'success');
 
-        // Update distances if displayed
         this.updateDistances();
+        if (this.sortMode === 'distance') this.renderPOIList();
       },
       (error) => {
         locateBtn?.classList.remove('loading');

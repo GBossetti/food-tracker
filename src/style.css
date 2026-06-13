@@ -609,6 +609,36 @@ body {
   color: var(--ink-3);
 }
 
+.sort-chips {
+  display: flex;
+  gap: 4px;
+}
+
+.sort-chip {
+  font-family: var(--font-body);
+  font-size: var(--text-micro);
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 100px;
+  border: 1.5px solid var(--border-strong);
+  background: transparent;
+  color: var(--ink-2);
+  cursor: pointer;
+  transition: background var(--transition-speed) ease, color var(--transition-speed) ease, border-color var(--transition-speed) ease;
+  white-space: nowrap;
+}
+
+.sort-chip:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.sort-chip.active {
+  background: var(--accent);
+  border-color: transparent;
+  color: #fff;
+}
+
 /* POI list */
 .poi-list-items {
   padding: 0 10px 80px;
