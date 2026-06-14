@@ -6,15 +6,15 @@
 - [x] Fix XSS vulnerability — `review.text` and `review.id` interpolated directly into `innerHTML` at `ui.ts:762–765`
 - [x] Remove global `window` pollution — `window.editReview` / `window.deleteReview` set inline
 - [x] Replace ~24 `any` casts across `ui.ts`, `analytics.ts`, `app-controller.ts`
-- [ ] Add DOM existence check before Leaflet init in `leaflet-adapter.ts:17`
+- [x] Add DOM existence check before Leaflet init in `leaflet-adapter.ts:17`
 
 ## High
 
 - [x] Add "Log visit" flow — one-tap "I went" button on wishlist place cards/modal that flips status to `visited`, captures optional note + rating, and appends to the history record (currently requires manually changing the status tile in the form)
-- [ ] Implement or gracefully stub backend methods — `storage.ts:148–163` throws hard on `syncToBackend()`
-- [ ] Fix async race in storage sync — `syncFromBackend()` can overwrite concurrent writes (`storage.ts:39–47`)
-- [ ] Remove dead navigation code — `app-controller.ts` references `#landing-view`, `#dashboard-content`, `.nav-tab` that don't exist in `index.html`
-- [ ] Remove unsafe `(this.mapEngine as any).adapter?.getMap()` cast — `app-controller.ts:150,188`
+- [x] Implement or gracefully stub backend methods — `storage.ts:148–163` throws hard on `syncToBackend()`
+- [x] Fix async race in storage sync — `syncFromBackend()` can overwrite concurrent writes (`storage.ts:39–47`)
+- [x] Remove dead navigation code — `app-controller.ts` references `#landing-view`, `#dashboard-content`, `.nav-tab` that don't exist in `index.html`
+- [x] Remove unsafe `(this.mapEngine as any).adapter?.getMap()` cast — `app-controller.ts:150,188`
 - [ ] Add event listener cleanup — `setupEventListeners()` in `ui.ts` never removes handlers
 
 ## Medium

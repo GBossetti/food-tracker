@@ -32,6 +32,13 @@ describe('LeafletAdapter — marker icons', () => {
   beforeEach(() => {
     mockDivIcon.mockClear();
     mockMarker.mockClear();
+    const el = document.createElement('div');
+    el.id = 'map';
+    document.body.appendChild(el);
+  });
+
+  afterEach(() => {
+    document.getElementById('map')?.remove();
   });
 
   it('creates a DivIcon for each marker', async () => {

@@ -13,7 +13,9 @@ export class LeafletAdapter {
   private layerGroup: L.LayerGroup;
 
   constructor(containerId: string, center: [number, number], zoom: number) {
-    // Initialize Leaflet map
+    if (!document.getElementById(containerId)) {
+      throw new Error(`Map container #${containerId} not found in DOM`);
+    }
     this.map = L.map(containerId).setView(center, zoom);
 
     // Add OpenStreetMap tiles
