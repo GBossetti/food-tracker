@@ -34,6 +34,7 @@ export class UIController {
   private editingReviewId: string | null = null;
   private quickVisitSheet: QuickVisitSheet;
   private sortMode: 'name' | 'rating' | 'recent' | 'distance' = 'name';
+  private _listenersAttached = false;
 
   constructor(mapEngine: MapEngine, storage: StorageLayer) {
     this.mapEngine = mapEngine;
@@ -50,6 +51,9 @@ export class UIController {
   }
 
   private setupEventListeners(): void {
+    if (this._listenersAttached) return;
+    this._listenersAttached = true;
+
     // Export button
     const exportBtn = document.getElementById('export-btn');
     exportBtn?.addEventListener('click', () => this.handleExport());
@@ -1204,11 +1208,16 @@ export class UIController {
   }
 
   private setupTagChipInput(existingTags: string[]): void {
-    const container = document.getElementById('tag-chip-container');
+    const containerEl = document.getElementById('tag-chip-container');
+    if (!containerEl) return;
+    // Clone-and-replace to flush any previously attached listeners
+    const container = containerEl.cloneNode(true) as HTMLElement;
+    containerEl.parentNode!.replaceChild(container, containerEl);
+
     const textInput = document.getElementById('tag-chip-text') as HTMLInputElement;
     const hiddenInput = document.getElementById('poi-tags') as HTMLInputElement;
     const suggestions = document.getElementById('tag-suggestions');
-    if (!container || !textInput || !hiddenInput || !suggestions) return;
+    if (!textInput || !hiddenInput || !suggestions) return;
 
     let chipTags: string[] = [...existingTags];
 
