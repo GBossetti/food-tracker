@@ -366,9 +366,13 @@ body {
   margin: 10px auto 6px;
 }
 
-/* Keep map rendered behind the decide sheet */
+/* Keep map rendered behind the decide sheet.
+   z-index: 0 creates a stacking context so Leaflet's internal z-indexes
+   (tiles at 200, markers at 600, popups at 700…) stay confined inside
+   #tab-map and don't paint over the decide sheet at z-index 20. */
 #tab-map.map-behind-decide {
   display: block;
+  z-index: 0;
 }
 
 /* Challenges / You tabs */
