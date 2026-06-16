@@ -342,6 +342,35 @@ body {
   -webkit-overflow-scrolling: touch;
 }
 
+/* Decide tab active: bottom sheet floating over the map */
+#tab-decide.active {
+  inset: unset;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 62vh;
+  border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;
+  box-shadow: 0 -4px 24px rgba(28,25,23,.12), 0 -1px 4px rgba(28,25,23,.07);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  z-index: 20;
+}
+
+#tab-decide.active::before {
+  content: '';
+  display: block;
+  width: 36px;
+  height: 4px;
+  background: var(--border-strong);
+  border-radius: 2px;
+  margin: 10px auto 6px;
+}
+
+/* Keep map rendered behind the decide sheet */
+#tab-map.map-behind-decide {
+  display: block;
+}
+
 /* Challenges / You tabs */
 #tab-challenges,
 #tab-you {
@@ -415,29 +444,6 @@ body {
 
 .add-mode-hint svg { color: #FF7A5C; flex-shrink: 0; }
 
-/* Distance info overlay */
-.distance-info-overlay {
-  position: absolute;
-  bottom: 1.5rem;
-  left: 1rem;
-  z-index: 800;
-  max-width: calc(100% - 2rem);
-}
-
-.distance-info-overlay:empty { display: none; }
-
-.distance-info-overlay ul { list-style: none; }
-
-.distance-info-overlay li {
-  font-size: var(--text-micro);
-  color: var(--ink-2);
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--border-radius);
-  padding: 4px 10px;
-  margin-bottom: 3px;
-  box-shadow: var(--shadow-sm);
-}
 
 /* ===================================
    Decide Tab

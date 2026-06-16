@@ -750,7 +750,6 @@ export class UIController {
         locateBtn?.classList.remove('loading');
         this.showNotification('Location found!', 'success');
 
-        this.updateDistances();
         if (this.sortMode === 'distance') this.renderPOIList();
       },
       (error) => {
@@ -789,36 +788,6 @@ export class UIController {
     
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     return R * c;
-  }
-
-  /**
-   * Update distance displays
-   */
-  private updateDistances(): void {
-    if (!this.userLocation) return;
-
-    const [userLat, userLng] = this.userLocation;
-    
-    // Add distance info to sidebar
-    const distanceInfo = document.getElementById('distance-info');
-    if (distanceInfo) {
-      const features = this.mapEngine.getAllFeatures();
-      const nearest = features
-        .map(f => {
-          const coords = f.geometry.coordinates as [number, number];
-          const distance = this.calculateDistance(userLat, userLng, coords[1], coords[0]);
-          return { name: f.properties.name, distance };
-        })
-        .sort((a, b) => a.distance - b.distance)
-        .slice(0, 5);
-
-      distanceInfo.innerHTML = `
-        <h3>Nearest Places:</h3>
-        <ul>
-          ${nearest.map(p => `<li>${p.name} - ${p.distance.toFixed(1)} km</li>`).join('')}
-        </ul>
-      `;
-    }
   }
 
   // --- RATINGS & REVIEWS FEATURES ---

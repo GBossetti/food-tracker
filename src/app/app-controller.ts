@@ -47,10 +47,16 @@ export class AppController {
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
     document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
 
+    document.getElementById('tab-map')?.classList.remove('map-behind-decide');
+
     const btn = document.querySelector<HTMLElement>(`.tab-btn[data-tab="${tab}"]`);
     const panel = document.getElementById(`tab-${tab}`);
     if (btn) btn.classList.add('active');
     if (panel) panel.classList.add('active');
+
+    if (tab === 'decide') {
+      document.getElementById('tab-map')?.classList.add('map-behind-decide');
+    }
 
     if (tab === 'map') {
       setTimeout(() => {
