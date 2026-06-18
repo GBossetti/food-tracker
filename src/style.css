@@ -348,7 +348,8 @@ body {
   bottom: 0;
   left: 0;
   right: 0;
-  height: 62vh;
+  height: fit-content;
+  max-height: 50vh;
   border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;
   box-shadow: 0 -4px 24px rgba(28,25,23,.12), 0 -1px 4px rgba(28,25,23,.07);
   overflow-y: auto;
@@ -375,7 +376,8 @@ body {
   z-index: 0;
 }
 
-/* Challenges / You tabs */
+/* Places / Challenges / You tabs */
+#tab-places,
 #tab-challenges,
 #tab-you {
   overflow-y: auto;
@@ -624,7 +626,8 @@ body {
   gap: 4px;
 }
 
-.sort-chip {
+.sort-chip,
+.places-sort-chip {
   font-family: var(--font-body);
   font-size: var(--text-micro);
   font-weight: 600;
@@ -638,12 +641,14 @@ body {
   white-space: nowrap;
 }
 
-.sort-chip:hover {
+.sort-chip:hover,
+.places-sort-chip:hover {
   border-color: var(--accent);
   color: var(--accent);
 }
 
-.sort-chip.active {
+.sort-chip.active,
+.places-sort-chip.active {
   background: var(--accent);
   border-color: transparent;
   color: #fff;

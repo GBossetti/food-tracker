@@ -83,17 +83,51 @@
           <button id="clear-filters-btn" class="clear-btn">Clear filters</button>
         </div>
 
-        <div class="results-header">
-          <span id="poi-list-count" class="results-count"></span>
-          <div class="sort-chips">
-            <button type="button" class="sort-chip active" data-sort="name">Name</button>
-            <button type="button" class="sort-chip" data-sort="rating">Rating</button>
-            <button type="button" class="sort-chip" data-sort="recent">Recent</button>
-            <button type="button" class="sort-chip" data-sort="distance">Nearby</button>
+      </div>
+
+      <!-- Places Tab -->
+      <div id="tab-places" class="tab-panel">
+        <div class="decide-search">
+          <input type="text" id="places-search-input" class="search-input" placeholder="Search places…">
+        </div>
+
+        <div class="chip-section">
+          <div class="chip-row" id="places-category-tabs">
+            <button class="category-tab active" data-category="all">All <span class="tab-count"></span></button>
+            <button class="category-tab" data-category="restaurant">Restaurant <span class="tab-count"></span></button>
+            <button class="category-tab" data-category="cafe">Café <span class="tab-count"></span></button>
+            <button class="category-tab" data-category="bar">Bar <span class="tab-count"></span></button>
+            <button class="category-tab" data-category="bakery">Bakery <span class="tab-count"></span></button>
+            <button class="category-tab" data-category="market">Market <span class="tab-count"></span></button>
+            <button class="category-tab" data-category="heladeria">Ice Cream <span class="tab-count"></span></button>
+            <button class="category-tab" data-category="other">Other <span class="tab-count"></span></button>
           </div>
         </div>
 
-        <div id="poi-list-items" class="poi-list-items"></div>
+        <div class="chip-section">
+          <div class="chip-row" id="places-status-tabs">
+            <button class="status-tab active" data-status="all">All <span class="tab-count"></span></button>
+            <button class="status-tab" data-status="visited">Visited <span class="tab-count"></span></button>
+            <button class="status-tab" data-status="wishlist">Wishlist <span class="tab-count"></span></button>
+          </div>
+        </div>
+
+        <div class="tag-filter-section">
+          <div id="places-tag-filters" class="tag-filters"></div>
+          <button id="places-clear-filters-btn" class="clear-btn">Clear filters</button>
+        </div>
+
+        <div class="results-header">
+          <span id="places-list-count" class="results-count"></span>
+          <div class="sort-chips">
+            <button type="button" class="places-sort-chip active" data-sort="name">Name</button>
+            <button type="button" class="places-sort-chip" data-sort="rating">Rating</button>
+            <button type="button" class="places-sort-chip" data-sort="recent">Recent</button>
+            <button type="button" class="places-sort-chip" data-sort="distance">Nearby</button>
+          </div>
+        </div>
+
+        <div id="places-list-items" class="poi-list-items"></div>
       </div>
 
       <!-- Challenges Tab -->
@@ -207,6 +241,10 @@
       <button class="tab-btn" data-tab="decide">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><line x1="7" y1="2" x2="7" y2="22"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3zm0 0v7"/></svg>
         <span>Decide</span>
+      </button>
+      <button class="tab-btn" data-tab="places">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+        <span>Places</span>
       </button>
       <button class="tab-btn" data-tab="challenges">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2z"/></svg>
