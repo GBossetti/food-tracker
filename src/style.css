@@ -566,10 +566,15 @@ body {
 
 .tag-filters {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  scrollbar-width: none;
   gap: 6px;
   margin-bottom: 6px;
+  padding-bottom: 2px;
 }
+
+.tag-filters::-webkit-scrollbar { display: none; }
 
 .tag-btn {
   display: inline-flex;
