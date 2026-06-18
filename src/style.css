@@ -138,9 +138,9 @@ body {
 .landing-bg {
   position: absolute;
   inset: 0;
-  background-image: url('/city-background.jpg');
+  background-image: url('/logo.png');
   background-size: cover;
-  background-position: center 40%;
+  background-position: center center;
   background-repeat: no-repeat;
 }
 

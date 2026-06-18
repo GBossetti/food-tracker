@@ -41,6 +41,15 @@ export class AppController {
       const map = this.mapEngine.getAdapter().getMap();
       if (map) map.invalidateSize();
     }, 100);
+
+    if ('geolocation' in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          this.mapEngine.centerOn(pos.coords.latitude, pos.coords.longitude, 13);
+        },
+        () => { /* denied or unavailable — stay on default centre */ }
+      );
+    }
   }
 
   private activateTab(tab: string): void {
