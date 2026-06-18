@@ -58,7 +58,7 @@
         </div>
 
         <div class="chip-section">
-          <div class="chip-row" id="category-tabs">
+          <div class="chip-row">
             <button class="category-tab active" data-category="all">All <span class="tab-count"></span></button>
             <button class="category-tab" data-category="restaurant">Restaurant <span class="tab-count"></span></button>
             <button class="category-tab" data-category="cafe">Café <span class="tab-count"></span></button>
@@ -67,11 +67,7 @@
             <button class="category-tab" data-category="market">Market <span class="tab-count"></span></button>
             <button class="category-tab" data-category="heladeria">Ice Cream <span class="tab-count"></span></button>
             <button class="category-tab" data-category="other">Other <span class="tab-count"></span></button>
-          </div>
-        </div>
-
-        <div class="chip-section">
-          <div class="chip-row" id="status-tabs">
+            <span class="chip-divider" aria-hidden="true"></span>
             <button class="status-tab active" data-status="all">All <span class="tab-count"></span></button>
             <button class="status-tab" data-status="visited">Visited <span class="tab-count"></span></button>
             <button class="status-tab" data-status="wishlist">Wishlist <span class="tab-count"></span></button>
@@ -83,6 +79,17 @@
           <button id="clear-filters-btn" class="clear-btn">Clear filters</button>
         </div>
 
+        <div class="results-header">
+          <span id="poi-list-count" class="results-count"></span>
+          <div class="sort-chips">
+            <button type="button" class="sort-chip active" data-sort="name">Name</button>
+            <button type="button" class="sort-chip" data-sort="rating">Rating</button>
+            <button type="button" class="sort-chip" data-sort="recent">Recent</button>
+            <button type="button" class="sort-chip" data-sort="distance">Nearby</button>
+          </div>
+        </div>
+
+        <div id="poi-list-items" class="poi-list-items"></div>
       </div>
 
       <!-- Places Tab -->

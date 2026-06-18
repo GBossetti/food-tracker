@@ -135,7 +135,7 @@ export class UIController {
     });
 
     // Decide: category tabs
-    document.querySelectorAll('#category-tabs .category-tab').forEach((tab) => {
+    document.querySelectorAll('#tab-decide .category-tab').forEach((tab) => {
       tab.addEventListener('click', (e) => {
         const cat = (e.currentTarget as HTMLElement).dataset.category as POICategory | 'all';
         this.setActiveCategory(cat);
@@ -163,7 +163,7 @@ export class UIController {
     });
 
     // Decide: status tabs
-    document.querySelectorAll('#status-tabs .status-tab').forEach((tab) => {
+    document.querySelectorAll('#tab-decide .status-tab').forEach((tab) => {
       tab.addEventListener('click', (e) => {
         const status = (e.currentTarget as HTMLElement).dataset.status as POIStatus | 'all';
         this.setActiveStatus(status);
@@ -175,6 +175,20 @@ export class UIController {
       tab.addEventListener('click', (e) => {
         const status = (e.currentTarget as HTMLElement).dataset.status as POIStatus | 'all';
         this.setPlacesActiveStatus(status);
+      });
+    });
+
+    // Decide: sort chips
+    document.querySelectorAll('#tab-decide .sort-chip').forEach((chip) => {
+      chip.addEventListener('click', (e) => {
+        const target = e.currentTarget as HTMLElement;
+        this.sortMode = target.dataset.sort as typeof this.sortMode;
+        document.querySelectorAll('#tab-decide .sort-chip').forEach(c => c.classList.toggle('active', c === target));
+        if (this.sortMode === 'distance' && !this.userLocation) {
+          this.locateUser();
+        } else {
+          this.renderPOIList();
+        }
       });
     });
 
@@ -240,7 +254,7 @@ export class UIController {
 
   private setActiveCategory(category: POICategory | 'all'): void {
     this.activeCategory = category;
-    document.querySelectorAll('#category-tabs .category-tab').forEach((tab) => {
+    document.querySelectorAll('#tab-decide .category-tab').forEach((tab) => {
       (tab as HTMLElement).classList.toggle('active', (tab as HTMLElement).dataset.category === category);
     });
     this.applyFilters();
@@ -256,7 +270,7 @@ export class UIController {
 
   private setActiveStatus(status: POIStatus | 'all'): void {
     this.activeStatus = status;
-    document.querySelectorAll('#status-tabs .status-tab').forEach((tab) => {
+    document.querySelectorAll('#tab-decide .status-tab').forEach((tab) => {
       (tab as HTMLElement).classList.toggle('active', (tab as HTMLElement).dataset.status === status);
     });
     this.applyFilters();
@@ -370,9 +384,10 @@ export class UIController {
     const modal = document.getElementById('poi-modal');
     if (modal) modal.style.display = 'none';
 
-    // Update tag list and places list
+    // Update tag list and refresh both lists
     this.updateTagList();
     this.updatePlacesTagList();
+    this.renderPOIList();
     this.renderPlacesList();
   }
 
@@ -442,6 +457,7 @@ export class UIController {
           this.showNotification('POI deleted');
           this.updateTagList();
           this.updatePlacesTagList();
+          this.renderPOIList();
           this.renderPlacesList();
         } else {
           deleteBtn.classList.add('confirming');
@@ -567,6 +583,7 @@ export class UIController {
       })
     );
     this.updateTabCounts();
+    this.renderPOIList();
   }
 
   private applyPlacesFilters(): void {
@@ -576,7 +593,7 @@ export class UIController {
 
   private updateTabCounts(): void {
     const all = this.mapEngine.getAllFeatures();
-    document.querySelectorAll('#status-tabs .status-tab').forEach((btn) => {
+    document.querySelectorAll('#tab-decide .status-tab').forEach((btn) => {
       const st = (btn as HTMLElement).dataset.status!;
       const count = all.filter(f =>
         matchesFilters(f, {
@@ -605,6 +622,90 @@ export class UIController {
       ).length;
       const badge = btn.querySelector('.tab-count');
       if (badge) badge.textContent = count > 0 ? String(count) : '';
+    });
+  }
+
+  private renderPOIList(): void {
+    const items = document.getElementById('poi-list-items');
+    const countEl = document.getElementById('poi-list-count');
+    if (!items) return;
+
+    const filtered = this.mapEngine.getAllFeatures()
+      .filter(f => matchesFilters(f, {
+        category: this.activeCategory,
+        status: this.activeStatus,
+        selectedTags: this.selectedTags,
+        searchTerm: this.searchTerm,
+      }))
+      .sort((a, b) => {
+        switch (this.sortMode) {
+          case 'rating':
+            return (b.properties.rating ?? 0) - (a.properties.rating ?? 0);
+          case 'recent':
+            return new Date(b.properties.created_at ?? 0).getTime()
+                 - new Date(a.properties.created_at ?? 0).getTime();
+          case 'distance': {
+            if (!this.userLocation) return 0;
+            const [aLng, aLat] = a.geometry.coordinates as [number, number];
+            const [bLng, bLat] = b.geometry.coordinates as [number, number];
+            return this.calculateDistance(this.userLocation[0], this.userLocation[1], aLat, aLng)
+                 - this.calculateDistance(this.userLocation[0], this.userLocation[1], bLat, bLng);
+          }
+          default:
+            return a.properties.name.localeCompare(b.properties.name);
+        }
+      });
+
+    if (countEl) countEl.textContent = String(filtered.length);
+
+    if (filtered.length === 0) {
+      const total = this.mapEngine.getAllFeatures().length;
+      let message: string;
+      if (total === 0) {
+        message = 'No places saved yet. Tap + on the map to add your first.';
+      } else if (this.searchTerm) {
+        message = `No results for &ldquo;${escapeHtml(this.searchTerm)}&rdquo;.`;
+      } else {
+        message = 'No places match these filters. Try clearing some.';
+      }
+      items.innerHTML = `<p class="poi-list-empty">${message}</p>`;
+      return;
+    }
+
+    items.innerHTML = filtered.map(f => {
+      const p = f.properties;
+      const cfg = CATEGORY_CONFIG[p.category as POICategory] ?? CATEGORY_CONFIG['other'];
+      const rating = p.rating ?? 0;
+      const stars = rating > 0
+        ? '★'.repeat(Math.round(rating)) + '☆'.repeat(5 - Math.round(rating))
+        : '';
+      const [lng, lat] = f.geometry.coordinates;
+      const isWishlist = p.status === 'wishlist';
+      return `<div class="poi-list-item" data-lat="${lat}" data-lng="${lng}" data-id="${escapeHtml(p.id)}">
+        <span class="poi-list-dot" style="background:${cfg.color}"></span>
+        <span class="poi-list-name">${escapeHtml(p.name)}</span>
+        ${stars ? `<span class="poi-list-stars">${stars}</span>` : ''}
+        ${isWishlist ? `<button type="button" class="log-visit-btn" data-id="${escapeHtml(p.id)}" title="Log visit">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        </button>` : ''}
+      </div>`;
+    }).join('');
+
+    items.querySelectorAll<HTMLElement>('.poi-list-item').forEach(el => {
+      el.addEventListener('click', () => {
+        const lat = parseFloat(el.dataset.lat!);
+        const lng = parseFloat(el.dataset.lng!);
+        this.mapEngine.centerOn(lat, lng, 16);
+      });
+    });
+
+    items.querySelectorAll<HTMLElement>('.log-visit-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const id = btn.dataset.id!;
+        const feature = this.mapEngine.getAllFeatures().find(f => f.properties.id === id);
+        if (feature) this.handleLogVisit(feature);
+      });
     });
   }
 
@@ -715,6 +816,7 @@ export class UIController {
     logVisit(feature.properties);
     this.mapEngine.updateFeature(feature.properties.id, feature.properties);
     await this.saveCurrentState();
+    this.renderPOIList();
     this.renderPlacesList();
     this.showNotification('Visit logged!');
 
@@ -727,6 +829,7 @@ export class UIController {
         attachVisitReview(feature.properties, rating, text);
         this.mapEngine.updateFeature(feature.properties.id, feature.properties);
         this.saveCurrentState();
+        this.renderPOIList();
         this.renderPlacesList();
         if (this.currentFeature?.properties.id === feature.properties.id) {
           this.renderReviews(feature);
@@ -873,6 +976,7 @@ export class UIController {
         locateBtn?.classList.remove('loading');
         this.showNotification('Location found!', 'success');
 
+        if (this.sortMode === 'distance') this.renderPOIList();
         if (this.placesSortMode === 'distance') this.renderPlacesList();
       },
       (error) => {
