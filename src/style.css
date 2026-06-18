@@ -5,30 +5,30 @@
    =================================== */
 
 :root {
-  --bg:           #FAF7F4;
-  --surface:      #FFFFFF;
-  --surface-2:    #F5F1ED;
-  --ink:          #1C1917;
-  --ink-2:        #78716C;
-  --ink-3:        rgba(28, 25, 23, 0.38);
+  --bg:           #1A1714;
+  --surface:      #242120;
+  --surface-2:    #2D2A28;
+  --ink:          #FAF7F4;
+  --ink-2:        #A8A29E;
+  --ink-3:        rgba(250, 247, 244, 0.38);
   --accent:       #DC4C2F;
-  --accent-soft:  rgba(220, 76, 47, 0.09);
+  --accent-soft:  rgba(220, 76, 47, 0.12);
   --accent-dim:   rgba(220, 76, 47, 0.60);
-  --border:       rgba(28, 25, 23, 0.09);
-  --border-strong: rgba(28, 25, 23, 0.16);
-  --border-subtle: rgba(28, 25, 23, 0.05);
+  --border:       rgba(250, 247, 244, 0.09);
+  --border-strong: rgba(250, 247, 244, 0.16);
+  --border-subtle: rgba(250, 247, 244, 0.05);
 
   /* Semantic */
-  --success:  #3D7A52;
-  --danger:   #C42B1A;
-  --warning:  #B87420;
+  --success:  #4E9966;
+  --danger:   #E04444;
+  --warning:  #D4902A;
 
   /* Legacy alias — keeps ui.ts / analytics-ui.ts vars working */
   --primary:              var(--accent);
   --primary-blue:         var(--accent);
   --primary-color:        var(--accent);
   --accent-color:         var(--accent);
-  --accent-glow:          rgba(220, 76, 47, 0.14);
+  --accent-glow:          rgba(220, 76, 47, 0.20);
   --text-primary:         var(--ink);
   --text-secondary:       var(--ink-2);
   --text-muted:           var(--ink-3);
@@ -36,8 +36,8 @@
   --bg-dark:              var(--surface);
   --bg-surface:           var(--surface);
   --bg-elevated:          var(--surface);
-  --glass-bg:             rgba(28, 25, 23, 0.03);
-  --glass-bg-strong:      rgba(28, 25, 23, 0.05);
+  --glass-bg:             rgba(250, 247, 244, 0.03);
+  --glass-bg-strong:      rgba(250, 247, 244, 0.05);
   --glass-border:         var(--border);
   --glass-border-light:   var(--border-subtle);
   --border-color:         var(--border);
@@ -64,10 +64,10 @@
   --border-radius:    6px;
   --border-radius-lg: 12px;
 
-  /* Elevation */
-  --shadow-sm: 0 1px 3px rgba(28,25,23,.07), 0 1px 2px rgba(28,25,23,.05);
-  --shadow-md: 0 4px 12px rgba(28,25,23,.09), 0 2px 4px rgba(28,25,23,.06);
-  --shadow-lg: 0 12px 32px rgba(28,25,23,.10), 0 4px 10px rgba(28,25,23,.07);
+  /* Elevation — use pure black for depth on dark backgrounds */
+  --shadow-sm: 0 1px 3px rgba(0,0,0,.25), 0 1px 2px rgba(0,0,0,.18);
+  --shadow-md: 0 4px 12px rgba(0,0,0,.35), 0 2px 4px rgba(0,0,0,.25);
+  --shadow-lg: 0 12px 32px rgba(0,0,0,.45), 0 4px 10px rgba(0,0,0,.30);
   --box-shadow: var(--shadow-lg);
 
   --transition-speed: 0.18s;
@@ -150,9 +150,10 @@ body {
   inset: 0;
   background: linear-gradient(
     to bottom,
-    rgba(28, 25, 23, 0.45) 0%,
-    rgba(28, 25, 23, 0.62) 55%,
-    rgba(28, 25, 23, 0.88) 100%
+    rgba(28, 25, 23, 0)    0%,
+    rgba(28, 25, 23, 0)    45%,
+    rgba(28, 25, 23, 0.75) 72%,
+    rgba(28, 25, 23, 0.95) 100%
   );
 }
 
@@ -163,9 +164,9 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 2.5rem;
-  padding: 2rem;
+  justify-content: flex-end;
+  gap: 2rem;
+  padding: 2rem 2rem 3.5rem;
   text-align: center;
 }
 
@@ -278,8 +279,8 @@ body {
 
 .header-btn:hover {
   color: var(--ink);
-  border-color: rgba(28,25,23,0.25);
-  background: rgba(28,25,23,0.04);
+  border-color: rgba(250,247,244,0.25);
+  background: rgba(250,247,244,0.04);
 }
 
 .header-btn-accent {
@@ -296,7 +297,7 @@ body {
 
 /* Add-mode state */
 .header.adding {
-  background: #FFF5F3;
+  background: rgba(220, 76, 47, 0.12);
   border-bottom-color: rgba(220, 76, 47, 0.3);
 }
 
@@ -350,7 +351,7 @@ body {
   right: 0;
   height: 50vh;
   border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;
-  box-shadow: 0 -4px 24px rgba(28,25,23,.12), 0 -1px 4px rgba(28,25,23,.07);
+  box-shadow: 0 -4px 24px rgba(0,0,0,.35), 0 -1px 4px rgba(0,0,0,.20);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -544,7 +545,7 @@ body {
 .category-tab:hover,
 .status-tab:hover {
   color: var(--ink);
-  border-color: rgba(28,25,23,0.25);
+  border-color: rgba(250,247,244,0.25);
 }
 
 /* Active state — accent fill */
@@ -611,7 +612,7 @@ body {
 
 .tag-btn:hover {
   color: var(--ink);
-  border-color: rgba(28,25,23,.22);
+  border-color: rgba(250,247,244,.22);
 }
 
 .tag-btn.active {
@@ -997,7 +998,7 @@ body {
 
 .you-action-btn:hover {
   border-color: var(--border-strong);
-  background: rgba(28,25,23,0.02);
+  background: rgba(250,247,244,0.02);
 }
 
 /* ===================================
@@ -1024,8 +1025,8 @@ body {
 
 .btn:hover {
   color: var(--ink);
-  border-color: rgba(28,25,23,0.25);
-  background: rgba(28,25,23,0.03);
+  border-color: rgba(250,247,244,0.25);
+  background: rgba(250,247,244,0.03);
 }
 
 .btn-primary {
@@ -1048,7 +1049,7 @@ body {
 
 .btn-secondary:hover {
   color: var(--ink);
-  border-color: rgba(28,25,23,.25);
+  border-color: rgba(250,247,244,.25);
 }
 
 .btn-danger {
@@ -1194,7 +1195,7 @@ body {
 .poi-hero-close:hover {
   color: var(--ink);
   border-color: var(--border-strong);
-  background: rgba(28,25,23,0.06);
+  background: rgba(250,247,244,0.06);
 }
 
 /* Modal inner tabs */
@@ -1261,7 +1262,7 @@ body {
 
 .status-tile:hover {
   color: var(--ink);
-  border-color: rgba(28,25,23,0.25);
+  border-color: rgba(250,247,244,0.25);
 }
 
 .status-tile[data-status="visited"].active  {
@@ -1475,7 +1476,7 @@ body {
 }
 
 .tag-suggestion-item:hover {
-  background: rgba(28,25,23,0.04);
+  background: rgba(250,247,244,0.04);
   color: var(--ink);
 }
 
@@ -1826,7 +1827,7 @@ body {
 .distribution-bar-container {
   flex: 1;
   height: 22px;
-  background: rgba(28,25,23,0.05);
+  background: rgba(250,247,244,0.05);
   border-radius: 3px;
   overflow: hidden;
   border: 1px solid var(--border-subtle);
@@ -1871,7 +1872,7 @@ body {
 }
 
 .ranking-item:hover {
-  background: rgba(28,25,23,0.03);
+  background: rgba(250,247,244,0.03);
   border-color: var(--border);
 }
 
@@ -1883,7 +1884,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(28,25,23,0.07);
+  background: rgba(250,247,244,0.07);
   color: var(--ink);
   border-radius: 4px;
   font-weight: 700;
@@ -1940,7 +1941,7 @@ body {
 .tag-bar-track {
   flex: 1;
   height: 14px;
-  background: rgba(28,25,23,0.05);
+  background: rgba(250,247,244,0.05);
   border-radius: 2px;
   overflow: hidden;
 }
@@ -2176,7 +2177,7 @@ body {
 .qvs-backdrop {
   position: absolute;
   inset: 0;
-  background: rgba(28, 25, 23, 0.45);
+  background: rgba(0, 0, 0, 0.55);
 }
 
 .qvs-panel {
