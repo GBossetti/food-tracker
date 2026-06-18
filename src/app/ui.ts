@@ -143,7 +143,7 @@ export class UIController {
     });
 
     // Places: category tabs
-    document.querySelectorAll('#places-category-tabs .category-tab').forEach((tab) => {
+    document.querySelectorAll('#tab-places .category-tab').forEach((tab) => {
       tab.addEventListener('click', (e) => {
         const cat = (e.currentTarget as HTMLElement).dataset.category as POICategory | 'all';
         this.setPlacesActiveCategory(cat);
@@ -171,7 +171,7 @@ export class UIController {
     });
 
     // Places: status tabs
-    document.querySelectorAll('#places-status-tabs .status-tab').forEach((tab) => {
+    document.querySelectorAll('#tab-places .status-tab').forEach((tab) => {
       tab.addEventListener('click', (e) => {
         const status = (e.currentTarget as HTMLElement).dataset.status as POIStatus | 'all';
         this.setPlacesActiveStatus(status);
@@ -262,7 +262,7 @@ export class UIController {
 
   private setPlacesActiveCategory(category: POICategory | 'all'): void {
     this.placesActiveCategory = category;
-    document.querySelectorAll('#places-category-tabs .category-tab').forEach((tab) => {
+    document.querySelectorAll('#tab-places .category-tab').forEach((tab) => {
       (tab as HTMLElement).classList.toggle('active', (tab as HTMLElement).dataset.category === category);
     });
     this.applyPlacesFilters();
@@ -278,7 +278,7 @@ export class UIController {
 
   private setPlacesActiveStatus(status: POIStatus | 'all'): void {
     this.placesActiveStatus = status;
-    document.querySelectorAll('#places-status-tabs .status-tab').forEach((tab) => {
+    document.querySelectorAll('#tab-places .status-tab').forEach((tab) => {
       (tab as HTMLElement).classList.toggle('active', (tab as HTMLElement).dataset.status === status);
     });
     this.applyPlacesFilters();
@@ -610,7 +610,7 @@ export class UIController {
 
   private updatePlacesTabCounts(): void {
     const all = this.mapEngine.getAllFeatures();
-    document.querySelectorAll('#places-status-tabs .status-tab').forEach((btn) => {
+    document.querySelectorAll('#tab-places .status-tab').forEach((btn) => {
       const st = (btn as HTMLElement).dataset.status!;
       const count = all.filter(f =>
         matchesFilters(f, {
