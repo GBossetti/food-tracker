@@ -351,9 +351,18 @@ body {
   height: 50vh;
   border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;
   box-shadow: 0 -4px 24px rgba(28,25,23,.12), 0 -1px 4px rgba(28,25,23,.07);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 20;
+}
+
+/* Only the results list scrolls; filter controls stay pinned */
+#tab-decide #poi-list-items {
+  flex: 1;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  z-index: 20;
+  min-height: 0;
 }
 
 #tab-decide.active::before {

@@ -257,6 +257,8 @@ export class UIController {
     document.querySelectorAll('#tab-decide .category-tab').forEach((tab) => {
       (tab as HTMLElement).classList.toggle('active', (tab as HTMLElement).dataset.category === category);
     });
+    document.querySelector<HTMLElement>('#tab-decide .category-tab.active')
+      ?.scrollIntoView({ behavior: 'smooth', inline: 'start', block: 'nearest' });
     this.applyFilters();
   }
 
@@ -265,6 +267,8 @@ export class UIController {
     document.querySelectorAll('#tab-places .category-tab').forEach((tab) => {
       (tab as HTMLElement).classList.toggle('active', (tab as HTMLElement).dataset.category === category);
     });
+    document.querySelector<HTMLElement>('#tab-places .category-tab.active')
+      ?.scrollIntoView({ behavior: 'smooth', inline: 'start', block: 'nearest' });
     this.applyPlacesFilters();
   }
 
@@ -273,6 +277,8 @@ export class UIController {
     document.querySelectorAll('#tab-decide .status-tab').forEach((tab) => {
       (tab as HTMLElement).classList.toggle('active', (tab as HTMLElement).dataset.status === status);
     });
+    document.querySelector<HTMLElement>('#tab-decide .status-tab.active')
+      ?.scrollIntoView({ behavior: 'smooth', inline: 'start', block: 'nearest' });
     this.applyFilters();
   }
 
@@ -281,6 +287,8 @@ export class UIController {
     document.querySelectorAll('#tab-places .status-tab').forEach((tab) => {
       (tab as HTMLElement).classList.toggle('active', (tab as HTMLElement).dataset.status === status);
     });
+    document.querySelector<HTMLElement>('#tab-places .status-tab.active')
+      ?.scrollIntoView({ behavior: 'smooth', inline: 'start', block: 'nearest' });
     this.applyPlacesFilters();
   }
 
