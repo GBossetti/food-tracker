@@ -503,6 +503,13 @@ body {
 
 .chip-row::-webkit-scrollbar { display: none; }
 
+/* Active chip floats to front of its group */
+.chip-row .category-tab        { order: 1; }
+.chip-row .category-tab.active { order: 0; }
+.chip-row .chip-divider        { order: 2; }
+.chip-row .status-tab          { order: 4; }
+.chip-row .status-tab.active   { order: 3; }
+
 .chip-divider {
   flex-shrink: 0;
   width: 1px;

@@ -257,8 +257,8 @@ export class UIController {
     document.querySelectorAll('#tab-decide .category-tab').forEach((tab) => {
       (tab as HTMLElement).classList.toggle('active', (tab as HTMLElement).dataset.category === category);
     });
-    document.querySelector<HTMLElement>('#tab-decide .category-tab.active')
-      ?.scrollIntoView({ behavior: 'smooth', inline: 'start', block: 'nearest' });
+    const decideRow = document.querySelector<HTMLElement>('#tab-decide .chip-row');
+    if (decideRow) decideRow.scrollLeft = 0;
     this.applyFilters();
   }
 
@@ -267,8 +267,8 @@ export class UIController {
     document.querySelectorAll('#tab-places .category-tab').forEach((tab) => {
       (tab as HTMLElement).classList.toggle('active', (tab as HTMLElement).dataset.category === category);
     });
-    document.querySelector<HTMLElement>('#tab-places .category-tab.active')
-      ?.scrollIntoView({ behavior: 'smooth', inline: 'start', block: 'nearest' });
+    const placesRow = document.querySelector<HTMLElement>('#tab-places .chip-row');
+    if (placesRow) placesRow.scrollLeft = 0;
     this.applyPlacesFilters();
   }
 
@@ -277,8 +277,8 @@ export class UIController {
     document.querySelectorAll('#tab-decide .status-tab').forEach((tab) => {
       (tab as HTMLElement).classList.toggle('active', (tab as HTMLElement).dataset.status === status);
     });
-    document.querySelector<HTMLElement>('#tab-decide .status-tab.active')
-      ?.scrollIntoView({ behavior: 'smooth', inline: 'start', block: 'nearest' });
+    const decideRow = document.querySelector<HTMLElement>('#tab-decide .chip-row');
+    if (decideRow) decideRow.scrollLeft = 0;
     this.applyFilters();
   }
 
@@ -287,8 +287,8 @@ export class UIController {
     document.querySelectorAll('#tab-places .status-tab').forEach((tab) => {
       (tab as HTMLElement).classList.toggle('active', (tab as HTMLElement).dataset.status === status);
     });
-    document.querySelector<HTMLElement>('#tab-places .status-tab.active')
-      ?.scrollIntoView({ behavior: 'smooth', inline: 'start', block: 'nearest' });
+    const placesRow = document.querySelector<HTMLElement>('#tab-places .chip-row');
+    if (placesRow) placesRow.scrollLeft = 0;
     this.applyPlacesFilters();
   }
 
@@ -505,10 +505,16 @@ export class UIController {
     const tagContainer = document.getElementById('tag-filters');
     if (!tagContainer) return;
 
+    const sorted = [...this.allTags].sort((a, b) => {
+      const aSelected = this.selectedTags.has(a) ? 0 : 1;
+      const bSelected = this.selectedTags.has(b) ? 0 : 1;
+      return aSelected - bSelected;
+    });
+
     tagContainer.innerHTML = '';
-    this.allTags.forEach((tag) => {
+    sorted.forEach((tag) => {
       const button = document.createElement('button');
-      button.className = 'tag-btn';
+      button.className = this.selectedTags.has(tag) ? 'tag-btn active' : 'tag-btn';
       button.textContent = tag;
       button.onclick = () => this.toggleTag(tag, button);
       tagContainer.appendChild(button);
@@ -531,10 +537,16 @@ export class UIController {
     const tagContainer = document.getElementById('places-tag-filters');
     if (!tagContainer) return;
 
+    const sorted = [...this.placesAllTags].sort((a, b) => {
+      const aSelected = this.placesSelectedTags.has(a) ? 0 : 1;
+      const bSelected = this.placesSelectedTags.has(b) ? 0 : 1;
+      return aSelected - bSelected;
+    });
+
     tagContainer.innerHTML = '';
-    this.placesAllTags.forEach((tag) => {
+    sorted.forEach((tag) => {
       const button = document.createElement('button');
-      button.className = 'tag-btn';
+      button.className = this.placesSelectedTags.has(tag) ? 'tag-btn active' : 'tag-btn';
       button.textContent = tag;
       button.onclick = () => this.togglePlacesTag(tag, button);
       tagContainer.appendChild(button);
@@ -591,11 +603,13 @@ export class UIController {
       })
     );
     this.updateTabCounts();
+    this.updateTagList();
     this.renderPOIList();
   }
 
   private applyPlacesFilters(): void {
     this.updatePlacesTabCounts();
+    this.updatePlacesTagList();
     this.renderPlacesList();
   }
 
