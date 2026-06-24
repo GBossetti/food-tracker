@@ -1,15 +1,18 @@
 import { MapEngine } from '../core/map-engine';
 import { StorageLayer } from './storage';
 import { GeoJSONFeatureCollection } from '../core/types';
+import { GamificationUI } from './gamification-ui';
 
 export class AppController {
   private mapEngine: MapEngine;
   private storage: StorageLayer;
   private data: GeoJSONFeatureCollection | null = null;
+  private gamificationUI: GamificationUI;
 
   constructor(mapEngine: MapEngine, storage: StorageLayer) {
     this.mapEngine = mapEngine;
     this.storage = storage;
+    this.gamificationUI = new GamificationUI(mapEngine);
 
     this.initializeViews();
     this.setupNavigation();
@@ -72,6 +75,10 @@ export class AppController {
         const map = this.mapEngine.getAdapter().getMap();
         if (map) map.invalidateSize();
       }, 50);
+    }
+
+    if (tab === 'challenges' || tab === 'you') {
+      this.gamificationUI.render();
     }
   }
 

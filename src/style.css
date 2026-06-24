@@ -793,6 +793,14 @@ body {
   opacity: 0.5;
 }
 
+.challenge-complete {
+  border-color: var(--border-strong);
+}
+
+.challenge-complete .progress-fill {
+  background: var(--success);
+}
+
 .challenge-icon {
   font-size: 1.75rem;
   line-height: 1;
