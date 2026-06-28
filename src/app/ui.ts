@@ -257,8 +257,8 @@ export class UIController {
     document.querySelectorAll('#tab-decide .category-tab').forEach((tab) => {
       (tab as HTMLElement).classList.toggle('active', (tab as HTMLElement).dataset.category === category);
     });
-    const decideRow = document.querySelector<HTMLElement>('#tab-decide .chip-row');
-    if (decideRow) decideRow.scrollLeft = 0;
+    document.querySelector<HTMLElement>('#tab-decide .category-tab.active')
+      ?.scrollIntoView({ behavior: 'smooth', inline: 'start', block: 'nearest' });
     this.applyFilters();
   }
 
@@ -267,8 +267,8 @@ export class UIController {
     document.querySelectorAll('#tab-places .category-tab').forEach((tab) => {
       (tab as HTMLElement).classList.toggle('active', (tab as HTMLElement).dataset.category === category);
     });
-    const placesRow = document.querySelector<HTMLElement>('#tab-places .chip-row');
-    if (placesRow) placesRow.scrollLeft = 0;
+    document.querySelector<HTMLElement>('#tab-places .category-tab.active')
+      ?.scrollIntoView({ behavior: 'smooth', inline: 'start', block: 'nearest' });
     this.applyPlacesFilters();
   }
 

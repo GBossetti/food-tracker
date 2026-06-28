@@ -11,6 +11,7 @@
   --ink:          #FAF7F4;
   --ink-2:        #A8A29E;
   --ink-3:        rgba(250, 247, 244, 0.38);
+  --neutral-active: #5B5550;
   --accent:       #DC4C2F;
   --accent-soft:  rgba(220, 76, 47, 0.12);
   --accent-dim:   rgba(220, 76, 47, 0.60);
@@ -466,11 +467,16 @@ body {
    =================================== */
 
 .decide-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   padding: 14px 14px 10px;
 }
 
 .search-input {
-  width: 100%;
+  flex: 1;
+  width: auto;
+  min-width: 0;
   padding: 0.7rem 1rem;
   background: var(--surface);
   border: 1px solid var(--border-strong);
@@ -505,11 +511,22 @@ body {
 .chip-row::-webkit-scrollbar { display: none; }
 
 /* Active chip floats to front of its group */
-.chip-row .category-tab        { order: 1; }
-.chip-row .category-tab.active { order: 0; }
 .chip-row .chip-divider        { order: 2; }
 .chip-row .status-tab          { order: 4; }
 .chip-row .status-tab.active   { order: 3; }
+
+.status-segment {
+  display: flex;
+  flex-shrink: 0;
+  gap: 4px;
+}
+
+.status-segment .status-tab {
+  height: 20px;
+  padding: 0 8px;
+  font-size: 0.5625rem;
+  gap: 2px;
+}
 
 .chip-divider {
   flex-shrink: 0;
@@ -557,7 +574,7 @@ body {
 }
 
 /* Per-category active colours */
-.category-tab[data-category="all"].active        { background: var(--ink); }
+.category-tab[data-category="all"].active        { background: var(--neutral-active); }
 .category-tab[data-category="restaurant"].active { background: #C9503F; }
 .category-tab[data-category="cafe"].active       { background: #C07A2A; }
 .category-tab[data-category="bar"].active        { background: #8B4A62; }
@@ -566,7 +583,7 @@ body {
 .category-tab[data-category="heladeria"].active  { background: #3E8A83; }
 .category-tab[data-category="other"].active      { background: #7A6E62; }
 
-.status-tab[data-status="all"].active      { background: var(--ink); }
+.status-tab[data-status="all"].active      { background: var(--neutral-active); }
 .status-tab[data-status="visited"].active  { background: var(--success); }
 .status-tab[data-status="wishlist"].active { background: #C07A2A; }
 
@@ -787,6 +804,13 @@ body {
   border: 1px solid var(--border);
   border-radius: var(--border-radius-lg);
   padding: 14px;
+  cursor: pointer;
+  transition: border-color var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
+}
+
+.challenge-card:hover {
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-sm);
 }
 
 .challenge-locked {
@@ -869,6 +893,13 @@ body {
   border-radius: 10px;
   padding: 10px 14px;
   opacity: 0.45;
+  cursor: pointer;
+  transition: border-color var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
+}
+
+.badge:hover {
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-sm);
 }
 
 .badge-earned {
