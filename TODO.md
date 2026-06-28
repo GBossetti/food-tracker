@@ -27,6 +27,12 @@
 - [ ] Expand test coverage — `ui.ts`, `analytics.ts`, `app-controller.ts`, `map-engine.ts` have zero tests (~80% of codebase uncovered)
 - [ ] Replace hardcoded `setTimeout` delays for map DOM ops — `map-engine.ts`, `app-controller.ts`
 - [ ] Debounce search input handler in `ui.ts`
+- [ ] De-duplicate Decide vs. Places tab logic in `ui.ts` — ~95% identical filter/sort/render methods maintained twice (`renderPOIList`/`renderPlacesList`, `setActiveCategory`/`setPlacesActiveCategory`, etc.)
+- [ ] Fix `visit_count || 1` fallback in `gamification.ts` (badge totals) and `analytics.ts` — should be `visit_count ?? 0`; currently counts unvisited places (`visit_count: 0`) as 1 visit
+- [ ] Cache gamification `calculateAll()` results instead of recalculating from scratch (incl. O(n²) clustering) on every Challenges/You tab visit
+- [ ] Clean up gamification card click listeners on re-render (`gamification-ui.ts`) — currently re-attached without removing previous ones
+- [ ] Guard `importFromFile()`'s `JSON.parse()` with a try/catch and a user-facing error message instead of failing silently
+- [ ] Add a confirmation/export prompt before `clear()` — currently a single click permanently deletes all local data with no recovery path
 
 ## Low / Arch
 
@@ -35,3 +41,17 @@
 - [ ] Add localStorage data versioning and migration guard
 - [ ] Add ARIA labels, focus management in modals, skip links
 - [ ] Debounce `localStorage.setItem` — every UIController change triggers an immediate write
+- [ ] Log a warning if `backendEnabled` is ever set `true` while `syncToBackend()`/`syncFromBackend()` remain stubs, so this isn't silently broken later
+
+## UX/UI
+
+- [ ] Add visible `:focus-visible` rings to all interactive elements (buttons, chips, inputs) — keyboard navigation currently has no visible focus indicator anywhere except form inputs
+- [ ] Fix `--ink-3` tertiary text color contrast — fails WCAG AA against the dark background; used for tab counts, section labels, meta text
+- [ ] Add a lightweight first-run onboarding (tooltip/tour) explaining the Map → Decide → Places → Challenges flow and the "+" add button — currently no guidance for new users beyond a hint that appears after tapping Add
+- [ ] Add `aria-label`s to icon-only buttons (add, close, star rating) and `role="alert"`/`aria-live` to notification toasts for screen reader support
+- [ ] Unify the visual language for category/status selection — POI modal uses icon tiles, filter bars use text pills, for the same underlying concept
+- [ ] Clarify or consolidate Decide vs. Places tabs — near-total feature/UI overlap with no explanation of when to use which
+- [ ] Show inline field-level validation errors on the POI form instead of only a generic toast on submit
+- [ ] Add a loading state to the Analytics button/modal for larger datasets
+- [ ] Increase the star-rating touch target (~28px currently, below the 44px mobile recommendation)
+- [ ] Add a short explanation/tooltip on the Challenges tab describing how badges and levels are earned
