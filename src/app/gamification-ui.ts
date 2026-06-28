@@ -1,4 +1,4 @@
-import { GamificationEngine, GamificationData, Challenge, Badge, AreaCluster } from './gamification';
+import { GamificationEngine, GamificationData, Challenge, Badge, AreaCluster, GamificationAction } from './gamification';
 import { MapEngine } from '../core/map-engine';
 
 function escapeHtml(str: string): string {
@@ -23,16 +23,47 @@ export class GamificationUI {
 
   private renderChallenges(data: GamificationData): void {
     const challengeList = document.querySelector('#tab-challenges .challenge-list');
-    if (challengeList) challengeList.innerHTML = data.challenges.map(c => this.renderChallengeCard(c)).join('');
+    if (challengeList) {
+      challengeList.innerHTML = data.challenges.map(c => this.renderChallengeCard(c)).join('');
+      Array.from(challengeList.children).forEach((el, i) => {
+        el.addEventListener('click', () => this.runAction(data.challenges[i].action));
+      });
+    }
 
     const badgesRow = document.querySelector('#tab-challenges .badges-row');
-    if (badgesRow) badgesRow.innerHTML = data.badges.map(b => this.renderBadge(b)).join('');
+    if (badgesRow) {
+      badgesRow.innerHTML = data.badges.map(b => this.renderBadge(b)).join('');
+      Array.from(badgesRow.children).forEach(el => {
+        el.addEventListener('click', () => this.runAction({ type: 'places' }));
+      });
+    }
 
     const exploreAreas = document.getElementById('explore-areas');
     if (exploreAreas) {
-      exploreAreas.innerHTML = data.areasToExplore.length > 0
-        ? data.areasToExplore.map(a => this.renderAreaCard(a)).join('')
-        : `<p class="tab-sub">No unexplored wishlist areas right now — every saved place nearby has been visited.</p>`;
+      if (data.areasToExplore.length > 0) {
+        exploreAreas.innerHTML = data.areasToExplore.map(a => this.renderAreaCard(a)).join('');
+        Array.from(exploreAreas.children).forEach((el, i) => {
+          el.addEventListener('click', () => this.runAction(data.areasToExplore[i].action));
+        });
+      } else {
+        exploreAreas.innerHTML = `<p class="tab-sub">No unexplored wishlist areas right now — every saved place nearby has been visited.</p>`;
+      }
+    }
+  }
+
+  private runAction(action: GamificationAction): void {
+    if (action.type === 'map') {
+      document.querySelector<HTMLElement>('.tab-btn[data-tab="map"]')?.click();
+      setTimeout(() => this.mapEngine.centerOn(action.lat, action.lng, 16), 60);
+      return;
+    }
+
+    document.querySelector<HTMLElement>('.tab-btn[data-tab="places"]')?.click();
+    if (action.status) {
+      document.querySelector<HTMLElement>(`#tab-places .status-tab[data-status="${action.status}"]`)?.click();
+    }
+    if (action.sort) {
+      document.querySelector<HTMLElement>(`#tab-places .places-sort-chip[data-sort="${action.sort}"]`)?.click();
     }
   }
 
