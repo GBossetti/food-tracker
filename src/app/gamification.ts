@@ -17,12 +17,19 @@ const LEVEL_THRESHOLDS: Array<{ points: number; name: string }> = [
   { points: 600, name: 'City Connoisseur' },
 ];
 
+export type GamificationAction =
+  | { type: 'map'; lat: number; lng: number }
+  | { type: 'places'; status?: 'all' | 'visited' | 'wishlist'; sort?: 'name' | 'rating' | 'recent' | 'distance' };
+
 export interface AreaCluster {
   id: string;
   label: string;
   total: number;
   visited: number;
   wishlist: number;
+  lat: number;
+  lng: number;
+  action: GamificationAction;
 }
 
 export interface Challenge {
@@ -32,6 +39,7 @@ export interface Challenge {
   desc: string;
   progress: number;
   target: number;
+  action: GamificationAction;
 }
 
 export interface Badge {
@@ -69,9 +77,13 @@ export class GamificationEngine {
 
   private calculateStats() {
     const total = this.features.length;
-    const visited = this.features.filter(f => f.properties.status === 'visited').length;
+    const visited = this.features.filter(f => this.isVisited(f)).length;
     const wishlist = this.features.filter(f => f.properties.status === 'wishlist').length;
     return { total, visited, wishlist };
+  }
+
+  private isVisited(f: GeoJSONFeature): boolean {
+    return f.properties.status === 'visited' || (f.properties.visit_count ?? 0) > 0;
   }
 
   private clusterByProximity(): AreaCluster[] {
@@ -97,13 +109,17 @@ export class GamificationEngine {
       const labelPlace = members.reduce((best, f) =>
         (f.properties.visit_count || 0) > (best.properties.visit_count || 0) ? f : best
       , members[0]);
+      const [lng, lat] = labelPlace.geometry.coordinates as [number, number];
 
       clusters.push({
         id: `cluster-${clusterIndex++}`,
         label: `Near ${labelPlace.properties.name}`,
         total: members.length,
-        visited: members.filter(f => f.properties.status === 'visited').length,
+        visited: members.filter(f => this.isVisited(f)).length,
         wishlist: members.filter(f => f.properties.status === 'wishlist').length,
+        lat,
+        lng,
+        action: { type: 'map', lat, lng },
       });
     }
 
@@ -123,11 +139,17 @@ export class GamificationEngine {
 
     const visitedCategories = new Set(
       this.features
-        .filter(f => f.properties.status === 'visited' && f.properties.category)
+        .filter(f => this.isVisited(f) && f.properties.category)
         .map(f => f.properties.category)
     );
 
-    const maxClusterVisits = clusters.reduce((max, c) => Math.max(max, c.visited), 0);
+    const busiestCluster = clusters.reduce<AreaCluster | null>(
+      (best, c) => (!best || c.visited > best.visited) ? c : best, null
+    );
+    const maxClusterVisits = busiestCluster?.visited ?? 0;
+    const neighborhoodAction: GamificationAction = busiestCluster
+      ? { type: 'map', lat: busiestCluster.lat, lng: busiestCluster.lng }
+      : { type: 'places', status: 'visited' };
 
     return [
       {
@@ -137,6 +159,7 @@ export class GamificationEngine {
         desc: 'Try 3 new places this month',
         progress: Math.min(newThisMonth, 3),
         target: 3,
+        action: { type: 'places', sort: 'recent' },
       },
       {
         id: 'cuisine-hopper',
@@ -145,6 +168,7 @@ export class GamificationEngine {
         desc: 'Visit 5 different cuisine types',
         progress: Math.min(visitedCategories.size, 5),
         target: 5,
+        action: { type: 'places', status: 'visited' },
       },
       {
         id: 'neighborhood-regular',
@@ -153,6 +177,7 @@ export class GamificationEngine {
         desc: 'Visit 10 places in one neighborhood',
         progress: Math.min(maxClusterVisits, 10),
         target: 10,
+        action: neighborhoodAction,
       },
     ];
   }
@@ -162,7 +187,7 @@ export class GamificationEngine {
     clusters: AreaCluster[]
   ): Badge[] {
     const totalVisits = this.features
-      .filter(f => f.properties.status === 'visited')
+      .filter(f => this.isVisited(f))
       .reduce((sum, f) => sum + (f.properties.visit_count || 1), 0);
 
     const distinctVisitedClusters = clusters.filter(c => c.visited >= 1).length;
