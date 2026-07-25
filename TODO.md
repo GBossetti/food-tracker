@@ -28,7 +28,7 @@
 - [ ] Replace hardcoded `setTimeout` delays for map DOM ops — `map-engine.ts`, `app-controller.ts`
 - [ ] Debounce search input handler in `ui.ts`
 - [ ] De-duplicate Decide vs. Places tab logic in `ui.ts` — ~95% identical filter/sort/render methods maintained twice (`renderPOIList`/`renderPlacesList`, `setActiveCategory`/`setPlacesActiveCategory`, etc.)
-- [ ] Fix `visit_count || 1` fallback in `gamification.ts` (badge totals) and `analytics.ts` — should be `visit_count ?? 0`; currently counts unvisited places (`visit_count: 0`) as 1 visit
+- [x] Fix `visit_count || 1` fallback in `gamification.ts` (badge totals) and `analytics.ts` — should be `visit_count ?? 0`; currently counts unvisited places (`visit_count: 0`) as 1 visit
 - [ ] Cache gamification `calculateAll()` results instead of recalculating from scratch (incl. O(n²) clustering) on every Challenges/You tab visit
 - [ ] Clean up gamification card click listeners on re-render (`gamification-ui.ts`) — currently re-attached without removing previous ones
 - [ ] Guard `importFromFile()`'s `JSON.parse()` with a try/catch and a user-facing error message instead of failing silently
