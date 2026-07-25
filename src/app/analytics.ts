@@ -71,7 +71,7 @@ export class AnalyticsEngine {
   private calculateOverview() {
     const totalPlaces = this.features.length;
     const totalVisits = this.features.reduce(
-      (sum, f) => sum + (f.properties.visit_count || 1),
+      (sum, f) => sum + (f.properties.visit_count ?? 0),
       0
     );
     const totalReviews = this.features.reduce(
@@ -87,7 +87,7 @@ export class AnalyticsEngine {
 
     // Most visited place
     const mostVisited = this.features.reduce((max, f) => {
-      const visits = f.properties.visit_count || 1;
+      const visits = f.properties.visit_count ?? 0;
       return visits > (max.count || 0) ? { name: f.properties.name, count: visits } : max;
     }, { name: '', count: 0 });
 
@@ -151,7 +151,7 @@ export class AnalyticsEngine {
       .map(f => ({
         name: f.properties.name,
         rating: f.properties.rating,
-        visits: f.properties.visit_count || 1,
+        visits: f.properties.visit_count ?? 0,
         id: f.properties.id,
       }))
       .sort((a, b) => b.rating - a.rating)
@@ -161,7 +161,7 @@ export class AnalyticsEngine {
     const byVisits = this.features
       .map(f => ({
         name: f.properties.name,
-        visits: f.properties.visit_count || 1,
+        visits: f.properties.visit_count ?? 0,
         rating: f.properties.rating || 0,
         id: f.properties.id,
       }))
@@ -319,7 +319,7 @@ export class AnalyticsEngine {
 
     // Average visits per place
     const averageVisitsPerPlace = this.features.length > 0
-      ? this.features.reduce((sum, f) => sum + (f.properties.visit_count || 1), 0) / this.features.length
+      ? this.features.reduce((sum, f) => sum + (f.properties.visit_count ?? 0), 0) / this.features.length
       : 0;
 
     // Favorite tag

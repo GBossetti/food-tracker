@@ -188,7 +188,7 @@ export class GamificationEngine {
   ): Badge[] {
     const totalVisits = this.features
       .filter(f => this.isVisited(f))
-      .reduce((sum, f) => sum + (f.properties.visit_count || 1), 0);
+      .reduce((sum, f) => sum + (f.properties.visit_count ?? 0), 0);
 
     const distinctVisitedClusters = clusters.filter(c => c.visited >= 1).length;
 
