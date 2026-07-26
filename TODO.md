@@ -20,10 +20,10 @@
 ## Medium
 
 - [x] Polish Decide tab UX — add sort toggle (distance / rating / recently added) to `renderPOIList()` (`ui.ts:456`), and smarter empty states that distinguish "you have no places yet" from "filters are hiding results"
-- [ ] Break up `UIController` god object — 1,140 lines handling search, filters, forms, reviews, analytics, import/export, modals, tags
+- [ ] Break up `UIController` god object — 1,511 lines handling search, filters, forms, reviews, analytics, import/export, modals, tags
 - [ ] Add `MapEngine.off()` method — events can be subscribed but never unsubscribed
-- [ ] Guard `feature.properties.reviews` before `.sort()` — null ref at `ui.ts:751`
-- [ ] Replace `confirm()` dialogs with custom accessible modals — `ui.ts:339,884`
+- [ ] Guard `feature.properties.reviews` before `.sort()` — null ref at `ui.ts:1099` and `ui.ts:1401`
+- [x] Replace `confirm()` dialogs with custom accessible modals — done in `cf16b64`; no `confirm(` remains in `ui.ts`
 - [ ] Expand test coverage — `ui.ts`, `analytics.ts`, `app-controller.ts`, `map-engine.ts` have zero tests (~80% of codebase uncovered)
 - [ ] Replace hardcoded `setTimeout` delays for map DOM ops — `map-engine.ts`, `app-controller.ts`
 - [ ] Debounce search input handler in `ui.ts`
@@ -37,7 +37,7 @@
 ## Low / Arch
 
 - [ ] Write `CLAUDE.md` and `README.md` — both are essentially empty
-- [ ] Move hardcoded Madrid coordinates to config — `main.ts:39`, `map-engine.ts:22`
+- [ ] Move hardcoded Madrid coordinates to config — `main.ts:35`, `map-engine.ts:22`
 - [ ] Add localStorage data versioning and migration guard
 - [ ] Add ARIA labels, focus management in modals, skip links
 - [ ] Debounce `localStorage.setItem` — every UIController change triggers an immediate write
