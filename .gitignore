@@ -42,7 +42,6 @@ config/
 
 # ai agent
 AGENTS.md
-feature_list.json
 specs/
 
 # Personal notes
