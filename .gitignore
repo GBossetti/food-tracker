@@ -39,6 +39,7 @@ coverage/
 # Setup and configuration files
 config/
 .vercel
+.netlify/
 
 # ai agent
 AGENTS.md
