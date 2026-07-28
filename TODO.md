@@ -7,6 +7,10 @@
 - [x] Remove global `window` pollution — `window.editReview` / `window.deleteReview` set inline
 - [x] Replace ~24 `any` casts across `ui.ts`, `analytics.ts`, `app-controller.ts`
 - [x] Add DOM existence check before Leaflet init in `leaflet-adapter.ts:17`
+- [x] Fix edit-modal trap on mobile — `form.onsubmit`/`#cancel-btn` were wired only inside `showAddPOIForm()`; opening a place via a marker or list tap (instead of "Add") left Save doing a native page-reloading form submit and the X button inert, with no other way to exit the modal on a phone. Both handlers are now wired once in `setupEventListeners()` so every entry path shares them.
+- [x] Fix review stars silently overwriting the place's own rating — `.rating-input .star` matched both the main form's stars and the Reviews panel's stars (which share the `.star` class), so tapping a review star fired both handlers and clobbered `currentRating`/`#poi-rating`. Scoped the main-form binding to `#poi-panel-details .rating-input .star`.
+- [x] Guard destructive import — importing replaced all data in one tap with no confirmation and no backup. Now gated behind a tap-to-confirm ("Replace N places?") and an automatic `exportToFile()` backup taken first; `storage.ts` gained `parseImportFile()` (parse-only) so the confirm step runs before anything is saved.
+- [x] Surface storage write failures — `StorageLayer.save()` used to swallow quota/write errors while the UI still toasted success. `saveToLocalStorage()` now propagates the error, and `UIController.saveCurrentState()` reports failure with an error toast instead of a false success one.
 
 ## High
 
@@ -16,6 +20,10 @@
 - [x] Remove dead navigation code — `app-controller.ts` references `#landing-view`, `#dashboard-content`, `.nav-tab` that don't exist in `index.html`
 - [x] Remove unsafe `(this.mapEngine as any).adapter?.getMap()` cast — `app-controller.ts:150,188`
 - [ ] Add event listener cleanup — `setupEventListeners()` in `ui.ts` never removes handlers
+- [x] Fix double-bound import handler — `#import-input`'s `change` event was wired in both `main.ts` and `ui.ts`; every import ran the whole pipeline twice and fired two stacked toasts. Removed the `main.ts` duplicate along with its dead sidebar-toggle code (`#toggle-sidebar-btn`/`.sidebar`/`.container` don't exist in `index.html`).
+- [x] Fix dead-end Places-tab row tap — tapping a row called `mapEngine.centerOn()`, but Places is a full-screen panel with no map visible behind it (unlike Decide, which is a sheet over the live map), so the tap did nothing observable. Now opens the place's detail modal via the existing `handleFeatureClick()`.
+- [x] Fix redundant geolocation requests — the silent auto-locate on app open (`app-controller.ts`) and the "Nearby" sort chip (`ui.ts`) each requested the user's location independently because the result was never shared between controllers, so tapping "Nearby" re-prompted/re-fetched location even right after a successful auto-locate. `AppController` now calls the new `UIController.setUserLocation()` with its geolocation result.
+- [x] Fix quick-visit sheet "Skip" discarding the note just typed — `quick-visit-sheet.ts` now saves rating/note on Skip and on backdrop-dismiss the same way it already did on Save, whenever either was filled in.
 
 ## Medium
 
@@ -24,15 +32,15 @@
 - [ ] Add `MapEngine.off()` method — events can be subscribed but never unsubscribed
 - [ ] Guard `feature.properties.reviews` before `.sort()` — null ref at `ui.ts:1099` and `ui.ts:1401`
 - [x] Replace `confirm()` dialogs with custom accessible modals — done in `cf16b64`; no `confirm(` remains in `ui.ts`
-- [ ] Expand test coverage — `ui.ts`, `analytics.ts`, `app-controller.ts`, `map-engine.ts` have zero tests (~80% of codebase uncovered)
+- [ ] Expand test coverage — `ui.ts`, `analytics.ts`, `app-controller.ts`, `map-engine.ts` have zero tests (~80% of codebase uncovered). In particular `ui.ts` has no regression coverage for the edit-modal-trap and review-star-clobbering fixes above — worth a jsdom test each once the DOM/mock harness exists.
 - [ ] Replace hardcoded `setTimeout` delays for map DOM ops — `map-engine.ts`, `app-controller.ts`
-- [ ] Debounce search input handler in `ui.ts`
-- [ ] De-duplicate Decide vs. Places tab logic in `ui.ts` — ~95% identical filter/sort/render methods maintained twice (`renderPOIList`/`renderPlacesList`, `setActiveCategory`/`setPlacesActiveCategory`, etc.)
+- [ ] Debounce search input handler in `ui.ts` — every keystroke tears down and rebuilds every Leaflet marker (`ui.ts:93` → `mapEngine.showFeatures()`), a responsiveness problem, not just a performance one, once past a few dozen places
+- [ ] De-duplicate Decide vs. Places tab logic in `ui.ts` — ~95% identical filter/sort/render methods maintained twice (`renderPOIList`/`renderPlacesList`, `setActiveCategory`/`setPlacesActiveCategory`, etc.), with fully separate filter state — the two tabs can silently show different results for the same data
 - [x] Fix `visit_count || 1` fallback in `gamification.ts` (badge totals) and `analytics.ts` — should be `visit_count ?? 0`; currently counts unvisited places (`visit_count: 0`) as 1 visit
 - [ ] Cache gamification `calculateAll()` results instead of recalculating from scratch (incl. O(n²) clustering) on every Challenges/You tab visit
 - [ ] Clean up gamification card click listeners on re-render (`gamification-ui.ts`) — currently re-attached without removing previous ones
-- [ ] Guard `importFromFile()`'s `JSON.parse()` with a try/catch and a user-facing error message instead of failing silently
-- [ ] Add a confirmation/export prompt before `clear()` — currently a single click permanently deletes all local data with no recovery path
+- [x] Guard `importFromFile()`'s `JSON.parse()` with a try/catch and a user-facing error message instead of failing silently — superseded by the confirm-gated import rework above (`parseImportFile()` + `handleImport()`); parse failures still surface the `'Failed to import file'` toast
+- [ ] Add a confirmation/export prompt before `clear()` — `StorageLayer.clear()` is currently unreferenced by any UI, so this is latent rather than live, but if it's ever wired up it needs the same tap-to-confirm + backup treatment now used for import
 
 ## Low / Arch
 
@@ -46,12 +54,31 @@
 ## UX/UI
 
 - [ ] Add visible `:focus-visible` rings to all interactive elements (buttons, chips, inputs) — keyboard navigation currently has no visible focus indicator anywhere except form inputs
-- [ ] Fix `--ink-3` tertiary text color contrast — fails WCAG AA against the dark background; used for tab counts, section labels, meta text
+- [ ] Fix `--ink-3` tertiary text color contrast — computed at **3.36:1** against `--surface` (fails WCAG AA's 4.5:1); used for tab counts, section labels, meta text, form labels, nav labels, and every placeholder
 - [ ] Add a lightweight first-run onboarding (tooltip/tour) explaining the Map → Decide → Places → Challenges flow and the "+" add button — currently no guidance for new users beyond a hint that appears after tapping Add
 - [ ] Add `aria-label`s to icon-only buttons (add, close, star rating) and `role="alert"`/`aria-live` to notification toasts for screen reader support
-- [ ] Unify the visual language for category/status selection — POI modal uses icon tiles, filter bars use text pills, for the same underlying concept
-- [ ] Clarify or consolidate Decide vs. Places tabs — near-total feature/UI overlap with no explanation of when to use which
-- [ ] Show inline field-level validation errors on the POI form instead of only a generic toast on submit
+- [ ] Unify the visual language for category/status selection — POI modal uses icon tiles, filter bars use text pills, for the same underlying concept. Category colors are also defined three times with divergent hex values (`core/types.ts:10-18` vs `style.css:577-588` vs `style.css:1353-1359`) plus a fourth, unrelated palette hardcoded in `analytics-ui.ts` — collapse onto `CATEGORY_CONFIG` as the single source
+- [ ] Clarify or consolidate Decide vs. Places tabs — near-total feature/UI overlap with no explanation of when to use which (see `docs/PRODUCT-ANALYSIS.md`)
+- [ ] Show inline field-level validation errors on the POI form instead of only a generic toast on submit — no `aria-invalid`/`aria-describedby`, and the native `required` on `#poi-name` fires inconsistently alongside the JS toast
 - [ ] Add a loading state to the Analytics button/modal for larger datasets
-- [ ] Increase the star-rating touch target (~28px currently, below the 44px mobile recommendation)
+- [ ] Increase the star-rating touch target (~28px currently, below the 44px mobile recommendation) — and the same for every other undersized control: "Clear filters" (~15px), tag-chip remove `×` (~13px), review edit/delete (~19px), Decide status segment (20px), sort chips (~22px), tag chips (26px), log-visit button (26px), modal close (28px), category/status chips (30px), header buttons (32px). Only the bottom tab bar currently meets 44px.
 - [ ] Add a short explanation/tooltip on the Challenges tab describing how badges and levels are earned
+- [ ] Add `role="dialog"`/`aria-modal`/focus trap/focus restore to all three overlays (POI modal, Analytics modal, quick-visit sheet) — none has them today, and Escape only closes the POI modal (Analytics and the quick-visit sheet have no Escape handling at all)
+- [ ] Make the primary interactive elements real, focusable controls instead of non-focusable `div`/`span` — the main POI list row (`ui.ts:706` region), challenge/badge/area cards (`gamification-ui.ts`), the tag-chip remove `×`, and the tag autocomplete options are all unreachable by keyboard
+- [ ] Add a dirty check before Escape/X/backdrop closes the POI modal — currently discards unsaved form input with no warning, and there's no `beforeunload` guard anywhere
+- [ ] Style the armed "Confirm delete?" state — `ui.ts` adds a `.confirming` class on the delete button but no such CSS rule exists, so the two-tap destructive-confirm pattern (also now used for import) is an unstyled label swap with an invisible 3-second disarm timer; the orphan `.delete-confirm-row`/`.delete-confirm-label` rules in `style.css:1679-1690` are dead and should either back this state or be removed
+- [ ] Stack toasts instead of overlapping them, and make them screen-reader visible — every toast is pinned to the same `bottom:80px; left:50%` position with `white-space:nowrap` and no `role="alert"`/`aria-live`, so concurrent toasts render on top of each other and long messages overflow the viewport
+- [ ] Add `@media (prefers-reduced-motion: reduce)` — zero occurrences today against 40 transition/animation declarations (modal slide-in, sheet slide-up, chart bar entrances, star hover scale, smooth-scroll calls)
+- [ ] Add `prefers-color-scheme`/`color-scheme: dark` support — without it, UA chrome (scrollbars, the native file picker, autofill, caret) renders light against the app's `#1A1714` dark theme; also add a `<meta name="theme-color">`
+- [ ] Add `@media` breakpoints — `style.css` has zero of them in 2,301 lines, so the phone-first layout stretches unconstrained on tablet/desktop
+- [ ] Raise `--text-body` to 16px (currently 15px on every input) so iOS Safari stops zooming the page on focus; raise `--text-micro` (11px) and the 8.8–9.6px outliers (nav labels, tab counts, cat-tile labels) to a legible floor
+- [ ] Remove the `order`-based active-chip reordering in the filter row (`style.css:515-517`) — tapping a status chip currently makes it jump to the front of the scroller and shifts its neighbours under the user's finger
+- [ ] Give active chips and earned/locked badges a non-color cue (icon, check, border weight) — state is currently conveyed by color and opacity alone, further degraded by the low-contrast text inside them
+- [ ] Wire the Decide sheet's drag handle to an actual resize, or remove it — the 36×4px grab-pill affordance (`style.css:370-378`) promises a drag interaction that doesn't exist; the sheet is fixed at `height: 50vh`
+- [ ] Add `history.pushState`/`popstate` handling — there is no routing at all today, so the back button exits the app from any tab or open modal, there are no deep links, and the landing splash reappears on every load with no "seen it" flag
+- [ ] Save/restore list scroll position per tab — `display:none` on inactive panels resets `scrollTop` and nothing restores it on return
+- [ ] Fix the dead geolocation loading indicator — `ui.ts` adds `.loading` to `#locate-btn`, but the only matching rule is `.btn.loading` and that button is `.header-btn`, so a 15-second geolocation timeout gives zero visual feedback. Add a real map-tile loading indicator too (`leaflet-adapter.ts` has no `loading`/`tileerror` handling).
+- [ ] Replace the Challenges/You tabs' hardcoded placeholder markup (fake progress, two pre-earned badges, avatar "G"/"My Map" in `index.html`) with a real first-render empty state, and render gamification once at boot rather than only on tab activation; add a first-place prompt to the empty map
+- [ ] Differentiate geolocation error cases (denied vs. timeout vs. unavailable) instead of one generic toast, and stop swallowing the auto-locate-on-open failure entirely; add a `window.onerror`/`unhandledrejection` handler since none exists today
+- [ ] Switch the search inputs to `type="search"` (currently `type="text"`), pair every placeholder-only field with a real label, and give the five `<label>`s that have no `for` attribute one
+
