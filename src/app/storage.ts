@@ -85,14 +85,19 @@ export class StorageLayer {
   // --- PRIVATE METHODS ---
 
   private async loadFromDB(): Promise<GeoJSONFeatureCollection> {
-    try {
-      const res = await fetch('/ddbb.json');
-      if (!res.ok) throw new Error(`Failed to fetch ddbb.json: ${res.status}`);
-      return await res.json() as GeoJSONFeatureCollection;
-    } catch (error) {
-      console.error('Failed to load ddbb.json, returning empty collection', error);
-      return { type: 'FeatureCollection', features: [] };
+    // ddbb.json is personal and gitignored, so it exists locally but never ships.
+    for (const url of ['/ddbb.json', '/demo-pois.geojson']) {
+      try {
+        const res = await fetch(url);
+        if (!res.ok) continue;
+        return await res.json() as GeoJSONFeatureCollection;
+      } catch {
+        continue;
+      }
     }
+
+    console.error('No seed data found, returning empty collection');
+    return { type: 'FeatureCollection', features: [] };
   }
 
   private getFromLocalStorage(): GeoJSONFeatureCollection | null {
