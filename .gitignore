@@ -48,10 +48,6 @@ specs/
 # Personal notes
 .notes/
 
-# Personal seed data — never publish; the app seeds from public/demo-pois.geojson
-local/
-public/ddbb.json
-
 # Claude Code (local config and docs, stay on this machine)
 .claude/
 docs/
