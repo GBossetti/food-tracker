@@ -2,12 +2,14 @@ import { MapEngine } from '../core/map-engine';
 import { StorageLayer } from './storage';
 import { GeoJSONFeatureCollection } from '../core/types';
 import { GamificationUI } from './gamification-ui';
+import { UIController } from './ui';
 
 export class AppController {
   private mapEngine: MapEngine;
   private storage: StorageLayer;
   private data: GeoJSONFeatureCollection | null = null;
   private gamificationUI: GamificationUI;
+  private uiController: UIController | null = null;
 
   constructor(mapEngine: MapEngine, storage: StorageLayer) {
     this.mapEngine = mapEngine;
@@ -17,6 +19,10 @@ export class AppController {
     this.initializeViews();
     this.setupNavigation();
     this.loadData();
+  }
+
+  public setUIController(uiController: UIController): void {
+    this.uiController = uiController;
   }
 
   private initializeViews(): void {
@@ -49,6 +55,7 @@ export class AppController {
       navigator.geolocation.getCurrentPosition(
         (pos) => {
           this.mapEngine.centerOn(pos.coords.latitude, pos.coords.longitude, 13);
+          this.uiController?.setUserLocation(pos.coords.latitude, pos.coords.longitude);
         },
         () => { /* denied or unavailable — stay on default centre */ }
       );

@@ -3,7 +3,7 @@
  * Handles all user interface interactions
  */
 
-import { GeoJSONFeature, POICategory, POIStatus, CATEGORY_CONFIG, Review } from '../core/types';
+import { GeoJSONFeature, GeoJSONFeatureCollection, POICategory, POIStatus, CATEGORY_CONFIG, Review } from '../core/types';
 import { matchesFilters } from '../core/poi-filters';
 import { MapEngine } from '../core/map-engine';
 import { StorageLayer } from './storage';
@@ -41,6 +41,7 @@ export class UIController {
   private placesActiveStatus: POIStatus | 'all' = 'all';
   private placesSortMode: 'name' | 'rating' | 'recent' | 'distance' = 'name';
   private _listenersAttached = false;
+  private pendingImport: GeoJSONFeatureCollection | null = null;
 
   constructor(mapEngine: MapEngine, storage: StorageLayer) {
     this.mapEngine = mapEngine;
@@ -58,6 +59,10 @@ export class UIController {
     this.appController = appController;
   }
 
+  public setUserLocation(lat: number, lng: number): void {
+    this.userLocation = [lat, lng];
+  }
+
   private setupEventListeners(): void {
     if (this._listenersAttached) return;
     this._listenersAttached = true;
@@ -66,10 +71,17 @@ export class UIController {
     const exportBtn = document.getElementById('export-btn');
     exportBtn?.addEventListener('click', () => this.handleExport());
 
-    // Import button
+    // Import button — a second tap while an import is armed confirms it
+    // instead of reopening the file picker (see handleImport / armImportConfirm)
     const importBtn = document.getElementById('import-btn');
     const importInput = document.getElementById('import-input') as HTMLInputElement;
-    importBtn?.addEventListener('click', () => importInput?.click());
+    importBtn?.addEventListener('click', () => {
+      if (this.pendingImport) {
+        this.confirmImport();
+      } else {
+        importInput?.click();
+      }
+    });
     importInput?.addEventListener('change', (e) => this.handleImport(e));
 
     // Add POI button
@@ -129,10 +141,21 @@ export class UIController {
       });
     });
 
-    // Rating stars in main form
-    document.querySelectorAll('.rating-input .star').forEach((star) => {
+    // Rating stars in main form (scoped to the Details panel so the Reviews
+    // panel's own .rating-input .star elements aren't double-bound — both
+    // share the .star class and would otherwise also set the place rating)
+    document.querySelectorAll('#poi-panel-details .rating-input .star').forEach((star) => {
       star.addEventListener('click', (e) => this.handleRatingClick(e));
     });
+
+    // POI form: submit and cancel — wired once so both the "Add" and
+    // marker-click ("edit") entry points share the same handlers.
+    const poiForm = document.getElementById('poi-form') as HTMLFormElement;
+    poiForm?.addEventListener('submit', (e) => {
+      e.preventDefault();
+      this.handlePOIFormSubmit();
+    });
+    document.getElementById('cancel-btn')?.addEventListener('click', () => this.closeModal());
 
     // Decide: category tabs
     document.querySelectorAll('#tab-decide .category-tab').forEach((tab) => {
@@ -310,20 +333,72 @@ export class UIController {
   private async handleImport(event: Event): Promise<void> {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
+    input.value = ''; // allow re-selecting the same file later
+
     if (!file) return;
 
     try {
-      const data = await this.storage.importFromFile(file);
-      this.mapEngine.load(data);
-      this.updateTagList();
-      this.showNotification('Data imported successfully!');
+      const data = await this.storage.parseImportFile(file);
+      const existingCount = this.mapEngine.getAllFeatures().length;
+
+      if (existingCount > 0) {
+        this.armImportConfirm(data, existingCount);
+      } else {
+        await this.applyImport(data);
+      }
     } catch (error) {
       this.showNotification('Failed to import file', 'error');
     }
   }
 
+  private armImportConfirm(data: GeoJSONFeatureCollection, existingCount: number): void {
+    this.pendingImport = data;
+    const importBtn = document.getElementById('import-btn');
+    const label = importBtn?.querySelector('span');
+    if (label) label.textContent = `Replace ${existingCount} places?`;
+    importBtn?.classList.add('confirming');
 
-  private handlePOIFormSubmit(): void {
+    setTimeout(() => {
+      if (this.pendingImport === data) this.cancelImportConfirm();
+    }, 5000);
+  }
+
+  private cancelImportConfirm(): void {
+    this.pendingImport = null;
+    const importBtn = document.getElementById('import-btn');
+    const label = importBtn?.querySelector('span');
+    if (label) label.textContent = 'Import data';
+    importBtn?.classList.remove('confirming');
+  }
+
+  private async confirmImport(): Promise<void> {
+    const data = this.pendingImport;
+    if (!data) return;
+    this.cancelImportConfirm();
+    await this.applyImport(data);
+  }
+
+  private async applyImport(data: GeoJSONFeatureCollection): Promise<void> {
+    // Back up the current data before it gets overwritten
+    this.storage.exportToFile();
+
+    try {
+      await this.storage.save(data);
+    } catch (error) {
+      this.showNotification('Failed to import file', 'error');
+      return;
+    }
+
+    this.mapEngine.load(data);
+    this.updateTagList();
+    this.updatePlacesTagList();
+    this.renderPOIList();
+    this.renderPlacesList();
+    this.showNotification('Data imported successfully!');
+  }
+
+
+  private async handlePOIFormSubmit(): Promise<void> {
     const form = document.getElementById('poi-form') as HTMLFormElement;
     const formData = new FormData(form);
 
@@ -376,17 +451,18 @@ export class UIController {
       }
       
       this.mapEngine.updateFeature(id, feature.properties);
-      this.showNotification('POI updated successfully!');
     } else {
       // Add new
       feature.properties.reviews = [];
       feature.properties.visit_count = 1;
       this.mapEngine.addFeature(feature);
-      this.showNotification('POI added successfully!');
     }
 
-    // Save to storage
-    this.saveCurrentState();
+    // Save to storage — only report success once the save actually lands
+    const saved = await this.saveCurrentState();
+    if (saved) {
+      this.showNotification(id ? 'POI updated successfully!' : 'POI added successfully!');
+    }
 
     // Close modal
     const modal = document.getElementById('poi-modal');
@@ -434,7 +510,7 @@ export class UIController {
     const rating = feature.properties.rating || 0;
     this.currentRating = Math.round(rating);
     (document.getElementById('poi-rating') as HTMLInputElement).value = this.currentRating.toString();
-    document.querySelectorAll('.rating-input .star').forEach((star, index) => {
+    document.querySelectorAll('#poi-panel-details .rating-input .star').forEach((star, index) => {
       star.textContent = index < this.currentRating ? '★' : '☆';
       star.classList.toggle('active', index < this.currentRating);
     });
@@ -797,11 +873,13 @@ export class UIController {
       </div>`;
     }).join('');
 
+    // Places is a full-screen list with no map behind it, so a row tap opens
+    // the place's detail modal instead of re-centring a map the user can't see.
     items.querySelectorAll<HTMLElement>('.poi-list-item').forEach(el => {
       el.addEventListener('click', () => {
-        const lat = parseFloat(el.dataset.lat!);
-        const lng = parseFloat(el.dataset.lng!);
-        this.mapEngine.centerOn(lat, lng, 16);
+        const id = el.dataset.id!;
+        const feature = this.mapEngine.getAllFeatures().find(f => f.properties.id === id);
+        if (feature) this.handleFeatureClick(feature);
       });
     });
 
@@ -815,12 +893,18 @@ export class UIController {
     });
   }
 
-  private async saveCurrentState(): Promise<void> {
+  private async saveCurrentState(): Promise<boolean> {
     const data = this.mapEngine.export();
-    await this.storage.save(data);
+    try {
+      await this.storage.save(data);
+    } catch (error) {
+      this.showNotification('Failed to save — your changes may not persist', 'error');
+      return false;
+    }
     if (this.appController) {
       await this.appController.refreshData();
     }
+    return true;
   }
 
   private showNotification(message: string, type: 'success' | 'error' = 'success'): void {
@@ -920,7 +1004,7 @@ export class UIController {
     this.currentRating = 0;
     this.setupTagChipInput([]);
 
-    document.querySelectorAll('.rating-input .star').forEach((star) => {
+    document.querySelectorAll('#poi-panel-details .rating-input .star').forEach((star) => {
       star.textContent = '☆';
       star.classList.remove('active');
     });
@@ -964,15 +1048,6 @@ export class UIController {
 
     // Show modal
     modal.style.display = 'flex';
-
-    // Form handlers
-    form.onsubmit = (e) => {
-      e.preventDefault();
-      this.handlePOIFormSubmit();
-    };
-    document.getElementById('cancel-btn')!.onclick = () => {
-      modal.style.display = 'none';
-    };
   }
 
   /**

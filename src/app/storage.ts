@@ -70,11 +70,9 @@ export class StorageLayer {
     URL.revokeObjectURL(url);
   }
 
-  async importFromFile(file: File): Promise<GeoJSONFeatureCollection> {
+  async parseImportFile(file: File): Promise<GeoJSONFeatureCollection> {
     const text = await file.text();
-    const data = JSON.parse(text) as GeoJSONFeatureCollection;
-    await this.save(data);
-    return data;
+    return JSON.parse(text) as GeoJSONFeatureCollection;
   }
 
   clear(): void {
@@ -106,11 +104,7 @@ export class StorageLayer {
   }
 
   private saveToLocalStorage(data: GeoJSONFeatureCollection): void {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-    } catch (error) {
-      console.error('Failed to save to localStorage', error);
-    }
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
   }
 
   // --- FUTURE BACKEND STUBS ---

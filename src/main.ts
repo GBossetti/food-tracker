@@ -48,59 +48,7 @@ async function initApp() {
     
     // 7. Link controllers
     uiController.setAppController(appController);
-
-    // 8. Setup import handler
-    const importInput = document.getElementById('import-input') as HTMLInputElement;
-    if (importInput) {
-      importInput.addEventListener('change', async (e) => {
-        const file = (e.target as HTMLInputElement)?.files?.[0];
-        if (!file) return;
-
-        try {
-          const newData = await storage.importFromFile(file);
-          mapEngine.load(newData);
-          await appController.refreshData();
-          
-          // Show notification
-          const notification = document.createElement('div');
-          notification.className = 'notification show';
-          notification.textContent = 'Data imported successfully!';
-          document.body.appendChild(notification);
-          setTimeout(() => {
-            notification.classList.remove('show');
-            setTimeout(() => notification.remove(), 300);
-          }, 3000);
-
-          // Reset input
-          importInput.value = '';
-        } catch (error) {
-          const notification = document.createElement('div');
-          notification.className = 'notification error show';
-          notification.textContent = 'Failed to import file';
-          document.body.appendChild(notification);
-          setTimeout(() => {
-            notification.classList.remove('show');
-            setTimeout(() => notification.remove(), 300);
-          }, 3000);
-        }
-      });
-    }
-
-    // 9. Setup sidebar toggle
-    const toggleSidebarBtn = document.getElementById('toggle-sidebar-btn');
-    const sidebar = document.querySelector('.sidebar');
-    const container = document.querySelector('.container');
-
-    if (toggleSidebarBtn && sidebar && container) {
-      toggleSidebarBtn.addEventListener('click', () => {
-        sidebar.classList.toggle('collapsed');
-        container.classList.toggle('sidebar-collapsed');
-        // Trigger map resize after CSS transition completes
-        setTimeout(() => {
-          mapEngine.getMap().invalidateSize();
-        }, 300);
-      });
-    }
+    appController.setUIController(uiController);
 
   } catch (error) {
     // Show error message to user

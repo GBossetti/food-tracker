@@ -20,15 +20,19 @@ export class QuickVisitSheet {
       });
     });
 
-    this.sheet.querySelector('.qvs-backdrop')?.addEventListener('click', () => this.close());
-    document.getElementById('qvs-skip-btn')?.addEventListener('click', () => this.close());
-    document.getElementById('qvs-save-btn')?.addEventListener('click', () => {
-      const note = (document.getElementById('qvs-note') as HTMLTextAreaElement).value.trim();
-      if (this.rating > 0 || note) {
-        this.onSave?.(this.rating, note);
-      }
-      this.close();
-    });
+    this.sheet.querySelector('.qvs-backdrop')?.addEventListener('click', () => this.closeAndSave());
+    document.getElementById('qvs-skip-btn')?.addEventListener('click', () => this.closeAndSave());
+    document.getElementById('qvs-save-btn')?.addEventListener('click', () => this.closeAndSave());
+  }
+
+  // Skip and backdrop-dismiss used to discard a note the user had already
+  // typed; anything worth keeping (a rating or a note) is saved on any close.
+  private closeAndSave(): void {
+    const note = (document.getElementById('qvs-note') as HTMLTextAreaElement).value.trim();
+    if (this.rating > 0 || note) {
+      this.onSave?.(this.rating, note);
+    }
+    this.close();
   }
 
   open(placeName: string, onSave: (rating: number, text: string) => void): void {
