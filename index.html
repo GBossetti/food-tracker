@@ -75,18 +75,23 @@
           </div>
         </div>
 
-        <div class="tag-filter-section">
+        <div class="tag-filter-section" id="tag-filter-section" hidden>
           <div id="tag-filters" class="tag-filters"></div>
           <button id="clear-filters-btn" class="clear-btn">Clear filters</button>
         </div>
 
         <div class="results-header">
           <span id="poi-list-count" class="results-count"></span>
-          <div class="sort-chips">
-            <button type="button" class="sort-chip active" data-sort="name">Name</button>
-            <button type="button" class="sort-chip" data-sort="rating">Rating</button>
-            <button type="button" class="sort-chip" data-sort="recent">Recent</button>
-            <button type="button" class="sort-chip" data-sort="distance">Nearby</button>
+          <div class="results-header-actions">
+            <button type="button" id="filters-toggle-btn" class="filters-toggle-chip" aria-expanded="false" aria-controls="tag-filter-section">
+              Filters<span id="filters-toggle-badge" class="filters-toggle-badge"></span>
+            </button>
+            <div class="sort-chips">
+              <button type="button" class="sort-chip active" data-sort="name">Name</button>
+              <button type="button" class="sort-chip" data-sort="rating">Rating</button>
+              <button type="button" class="sort-chip" data-sort="recent">Recent</button>
+              <button type="button" class="sort-chip" data-sort="distance">Nearby</button>
+            </div>
           </div>
         </div>
 

@@ -92,6 +92,17 @@ export class UIController {
     const clearFiltersBtn = document.getElementById('clear-filters-btn');
     clearFiltersBtn?.addEventListener('click', () => this.clearDecideFilters());
 
+    // Decide: filters toggle (show/hide the tag-filter row)
+    const filtersToggleBtn = document.getElementById('filters-toggle-btn');
+    const tagFilterSection = document.getElementById('tag-filter-section') as HTMLElement | null;
+    filtersToggleBtn?.addEventListener('click', () => {
+      if (!tagFilterSection) return;
+      const expanded = tagFilterSection.hidden;
+      tagFilterSection.hidden = !expanded;
+      filtersToggleBtn.classList.toggle('active', expanded);
+      filtersToggleBtn.setAttribute('aria-expanded', String(expanded));
+    });
+
     // Decide: search input
     const searchInput = document.getElementById('search-input') as HTMLInputElement;
     searchInput?.addEventListener('input', (e) => this.handleSearch(e));
@@ -522,6 +533,15 @@ export class UIController {
       button.onclick = () => this.toggleTag(tag, button);
       tagContainer.appendChild(button);
     });
+
+    this.updateFiltersToggleBadge();
+  }
+
+  private updateFiltersToggleBadge(): void {
+    const badge = document.getElementById('filters-toggle-badge');
+    if (!badge) return;
+    const count = this.selectedTags.size;
+    badge.textContent = count > 0 ? `(${count})` : '';
   }
 
   private toggleTag(tag: string, button: HTMLElement): void {

@@ -593,9 +593,13 @@ body {
   font-variant-numeric: tabular-nums;
 }
 
-/* Tag filters */
+/* Tag filters — collapsed by default; toggled via #filters-toggle-btn */
 .tag-filter-section {
   padding: 0 14px 10px;
+}
+
+.tag-filter-section[hidden] {
+  display: none;
 }
 
 .tag-filters {
@@ -666,6 +670,49 @@ body {
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--ink-3);
+}
+
+.results-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.filters-toggle-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--font-body);
+  font-size: var(--text-micro);
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 100px;
+  border: 1.5px solid var(--border-strong);
+  background: transparent;
+  color: var(--ink-2);
+  cursor: pointer;
+  transition: background var(--transition-speed) ease, color var(--transition-speed) ease, border-color var(--transition-speed) ease;
+  white-space: nowrap;
+}
+
+.filters-toggle-chip:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.filters-toggle-chip.active {
+  background: var(--accent);
+  border-color: transparent;
+  color: #fff;
+}
+
+.filters-toggle-badge {
+  font-size: 0.55rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.filters-toggle-badge:empty {
+  display: none;
 }
 
 .sort-chips {
