@@ -386,8 +386,7 @@ body {
   z-index: 0;
 }
 
-/* Places / Challenges / You tabs */
-#tab-places,
+/* Challenges / You tabs */
 #tab-challenges,
 #tab-you {
   overflow-y: auto;
@@ -674,8 +673,7 @@ body {
   gap: 4px;
 }
 
-.sort-chip,
-.places-sort-chip {
+.sort-chip {
   font-family: var(--font-body);
   font-size: var(--text-micro);
   font-weight: 600;
@@ -689,14 +687,12 @@ body {
   white-space: nowrap;
 }
 
-.sort-chip:hover,
-.places-sort-chip:hover {
+.sort-chip:hover {
   border-color: var(--accent);
   color: var(--accent);
 }
 
-.sort-chip.active,
-.places-sort-chip.active {
+.sort-chip.active {
   background: var(--accent);
   border-color: transparent;
   color: #fff;

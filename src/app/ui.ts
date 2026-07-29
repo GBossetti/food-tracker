@@ -34,12 +34,6 @@ export class UIController {
   private editingReviewId: string | null = null;
   private quickVisitSheet: QuickVisitSheet;
   private sortMode: 'name' | 'rating' | 'recent' | 'distance' = 'name';
-  private placesSelectedTags: Set<string> = new Set();
-  private placesAllTags: Set<string> = new Set();
-  private placesSearchTerm: string = '';
-  private placesActiveCategory: POICategory | 'all' = 'all';
-  private placesActiveStatus: POIStatus | 'all' = 'all';
-  private placesSortMode: 'name' | 'rating' | 'recent' | 'distance' = 'name';
   private _listenersAttached = false;
   private pendingImport: GeoJSONFeatureCollection | null = null;
 
@@ -50,9 +44,7 @@ export class UIController {
     this.quickVisitSheet = new QuickVisitSheet();
     this.setupEventListeners();
     this.updateTagList();
-    this.updatePlacesTagList();
     this.applyFilters();
-    this.applyPlacesFilters();
   }
 
   public setAppController(appController: AppController): void {
@@ -104,31 +96,6 @@ export class UIController {
     const searchInput = document.getElementById('search-input') as HTMLInputElement;
     searchInput?.addEventListener('input', (e) => this.handleSearch(e));
 
-    // Places: search input
-    const placesSearchInput = document.getElementById('places-search-input') as HTMLInputElement;
-    placesSearchInput?.addEventListener('input', (e) => {
-      this.placesSearchTerm = (e.target as HTMLInputElement).value.toLowerCase().trim();
-      this.applyPlacesFilters();
-    });
-
-    // Places: clear filters button
-    const placesClearBtn = document.getElementById('places-clear-filters-btn');
-    placesClearBtn?.addEventListener('click', () => this.clearPlacesFilters());
-
-    // Places: sort chips
-    document.querySelectorAll('.places-sort-chip').forEach((chip) => {
-      chip.addEventListener('click', (e) => {
-        const target = e.currentTarget as HTMLElement;
-        this.placesSortMode = target.dataset.sort as typeof this.placesSortMode;
-        document.querySelectorAll('.places-sort-chip').forEach(c => c.classList.toggle('active', c === target));
-        if (this.placesSortMode === 'distance' && !this.userLocation) {
-          this.locateUser();
-        } else {
-          this.renderPlacesList();
-        }
-      });
-    });
-
     // Tab change: reset map markers when leaving Decide
     document.querySelectorAll('.tab-btn').forEach(btn => {
       btn.addEventListener('click', () => {
@@ -165,14 +132,6 @@ export class UIController {
       });
     });
 
-    // Places: category tabs
-    document.querySelectorAll('#tab-places .category-tab').forEach((tab) => {
-      tab.addEventListener('click', (e) => {
-        const cat = (e.currentTarget as HTMLElement).dataset.category as POICategory | 'all';
-        this.setPlacesActiveCategory(cat);
-      });
-    });
-
     // Category tile selector in modal
     document.querySelectorAll('.cat-tile').forEach((btn) => {
       btn.addEventListener('click', (e) => {
@@ -193,13 +152,6 @@ export class UIController {
       });
     });
 
-    // Places: status tabs
-    document.querySelectorAll('#tab-places .status-tab').forEach((tab) => {
-      tab.addEventListener('click', (e) => {
-        const status = (e.currentTarget as HTMLElement).dataset.status as POIStatus | 'all';
-        this.setPlacesActiveStatus(status);
-      });
-    });
 
     // Decide: sort chips
     document.querySelectorAll('#tab-decide .sort-chip').forEach((chip) => {
@@ -285,16 +237,6 @@ export class UIController {
     this.applyFilters();
   }
 
-  private setPlacesActiveCategory(category: POICategory | 'all'): void {
-    this.placesActiveCategory = category;
-    document.querySelectorAll('#tab-places .category-tab').forEach((tab) => {
-      (tab as HTMLElement).classList.toggle('active', (tab as HTMLElement).dataset.category === category);
-    });
-    document.querySelector<HTMLElement>('#tab-places .category-tab.active')
-      ?.scrollIntoView({ behavior: 'smooth', inline: 'start', block: 'nearest' });
-    this.applyPlacesFilters();
-  }
-
   private setActiveStatus(status: POIStatus | 'all'): void {
     this.activeStatus = status;
     document.querySelectorAll('#tab-decide .status-tab').forEach((tab) => {
@@ -305,15 +247,6 @@ export class UIController {
     this.applyFilters();
   }
 
-  private setPlacesActiveStatus(status: POIStatus | 'all'): void {
-    this.placesActiveStatus = status;
-    document.querySelectorAll('#tab-places .status-tab').forEach((tab) => {
-      (tab as HTMLElement).classList.toggle('active', (tab as HTMLElement).dataset.status === status);
-    });
-    const placesRow = document.querySelector<HTMLElement>('#tab-places .chip-row');
-    if (placesRow) placesRow.scrollLeft = 0;
-    this.applyPlacesFilters();
-  }
 
   private toggleVisitedSections(status: POIStatus | 'all'): void {
     const isWishlist = status === 'wishlist';
@@ -391,9 +324,7 @@ export class UIController {
 
     this.mapEngine.load(data);
     this.updateTagList();
-    this.updatePlacesTagList();
     this.renderPOIList();
-    this.renderPlacesList();
     this.showNotification('Data imported successfully!');
   }
 
@@ -468,11 +399,9 @@ export class UIController {
     const modal = document.getElementById('poi-modal');
     if (modal) modal.style.display = 'none';
 
-    // Update tag list and refresh both lists
+    // Update tag list and refresh the list
     this.updateTagList();
-    this.updatePlacesTagList();
     this.renderPOIList();
-    this.renderPlacesList();
   }
 
   private handleFeatureClick(feature: GeoJSONFeature): void {
@@ -540,9 +469,7 @@ export class UIController {
           modal.style.display = 'none';
           this.showNotification('POI deleted');
           this.updateTagList();
-          this.updatePlacesTagList();
           this.renderPOIList();
-          this.renderPlacesList();
         } else {
           deleteBtn.classList.add('confirming');
           deleteBtn.textContent = 'Confirm delete?';
@@ -597,38 +524,6 @@ export class UIController {
     });
   }
 
-  private updatePlacesTagList(): void {
-    this.placesAllTags.clear();
-    this.mapEngine.getAllFeatures()
-      .filter(f => {
-        const status = f.properties.status || 'visited';
-        return this.placesActiveStatus === 'all' || status === this.placesActiveStatus;
-      })
-      .forEach((feature) => {
-        feature.properties.tags?.forEach((tag: string) => {
-          this.placesAllTags.add(tag);
-        });
-      });
-
-    const tagContainer = document.getElementById('places-tag-filters');
-    if (!tagContainer) return;
-
-    const sorted = [...this.placesAllTags].sort((a, b) => {
-      const aSelected = this.placesSelectedTags.has(a) ? 0 : 1;
-      const bSelected = this.placesSelectedTags.has(b) ? 0 : 1;
-      return aSelected - bSelected;
-    });
-
-    tagContainer.innerHTML = '';
-    sorted.forEach((tag) => {
-      const button = document.createElement('button');
-      button.className = this.placesSelectedTags.has(tag) ? 'tag-btn active' : 'tag-btn';
-      button.textContent = tag;
-      button.onclick = () => this.togglePlacesTag(tag, button);
-      tagContainer.appendChild(button);
-    });
-  }
-
   private toggleTag(tag: string, button: HTMLElement): void {
     if (this.selectedTags.has(tag)) {
       this.selectedTags.delete(tag);
@@ -640,17 +535,6 @@ export class UIController {
     this.applyFilters();
   }
 
-  private togglePlacesTag(tag: string, button: HTMLElement): void {
-    if (this.placesSelectedTags.has(tag)) {
-      this.placesSelectedTags.delete(tag);
-      button.classList.remove('active');
-    } else {
-      this.placesSelectedTags.add(tag);
-      button.classList.add('active');
-    }
-    this.applyPlacesFilters();
-  }
-
   private clearDecideFilters(): void {
     this.selectedTags.clear();
     this.searchTerm = '';
@@ -658,15 +542,6 @@ export class UIController {
     if (searchInput) searchInput.value = '';
     document.querySelectorAll('#tag-filters .tag-btn').forEach((btn) => btn.classList.remove('active'));
     this.applyFilters();
-  }
-
-  private clearPlacesFilters(): void {
-    this.placesSelectedTags.clear();
-    this.placesSearchTerm = '';
-    const searchInput = document.getElementById('places-search-input') as HTMLInputElement;
-    if (searchInput) searchInput.value = '';
-    document.querySelectorAll('#places-tag-filters .tag-btn').forEach((btn) => btn.classList.remove('active'));
-    this.applyPlacesFilters();
   }
 
   private applyFilters(): void {
@@ -683,12 +558,6 @@ export class UIController {
     this.renderPOIList();
   }
 
-  private applyPlacesFilters(): void {
-    this.updatePlacesTabCounts();
-    this.updatePlacesTagList();
-    this.renderPlacesList();
-  }
-
   private updateTabCounts(): void {
     const all = this.mapEngine.getAllFeatures();
     document.querySelectorAll('#tab-decide .status-tab').forEach((btn) => {
@@ -699,23 +568,6 @@ export class UIController {
           status: st === 'all' ? 'all' : st as POIStatus,
           selectedTags: this.selectedTags,
           searchTerm: this.searchTerm,
-        })
-      ).length;
-      const badge = btn.querySelector('.tab-count');
-      if (badge) badge.textContent = count > 0 ? String(count) : '';
-    });
-  }
-
-  private updatePlacesTabCounts(): void {
-    const all = this.mapEngine.getAllFeatures();
-    document.querySelectorAll('#tab-places .status-tab').forEach((btn) => {
-      const st = (btn as HTMLElement).dataset.status!;
-      const count = all.filter(f =>
-        matchesFilters(f, {
-          category: this.placesActiveCategory,
-          status: st === 'all' ? 'all' : st as POIStatus,
-          selectedTags: this.placesSelectedTags,
-          searchTerm: this.placesSearchTerm,
         })
       ).length;
       const badge = btn.querySelector('.tab-count');
@@ -807,91 +659,6 @@ export class UIController {
     });
   }
 
-  private renderPlacesList(): void {
-    const items = document.getElementById('places-list-items');
-    const countEl = document.getElementById('places-list-count');
-    if (!items) return;
-
-    const filtered = this.mapEngine.getAllFeatures()
-      .filter(f => matchesFilters(f, {
-        category: this.placesActiveCategory,
-        status: this.placesActiveStatus,
-        selectedTags: this.placesSelectedTags,
-        searchTerm: this.placesSearchTerm,
-      }))
-      .sort((a, b) => {
-        switch (this.placesSortMode) {
-          case 'rating':
-            return (b.properties.rating ?? 0) - (a.properties.rating ?? 0);
-          case 'recent':
-            return new Date(b.properties.created_at ?? 0).getTime()
-                 - new Date(a.properties.created_at ?? 0).getTime();
-          case 'distance': {
-            if (!this.userLocation) return 0;
-            const [aLng, aLat] = a.geometry.coordinates as [number, number];
-            const [bLng, bLat] = b.geometry.coordinates as [number, number];
-            return this.calculateDistance(this.userLocation[0], this.userLocation[1], aLat, aLng)
-                 - this.calculateDistance(this.userLocation[0], this.userLocation[1], bLat, bLng);
-          }
-          default:
-            return a.properties.name.localeCompare(b.properties.name);
-        }
-      });
-
-    if (countEl) countEl.textContent = String(filtered.length);
-
-    if (filtered.length === 0) {
-      const total = this.mapEngine.getAllFeatures().length;
-      let message: string;
-      if (total === 0) {
-        message = 'No places saved yet. Tap + on the map to add your first.';
-      } else if (this.placesSearchTerm) {
-        message = `No results for &ldquo;${escapeHtml(this.placesSearchTerm)}&rdquo;.`;
-      } else {
-        message = 'No places match these filters. Try clearing some.';
-      }
-      items.innerHTML = `<p class="poi-list-empty">${message}</p>`;
-      return;
-    }
-
-    items.innerHTML = filtered.map(f => {
-      const p = f.properties;
-      const cfg = CATEGORY_CONFIG[p.category as POICategory] ?? CATEGORY_CONFIG['other'];
-      const rating = p.rating ?? 0;
-      const stars = rating > 0
-        ? '★'.repeat(Math.round(rating)) + '☆'.repeat(5 - Math.round(rating))
-        : '';
-      const [lng, lat] = f.geometry.coordinates;
-      const isWishlist = p.status === 'wishlist';
-      return `<div class="poi-list-item" data-lat="${lat}" data-lng="${lng}" data-id="${escapeHtml(p.id)}">
-        <span class="poi-list-dot" style="background:${cfg.color}"></span>
-        <span class="poi-list-name">${escapeHtml(p.name)}</span>
-        ${stars ? `<span class="poi-list-stars">${stars}</span>` : ''}
-        ${isWishlist ? `<button type="button" class="log-visit-btn" data-id="${escapeHtml(p.id)}" title="Log visit">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-        </button>` : ''}
-      </div>`;
-    }).join('');
-
-    // Places is a full-screen list with no map behind it, so a row tap opens
-    // the place's detail modal instead of re-centring a map the user can't see.
-    items.querySelectorAll<HTMLElement>('.poi-list-item').forEach(el => {
-      el.addEventListener('click', () => {
-        const id = el.dataset.id!;
-        const feature = this.mapEngine.getAllFeatures().find(f => f.properties.id === id);
-        if (feature) this.handleFeatureClick(feature);
-      });
-    });
-
-    items.querySelectorAll<HTMLElement>('.log-visit-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const id = btn.dataset.id!;
-        const feature = this.mapEngine.getAllFeatures().find(f => f.properties.id === id);
-        if (feature) this.handleLogVisit(feature);
-      });
-    });
-  }
 
   private async saveCurrentState(): Promise<boolean> {
     const data = this.mapEngine.export();
@@ -923,7 +690,6 @@ export class UIController {
     this.mapEngine.updateFeature(feature.properties.id, feature.properties);
     await this.saveCurrentState();
     this.renderPOIList();
-    this.renderPlacesList();
     this.showNotification('Visit logged!');
 
     if (this.currentFeature?.properties.id === feature.properties.id) {
@@ -936,7 +702,6 @@ export class UIController {
         this.mapEngine.updateFeature(feature.properties.id, feature.properties);
         this.saveCurrentState();
         this.renderPOIList();
-        this.renderPlacesList();
         if (this.currentFeature?.properties.id === feature.properties.id) {
           this.renderReviews(feature);
         }
@@ -1074,7 +839,6 @@ export class UIController {
         this.showNotification('Location found!', 'success');
 
         if (this.sortMode === 'distance') this.renderPOIList();
-        if (this.placesSortMode === 'distance') this.renderPlacesList();
       },
       (error) => {
         locateBtn?.classList.remove('loading');
