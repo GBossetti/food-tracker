@@ -143,6 +143,9 @@ export class UIController {
       this.handlePOIFormSubmit();
     });
     document.getElementById('cancel-btn')?.addEventListener('click', () => this.closeModal());
+    document.getElementById('poi-name')?.addEventListener('input', (e) => {
+      if ((e.target as HTMLInputElement).value.trim()) this.setNameFieldInvalid(false);
+    });
 
     // Decide: category tabs
     document.querySelectorAll('#tab-decide .category-tab').forEach((tab) => {
@@ -246,6 +249,23 @@ export class UIController {
     this.releasePoiModalTrap?.();
     this.releasePoiModalTrap = null;
     if (modal) popOverlay(modal);
+  }
+
+  private setNameFieldInvalid(invalid: boolean): void {
+    const nameInput = document.getElementById('poi-name') as HTMLInputElement | null;
+    const nameError = document.getElementById('poi-name-error');
+    if (!nameInput) return;
+
+    if (invalid) {
+      nameInput.setAttribute('aria-invalid', 'true');
+      nameInput.setAttribute('aria-describedby', 'poi-name-error');
+      if (nameError) nameError.hidden = false;
+      nameInput.focus();
+    } else {
+      nameInput.removeAttribute('aria-invalid');
+      nameInput.removeAttribute('aria-describedby');
+      if (nameError) nameError.hidden = true;
+    }
   }
 
   private cancelAddMode(): void {
@@ -373,7 +393,14 @@ export class UIController {
     const category = ((document.getElementById('poi-category') as HTMLInputElement).value || 'restaurant') as POICategory;
     const status = ((document.getElementById('poi-status') as HTMLInputElement).value || 'visited') as POIStatus;
 
-    if (!name || isNaN(lat) || isNaN(lng)) {
+    if (!name) {
+      this.setNameFieldInvalid(true);
+      this.showNotification('Please fill all required fields', 'error');
+      return;
+    }
+    this.setNameFieldInvalid(false);
+
+    if (isNaN(lat) || isNaN(lng)) {
       this.showNotification('Please fill all required fields', 'error');
       return;
     }
@@ -439,6 +466,7 @@ export class UIController {
     if (!modal || !form) return;
 
     this.currentFeature = feature;
+    this.setNameFieldInvalid(false);
 
     // Populate form
     (document.getElementById('poi-id') as HTMLInputElement).value = feature.properties.id;
@@ -835,6 +863,7 @@ export class UIController {
     form.reset();
     (document.getElementById('poi-id') as HTMLInputElement).value = '';
     this.currentRating = 0;
+    this.setNameFieldInvalid(false);
     this.setupTagChipInput([]);
 
     const resetStars = Array.from(document.querySelectorAll<HTMLElement>('#poi-panel-details .rating-input .star'));

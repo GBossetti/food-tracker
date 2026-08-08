@@ -1473,6 +1473,12 @@ body {
 
 .form-group { margin-bottom: 18px; }
 
+.field-error {
+  margin-top: 6px;
+  font-size: var(--text-micro);
+  color: var(--danger);
+}
+
 .form-group label {
   display: block;
   margin-bottom: 6px;
@@ -1506,6 +1512,10 @@ body {
   outline: none;
   border-color: var(--accent);
   box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.form-group input[aria-invalid="true"] {
+  border-color: var(--danger);
 }
 
 .form-row {
