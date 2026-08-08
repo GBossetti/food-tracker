@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { trapFocus } from './focus-trap';
 
 describe('trapFocus', () => {
@@ -77,5 +77,23 @@ describe('trapFocus', () => {
     const event = new KeyboardEvent('keydown', { key: 'Tab', bubbles: true, cancelable: true });
     container.dispatchEvent(event);
     expect(event.defaultPrevented).toBe(false);
+  });
+
+  it('calls onEscape when Escape is pressed inside the container', () => {
+    const onEscape = vi.fn();
+    trapFocus(container, { onEscape });
+    middle.focus();
+    const event = new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true });
+    container.dispatchEvent(event);
+    expect(onEscape).toHaveBeenCalledOnce();
+  });
+
+  it('does not call onEscape after release', () => {
+    const onEscape = vi.fn();
+    const release = trapFocus(container, { onEscape });
+    release();
+    const event = new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true });
+    container.dispatchEvent(event);
+    expect(onEscape).not.toHaveBeenCalled();
   });
 });

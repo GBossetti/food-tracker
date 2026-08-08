@@ -11,6 +11,8 @@ import { AnalyticsUI } from './analytics-ui.ts';
 import { AppController } from './app-controller';
 import { logVisit, attachVisitReview } from './visit';
 import { QuickVisitSheet } from './quick-visit-sheet';
+import { trapFocus } from '../core/focus-trap';
+import { pushOverlay, popOverlay } from '../core/overlay-stack';
 
 function escapeHtml(str: string): string {
   return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -40,6 +42,7 @@ export class UIController {
   private sortMode: 'name' | 'rating' | 'recent' | 'distance' = 'name';
   private _listenersAttached = false;
   private pendingImport: GeoJSONFeatureCollection | null = null;
+  private releasePoiModalTrap: (() => void) | null = null;
 
   constructor(mapEngine: MapEngine, storage: StorageLayer) {
     this.mapEngine = mapEngine;
@@ -210,11 +213,12 @@ export class UIController {
       });
     });
 
-    // Escape key: close modal and cancel add mode
+    // Escape key: cancel add mode. Closing the POI modal on Escape is handled
+    // by its own focus trap (see openPoiModal) so it only fires when the modal
+    // actually holds focus, and doesn't fight with other open overlays.
     document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') {
-        this.closeModal();
-        if (this.addMode) this.cancelAddMode();
+      if (e.key === 'Escape' && this.addMode) {
+        this.cancelAddMode();
       }
     });
 
@@ -228,9 +232,18 @@ export class UIController {
     this.mapEngine.on('map:click', (event) => this.handleMapClick(event.feature));
   }
 
+  private openPoiModal(modal: HTMLElement): void {
+    modal.style.display = 'flex';
+    pushOverlay(modal);
+    this.releasePoiModalTrap = trapFocus(modal, { onEscape: () => this.closeModal() });
+  }
+
   private closeModal(): void {
     const modal = document.getElementById('poi-modal');
     if (modal) modal.style.display = 'none';
+    this.releasePoiModalTrap?.();
+    this.releasePoiModalTrap = null;
+    if (modal) popOverlay(modal);
   }
 
   private cancelAddMode(): void {
@@ -411,8 +424,7 @@ export class UIController {
     }
 
     // Close modal
-    const modal = document.getElementById('poi-modal');
-    if (modal) modal.style.display = 'none';
+    this.closeModal();
 
     // Update tag list and refresh the list
     this.updateTagList();
@@ -481,7 +493,7 @@ export class UIController {
         if (deleteBtn.classList.contains('confirming')) {
           this.mapEngine.removeFeature(feature.properties.id);
           this.saveCurrentState();
-          modal.style.display = 'none';
+          this.closeModal();
           this.showNotification('POI deleted');
           this.updateTagList();
           this.renderPOIList();
@@ -504,7 +516,7 @@ export class UIController {
       logVisitBtn.onclick = () => this.handleLogVisit(feature);
     }
 
-    modal.style.display = 'flex';
+    this.openPoiModal(modal);
   }
 
   private updateTagList(): void {
@@ -836,7 +848,7 @@ export class UIController {
     if (deleteBtn) deleteBtn.style.display = 'none';
 
     // Show modal
-    modal.style.display = 'flex';
+    this.openPoiModal(modal);
   }
 
   /**

@@ -17,12 +17,21 @@ function getFocusable(container: HTMLElement): HTMLElement[] {
   return Array.from(container.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)).filter(isVisible);
 }
 
+export interface TrapFocusOptions {
+  /** Called when Escape is pressed while focus is inside the container. */
+  onEscape?: () => void;
+}
+
 /**
  * Traps keyboard focus within `container`: moves focus in, cycles Tab/Shift-Tab
  * among its focusable elements, and restores focus to whatever was focused
  * before on release. Returns the release function.
+ *
+ * Because the listener is scoped to `container` rather than `document`, it only
+ * ever fires for whichever overlay currently holds focus — so when overlays are
+ * stacked (see overlay-stack.ts), Escape naturally closes just the topmost one.
  */
-export function trapFocus(container: HTMLElement): () => void {
+export function trapFocus(container: HTMLElement, options: TrapFocusOptions = {}): () => void {
   const previouslyFocused = document.activeElement as HTMLElement | null;
 
   const focusFirst = () => {
@@ -35,6 +44,10 @@ export function trapFocus(container: HTMLElement): () => void {
   }
 
   const onKeydown = (e: KeyboardEvent) => {
+    if (e.key === 'Escape') {
+      options.onEscape?.();
+      return;
+    }
     if (e.key !== 'Tab') return;
 
     const focusable = getFocusable(container);

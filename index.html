@@ -230,7 +230,7 @@
   </div><!-- /app-view -->
 
   <!-- POI Modal (full-screen sheet) -->
-  <div id="poi-modal" class="modal">
+  <div id="poi-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="poi-hero-title">
     <div class="modal-content poi-modal-content">
 
       <div class="poi-hero" id="poi-hero">
@@ -386,10 +386,10 @@
   </div><!-- /poi-modal -->
 
   <!-- Analytics Modal -->
-  <div id="analytics-modal" class="modal">
+  <div id="analytics-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="analytics-modal-title">
     <div class="modal-content modal-xlarge">
       <div class="modal-header">
-        <h2>Analytics</h2>
+        <h2 id="analytics-modal-title">Analytics</h2>
         <button type="button" id="close-analytics-btn" class="btn btn-secondary">Close</button>
       </div>
       <div id="analytics-content" style="overflow-y:auto;flex:1;padding:0 1.5rem 2rem;"></div>
@@ -397,7 +397,7 @@
   </div>
 
   <!-- Quick Visit Sheet -->
-  <div id="quick-visit-sheet" class="quick-visit-sheet" style="display:none">
+  <div id="quick-visit-sheet" class="quick-visit-sheet" style="display:none" role="dialog" aria-modal="true" aria-labelledby="qvs-label">
     <div class="qvs-backdrop"></div>
     <div class="qvs-panel">
       <p class="qvs-label" id="qvs-label">How was it?</p>

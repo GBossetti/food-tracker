@@ -1,7 +1,11 @@
+import { trapFocus } from '../core/focus-trap';
+import { pushOverlay, popOverlay } from '../core/overlay-stack';
+
 export class QuickVisitSheet {
   private sheet: HTMLElement;
   private rating: number = 0;
   private onSave: ((rating: number, text: string) => void) | null = null;
+  private releaseFocusTrap: (() => void) | null = null;
 
   constructor() {
     this.sheet = document.getElementById('quick-visit-sheet')!;
@@ -50,10 +54,15 @@ export class QuickVisitSheet {
     });
 
     this.sheet.style.display = 'flex';
+    pushOverlay(this.sheet);
+    this.releaseFocusTrap = trapFocus(this.sheet, { onEscape: () => this.closeAndSave() });
   }
 
   private close(): void {
     this.sheet.style.display = 'none';
     this.onSave = null;
+    this.releaseFocusTrap?.();
+    this.releaseFocusTrap = null;
+    popOverlay(this.sheet);
   }
 }
