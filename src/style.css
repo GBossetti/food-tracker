@@ -583,12 +583,19 @@ body {
   border-color: rgba(250,247,244,0.25);
 }
 
-/* Active state — accent fill */
+/* Active state — accent fill + a non-color cue so state isn't conveyed by hue alone */
 .category-tab.active,
 .status-tab.active {
   background: var(--accent);
   border-color: transparent;
   color: #FFFFFF;
+}
+
+.category-tab.active::before,
+.status-tab.active::before {
+  content: '✓';
+  margin-right: 2px;
+  font-weight: 700;
 }
 
 /* Per-category active colours */
@@ -762,6 +769,12 @@ body {
   background: var(--accent);
   border-color: transparent;
   color: #fff;
+}
+
+.sort-chip.active::before {
+  content: '✓';
+  margin-right: 2px;
+  font-weight: 700;
 }
 
 /* POI list */
@@ -946,6 +959,7 @@ body {
 }
 
 .badge {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -964,9 +978,27 @@ body {
   box-shadow: var(--shadow-sm);
 }
 
+/* Locked state — icon cue, not just opacity, so it reads without relying on the
+   low-contrast opacity difference alone */
+.badge::after {
+  content: '🔒';
+  position: absolute;
+  top: 4px;
+  right: 6px;
+  font-size: var(--text-micro);
+  line-height: 1;
+}
+
 .badge-earned {
   opacity: 1;
   border-color: var(--border-strong);
+}
+
+.badge-earned::after {
+  content: '✓';
+  color: var(--success);
+  font-weight: 700;
+  font-size: var(--text-small);
 }
 
 .badge-icon { font-size: 1.5rem; }
