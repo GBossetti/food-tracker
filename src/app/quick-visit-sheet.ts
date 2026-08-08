@@ -1,5 +1,6 @@
 import { trapFocus } from '../core/focus-trap';
 import { pushOverlay, popOverlay } from '../core/overlay-stack';
+import { setupStarRadiogroup } from '../core/star-rating';
 
 export class QuickVisitSheet {
   private sheet: HTMLElement;
@@ -13,17 +14,6 @@ export class QuickVisitSheet {
   }
 
   private setup(): void {
-    this.sheet.querySelectorAll<HTMLElement>('.qvs-star').forEach((star) => {
-      star.addEventListener('click', () => {
-        const r = parseInt(star.dataset.rating || '0');
-        this.rating = r;
-        this.sheet.querySelectorAll('.qvs-star').forEach((s, i) => {
-          s.textContent = i < r ? '★' : '☆';
-          (s as HTMLElement).classList.toggle('active', i < r);
-        });
-      });
-    });
-
     this.sheet.querySelector('.qvs-backdrop')?.addEventListener('click', () => this.closeAndSave());
     document.getElementById('qvs-skip-btn')?.addEventListener('click', () => this.closeAndSave());
     document.getElementById('qvs-save-btn')?.addEventListener('click', () => this.closeAndSave());
@@ -48,9 +38,17 @@ export class QuickVisitSheet {
 
     (document.getElementById('qvs-note') as HTMLTextAreaElement).value = '';
 
-    this.sheet.querySelectorAll('.qvs-star').forEach((s) => {
+    const qvsStars = Array.from(this.sheet.querySelectorAll<HTMLElement>('.qvs-star'));
+    qvsStars.forEach((s) => {
       s.textContent = '☆';
-      (s as HTMLElement).classList.remove('active');
+      s.classList.remove('active');
+    });
+    setupStarRadiogroup(qvsStars, (r) => {
+      this.rating = r;
+      qvsStars.forEach((s, i) => {
+        s.textContent = i < r ? '★' : '☆';
+        s.classList.toggle('active', i < r);
+      });
     });
 
     this.sheet.style.display = 'flex';

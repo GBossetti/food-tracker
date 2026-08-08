@@ -13,6 +13,7 @@ import { logVisit, attachVisitReview } from './visit';
 import { QuickVisitSheet } from './quick-visit-sheet';
 import { trapFocus } from '../core/focus-trap';
 import { pushOverlay, popOverlay } from '../core/overlay-stack';
+import { setupStarRadiogroup, syncStarAria } from '../core/star-rating';
 
 function escapeHtml(str: string): string {
   return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -129,9 +130,10 @@ export class UIController {
     // Rating stars in main form (scoped to the Details panel so the Reviews
     // panel's own .rating-input .star elements aren't double-bound — both
     // share the .star class and would otherwise also set the place rating)
-    document.querySelectorAll('#poi-panel-details .rating-input .star').forEach((star) => {
-      star.addEventListener('click', (e) => this.handleRatingClick(e));
-    });
+    setupStarRadiogroup(
+      Array.from(document.querySelectorAll<HTMLElement>('#poi-panel-details .rating-input .star')),
+      (rating) => this.setMainRating(rating)
+    );
 
     // POI form: submit and cancel — wired once so both the "Add" and
     // marker-click ("edit") entry points share the same handlers.
@@ -466,10 +468,12 @@ export class UIController {
     const rating = feature.properties.rating || 0;
     this.currentRating = Math.round(rating);
     (document.getElementById('poi-rating') as HTMLInputElement).value = this.currentRating.toString();
-    document.querySelectorAll('#poi-panel-details .rating-input .star').forEach((star, index) => {
+    const mainStars = Array.from(document.querySelectorAll<HTMLElement>('#poi-panel-details .rating-input .star'));
+    mainStars.forEach((star, index) => {
       star.textContent = index < this.currentRating ? '★' : '☆';
       star.classList.toggle('active', index < this.currentRating);
     });
+    syncStarAria(mainStars);
 
     // Hero
     (document.getElementById('poi-hero-title') as HTMLElement).textContent = feature.properties.name;
@@ -826,10 +830,12 @@ export class UIController {
     this.currentRating = 0;
     this.setupTagChipInput([]);
 
-    document.querySelectorAll('#poi-panel-details .rating-input .star').forEach((star) => {
+    const resetStars = Array.from(document.querySelectorAll<HTMLElement>('#poi-panel-details .rating-input .star'));
+    resetStars.forEach((star) => {
       star.textContent = '☆';
       star.classList.remove('active');
     });
+    syncStarAria(resetStars);
 
     this.currentFeature = null;
 
@@ -940,17 +946,13 @@ export class UIController {
   /**
    * Handle rating star clicks
    */
-  private handleRatingClick(event: Event): void {
-    const star = event.target as HTMLElement;
-    const rating = parseInt(star.dataset.rating || '0');
+  private setMainRating(rating: number): void {
     this.currentRating = rating;
-    
-    // Update hidden input
+
     const ratingInput = document.getElementById('poi-rating') as HTMLInputElement;
     if (ratingInput) ratingInput.value = rating.toString();
-    
-    const stars = star.parentElement?.querySelectorAll('.star');
-    stars?.forEach((s, index) => {
+
+    document.querySelectorAll('#poi-panel-details .rating-input .star').forEach((s, index) => {
       if (index < rating) {
         s.textContent = '★';
         s.classList.add('active');
@@ -1059,27 +1061,23 @@ export class UIController {
     const addReviewBtn = document.getElementById('add-review-btn');
     if (addReviewBtn) addReviewBtn.textContent = 'Add Review';
     
-    const reviewStars = document.querySelectorAll('.review-star');
+    const reviewStars = Array.from(document.querySelectorAll<HTMLElement>('.review-star'));
     reviewStars.forEach((star) => {
       star.textContent = '☆';
       star.classList.remove('active');
-
-      (star as HTMLElement).onclick = (e) => {
-        const rating = parseInt((e.target as HTMLElement).dataset.rating || '0');
-        this.currentReviewRating = rating;
-
-        if (reviewRating) reviewRating.value = rating.toString();
-
-        reviewStars.forEach((s, index) => {
-          if (index < rating) {
-            s.textContent = '★';
-            s.classList.add('active');
-          } else {
-            s.textContent = '☆';
-            s.classList.remove('active');
-          }
-        });
-      };
+    });
+    setupStarRadiogroup(reviewStars, (rating) => {
+      this.currentReviewRating = rating;
+      if (reviewRating) reviewRating.value = rating.toString();
+      reviewStars.forEach((s, index) => {
+        if (index < rating) {
+          s.textContent = '★';
+          s.classList.add('active');
+        } else {
+          s.textContent = '☆';
+          s.classList.remove('active');
+        }
+      });
     });
     
     // Add review button
@@ -1185,7 +1183,7 @@ export class UIController {
 
     this.currentReviewRating = review.rating;
 
-    const reviewStars = document.querySelectorAll('.review-star');
+    const reviewStars = Array.from(document.querySelectorAll<HTMLElement>('.review-star'));
     reviewStars.forEach((star, index) => {
       if (index < review.rating) {
         star.textContent = '★';
@@ -1195,6 +1193,7 @@ export class UIController {
         star.classList.remove('active');
       }
     });
+    syncStarAria(reviewStars);
 
     // Change button text
     const addReviewBtn = document.getElementById('add-review-btn');
