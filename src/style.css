@@ -57,9 +57,9 @@
   --text-hero:    3rem;
   --text-display: 1.75rem;
   --text-heading: 1.125rem;
-  --text-body:    0.9375rem;
+  --text-body:    1rem;
   --text-small:   0.8125rem;
-  --text-micro:   0.6875rem;
+  --text-micro:   0.75rem;
 
   /* Shape */
   --border-radius:    6px;
@@ -439,7 +439,7 @@ body {
 
 .tab-btn span {
   font-family: var(--font-body);
-  font-size: 0.5625rem;
+  font-size: var(--text-micro);
   font-weight: 600;
   letter-spacing: 0;
   text-transform: uppercase;
@@ -542,7 +542,7 @@ body {
 .status-segment .status-tab {
   height: 20px;
   padding: 0 8px;
-  font-size: 0.5625rem;
+  font-size: var(--text-micro);
   gap: 2px;
 }
 
@@ -606,7 +606,7 @@ body {
 .status-tab[data-status="wishlist"].active { background: #C07A2A; }
 
 .tab-count {
-  font-size: 0.55rem;
+  font-size: var(--text-micro);
   opacity: 0.7;
   letter-spacing: 0;
   font-variant-numeric: tabular-nums;
@@ -726,7 +726,7 @@ body {
 }
 
 .filters-toggle-badge {
-  font-size: 0.55rem;
+  font-size: var(--text-micro);
   font-variant-numeric: tabular-nums;
 }
 
@@ -805,7 +805,7 @@ body {
 }
 
 .poi-list-stars {
-  font-size: 0.6rem;
+  font-size: var(--text-micro);
   color: var(--accent);
   letter-spacing: 0.04em;
   flex-shrink: 0;
@@ -972,7 +972,7 @@ body {
 .badge-icon { font-size: 1.5rem; }
 
 .badge-label {
-  font-size: 0.6rem;
+  font-size: var(--text-micro);
   font-weight: 600;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -1399,7 +1399,7 @@ body {
   border-radius: var(--border-radius);
   cursor: pointer;
   font-family: var(--font-body);
-  font-size: 0.6rem;
+  font-size: var(--text-micro);
   font-weight: 600;
   letter-spacing: 0.04em;
   color: var(--ink-2);
@@ -2112,7 +2112,7 @@ body {
 }
 
 .timeline-bar-label {
-  font-size: 0.6rem;
+  font-size: var(--text-micro);
   font-weight: 600;
   letter-spacing: 0.04em;
   color: var(--ink-3);
