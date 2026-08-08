@@ -81,6 +81,25 @@
   padding: 0;
 }
 
+/* Keyboard focus — visible on every interactive element, silent on mouse/touch.
+   Buttons/links/inputs get it for free; the rest are non-native controls that
+   Branch B makes focusable (list rows, star ratings, chip-remove). */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+[tabindex]:focus-visible,
+.poi-list-item:focus-visible,
+.star:focus-visible,
+.review-star:focus-visible,
+.qvs-star:focus-visible,
+.tag-chip-remove:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: var(--border-radius);
+}
+
 body {
   font-family: var(--font-body);
   font-weight: 400;
@@ -2332,6 +2351,7 @@ body {
 
 .qvs-note:focus {
   border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
 }
 
 .qvs-actions {
