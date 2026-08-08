@@ -616,6 +616,15 @@ export class UIController {
     const countEl = document.getElementById('poi-list-count');
     if (!items) return;
 
+    // renderPOIList() rebuilds every row on each keystroke in the search box;
+    // once rows are focusable, preserve focus across that rebuild so a
+    // keyboard user doesn't lose their place while typing.
+    const focusedId = document.activeElement instanceof HTMLElement
+      && items.contains(document.activeElement)
+      && document.activeElement.classList.contains('poi-list-item')
+      ? document.activeElement.dataset.id
+      : null;
+
     const filtered = this.mapEngine.getAllFeatures()
       .filter(f => matchesFilters(f, {
         category: this.activeCategory,
@@ -667,21 +676,28 @@ export class UIController {
         : '';
       const [lng, lat] = f.geometry.coordinates;
       const isWishlist = p.status === 'wishlist';
-      return `<div class="poi-list-item" data-lat="${lat}" data-lng="${lng}" data-id="${escapeHtml(p.id)}">
+      return `<div class="poi-list-item" data-lat="${lat}" data-lng="${lng}" data-id="${escapeHtml(p.id)}" role="button" tabindex="0" aria-label="Show ${escapeHtml(p.name)} on the map">
         <span class="poi-list-dot" style="background:${cfg.color}"></span>
         <span class="poi-list-name">${escapeHtml(p.name)}</span>
         ${stars ? `<span class="poi-list-stars">${stars}</span>` : ''}
         ${isWishlist ? `<button type="button" class="log-visit-btn" data-id="${escapeHtml(p.id)}" title="Log visit">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
         </button>` : ''}
       </div>`;
     }).join('');
 
     items.querySelectorAll<HTMLElement>('.poi-list-item').forEach(el => {
-      el.addEventListener('click', () => {
+      const activate = () => {
         const lat = parseFloat(el.dataset.lat!);
         const lng = parseFloat(el.dataset.lng!);
         this.mapEngine.centerOn(lat, lng, 16);
+      };
+      el.addEventListener('click', activate);
+      el.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          activate();
+        }
       });
     });
 
@@ -693,6 +709,11 @@ export class UIController {
         if (feature) this.handleLogVisit(feature);
       });
     });
+
+    if (focusedId) {
+      const rows = items.querySelectorAll<HTMLElement>('.poi-list-item');
+      Array.from(rows).find(row => row.dataset.id === focusedId)?.focus();
+    }
   }
 
 

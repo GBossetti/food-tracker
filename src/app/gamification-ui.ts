@@ -21,12 +21,23 @@ export class GamificationUI {
     this.renderProfile(data);
   }
 
+  private bindActivation(el: Element, action: () => void): void {
+    el.addEventListener('click', action);
+    el.addEventListener('keydown', (e) => {
+      const ke = e as KeyboardEvent;
+      if (ke.key === 'Enter' || ke.key === ' ') {
+        ke.preventDefault();
+        action();
+      }
+    });
+  }
+
   private renderChallenges(data: GamificationData): void {
     const challengeList = document.querySelector('#tab-challenges .challenge-list');
     if (challengeList) {
       challengeList.innerHTML = data.challenges.map(c => this.renderChallengeCard(c)).join('');
       Array.from(challengeList.children).forEach((el, i) => {
-        el.addEventListener('click', () => this.runAction(data.challenges[i].action));
+        this.bindActivation(el, () => this.runAction(data.challenges[i].action));
       });
     }
 
@@ -34,7 +45,7 @@ export class GamificationUI {
     if (badgesRow) {
       badgesRow.innerHTML = data.badges.map(b => this.renderBadge(b)).join('');
       Array.from(badgesRow.children).forEach(el => {
-        el.addEventListener('click', () => this.runAction({ type: 'places' }));
+        this.bindActivation(el, () => this.runAction({ type: 'places' }));
       });
     }
 
@@ -43,7 +54,7 @@ export class GamificationUI {
       if (data.areasToExplore.length > 0) {
         exploreAreas.innerHTML = data.areasToExplore.map(a => this.renderAreaCard(a)).join('');
         Array.from(exploreAreas.children).forEach((el, i) => {
-          el.addEventListener('click', () => this.runAction(data.areasToExplore[i].action));
+          this.bindActivation(el, () => this.runAction(data.areasToExplore[i].action));
         });
       } else {
         exploreAreas.innerHTML = `<p class="tab-sub">No unexplored wishlist areas right now — every saved place nearby has been visited.</p>`;
@@ -71,7 +82,7 @@ export class GamificationUI {
     const pct = Math.round((c.progress / c.target) * 100);
     const complete = c.progress >= c.target;
     return `
-      <div class="challenge-card${complete ? ' challenge-complete' : ''}">
+      <div class="challenge-card${complete ? ' challenge-complete' : ''}" role="button" tabindex="0" aria-label="${escapeHtml(c.name)}: ${escapeHtml(c.desc)}, ${c.progress} of ${c.target}">
         <div class="challenge-icon">${c.icon}</div>
         <div class="challenge-body">
           <div class="challenge-name">${escapeHtml(c.name)}</div>
@@ -87,7 +98,7 @@ export class GamificationUI {
 
   private renderBadge(b: Badge): string {
     return `
-      <div class="badge${b.earned ? ' badge-earned' : ''}">
+      <div class="badge${b.earned ? ' badge-earned' : ''}" role="button" tabindex="0" aria-label="${escapeHtml(b.label)}${b.earned ? ', earned' : ', locked'}">
         <span class="badge-icon">${b.icon}</span>
         <span class="badge-label">${escapeHtml(b.label)}</span>
       </div>
@@ -95,12 +106,13 @@ export class GamificationUI {
   }
 
   private renderAreaCard(a: AreaCluster): string {
+    const desc = `${a.wishlist} place${a.wishlist === 1 ? '' : 's'} on your wishlist here, ${a.visited} visited so far`;
     return `
-      <div class="challenge-card">
+      <div class="challenge-card" role="button" tabindex="0" aria-label="${escapeHtml(a.label)}: ${desc}">
         <div class="challenge-icon">📌</div>
         <div class="challenge-body">
           <div class="challenge-name">${escapeHtml(a.label)}</div>
-          <div class="challenge-desc">${a.wishlist} place${a.wishlist === 1 ? '' : 's'} on your wishlist here, ${a.visited} visited so far</div>
+          <div class="challenge-desc">${desc}</div>
         </div>
       </div>
     `;
