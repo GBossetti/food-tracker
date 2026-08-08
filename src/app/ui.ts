@@ -16,6 +16,10 @@ function escapeHtml(str: string): string {
   return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
+function scrollBehavior(): ScrollBehavior {
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
+}
+
 export class UIController {
   private mapEngine: MapEngine;
   private storage: StorageLayer;
@@ -244,7 +248,7 @@ export class UIController {
       (tab as HTMLElement).classList.toggle('active', (tab as HTMLElement).dataset.category === category);
     });
     document.querySelector<HTMLElement>('#tab-decide .category-tab.active')
-      ?.scrollIntoView({ behavior: 'smooth', inline: 'start', block: 'nearest' });
+      ?.scrollIntoView({ behavior: scrollBehavior(), inline: 'start', block: 'nearest' });
     this.applyFilters();
   }
 
@@ -1167,7 +1171,7 @@ export class UIController {
     }
 
     // Scroll to form
-    reviewText?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    reviewText?.scrollIntoView({ behavior: scrollBehavior(), block: 'center' });
     reviewText?.focus();
 
     this.showNotification('Editing review...', 'success');
