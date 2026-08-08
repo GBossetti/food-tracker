@@ -10,7 +10,7 @@
   --surface-2:    #2D2A28;
   --ink:          #FAF7F4;
   --ink-2:        #A8A29E;
-  --ink-3:        rgba(250, 247, 244, 0.38);
+  --ink-3:        rgba(250, 247, 244, 0.56); /* ~5.3-6:1 against --bg/--surface/--surface-2, WCAG AA */
   --neutral-active: #5B5550;
   --accent:       #DC4C2F;
   --accent-soft:  rgba(220, 76, 47, 0.12);
