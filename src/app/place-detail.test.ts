@@ -1,12 +1,22 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { PlaceDetailView } from './place-detail';
+import { showToast } from './toast';
 import type { GeoJSONFeature } from '../core/types';
 import type { MapEngine } from '../core/map-engine';
+
+vi.mock('./toast', () => ({ showToast: vi.fn() }));
 
 function buildDom(): void {
   document.body.innerHTML = `
     <button id="detail-back-btn" aria-label="Back to results"></button>
     <h2 id="detail-title"></h2>
+    <button id="detail-menu-btn" aria-label="More actions" aria-haspopup="menu" aria-expanded="false" aria-controls="detail-menu"></button>
+    <div id="detail-menu" role="menu" hidden>
+      <button type="button" role="menuitem" data-action="edit">Edit place</button>
+      <button type="button" role="menuitem" data-action="share">Share</button>
+      <button type="button" role="menuitem" data-action="copy-coords">Copy coordinates</button>
+      <button type="button" role="menuitem" data-action="delete">Delete place</button>
+    </div>
     <div id="detail-body"></div>
   `;
 }
@@ -41,6 +51,8 @@ describe('PlaceDetailView', () => {
   let mapEngine: ReturnType<typeof makeFakeMapEngine>;
   let onLogVisit: ReturnType<typeof vi.fn>;
   let onBack: ReturnType<typeof vi.fn>;
+  let onEdit: ReturnType<typeof vi.fn>;
+  let onDelete: ReturnType<typeof vi.fn>;
   let view: PlaceDetailView;
 
   beforeEach(() => {
@@ -48,10 +60,15 @@ describe('PlaceDetailView', () => {
     mapEngine = makeFakeMapEngine();
     onLogVisit = vi.fn();
     onBack = vi.fn();
+    onEdit = vi.fn();
+    onDelete = vi.fn();
+    vi.mocked(showToast).mockClear();
     view = new PlaceDetailView({
       mapEngine: mapEngine as unknown as MapEngine,
       onLogVisit,
       onBack,
+      onEdit,
+      onDelete,
     });
   });
 
@@ -173,5 +190,114 @@ describe('PlaceDetailView', () => {
     view.show(makeFeature({ id: 'p1' }));
     mapEngine.__emit('deleted', makeFeature({ id: 'other' }));
     expect(onBack).not.toHaveBeenCalled();
+  });
+
+  describe('overflow menu', () => {
+    function flush(): Promise<void> {
+      return new Promise((resolve) => setTimeout(resolve, 0));
+    }
+
+    afterEach(() => {
+      delete (navigator as any).share;
+      delete (navigator as any).clipboard;
+    });
+
+    it('Edit calls onEdit with the current feature', () => {
+      const feature = makeFeature();
+      view.show(feature);
+      document.getElementById('detail-menu-btn')!.click();
+      document.querySelector<HTMLElement>('[data-action="edit"]')!.click();
+
+      expect(onEdit).toHaveBeenCalledWith(feature);
+    });
+
+    it('Delete requires a second click before calling onDelete', () => {
+      view.show(makeFeature({ id: 'p1' }));
+      document.getElementById('detail-menu-btn')!.click();
+      const deleteItem = document.querySelector<HTMLElement>('[data-action="delete"]')!;
+
+      deleteItem.click();
+      expect(onDelete).not.toHaveBeenCalled();
+      expect(deleteItem.textContent).toBe('Confirm delete?');
+
+      deleteItem.click();
+      expect(onDelete).toHaveBeenCalledWith('p1');
+    });
+
+    it('the delete confirmation auto-reverts after 3 seconds if not confirmed', () => {
+      vi.useFakeTimers();
+      view.show(makeFeature({ id: 'p1' }));
+      document.getElementById('detail-menu-btn')!.click();
+      const deleteItem = document.querySelector<HTMLElement>('[data-action="delete"]')!;
+      deleteItem.click();
+
+      vi.advanceTimersByTime(3000);
+
+      expect(deleteItem.textContent).toBe('Delete place');
+      expect(onDelete).not.toHaveBeenCalled();
+      vi.useRealTimers();
+    });
+
+    it('opening a new place resets a pending delete confirmation left over from the previous one', () => {
+      view.show(makeFeature({ id: 'p1' }));
+      document.getElementById('detail-menu-btn')!.click();
+      document.querySelector<HTMLElement>('[data-action="delete"]')!.click(); // arm
+      expect(document.querySelector('[data-action="delete"]')!.textContent).toBe('Confirm delete?');
+
+      view.show(makeFeature({ id: 'p2' }));
+      expect(document.querySelector('[data-action="delete"]')!.textContent).toBe('Delete place');
+    });
+
+    it('Share uses navigator.share when available', async () => {
+      const share = vi.fn().mockResolvedValue(undefined);
+      Object.defineProperty(navigator, 'share', { configurable: true, value: share });
+
+      view.show(makeFeature({ name: 'Bar Manolo' }));
+      document.getElementById('detail-menu-btn')!.click();
+      document.querySelector<HTMLElement>('[data-action="share"]')!.click();
+      await flush();
+
+      expect(share).toHaveBeenCalledWith(expect.objectContaining({ title: 'Bar Manolo' }));
+    });
+
+    it('Share falls back to clipboard copy when navigator.share is unavailable', async () => {
+      const writeText = vi.fn().mockResolvedValue(undefined);
+      Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText } });
+
+      view.show(makeFeature({ name: 'Bar Manolo' }));
+      document.getElementById('detail-menu-btn')!.click();
+      document.querySelector<HTMLElement>('[data-action="share"]')!.click();
+      await flush();
+
+      expect(writeText).toHaveBeenCalledWith(expect.stringContaining('Bar Manolo'));
+      expect(showToast).toHaveBeenCalledWith('Copied place info to clipboard');
+    });
+
+    it('Copy coordinates writes "lat, lng" to the clipboard and shows a toast', async () => {
+      const writeText = vi.fn().mockResolvedValue(undefined);
+      Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText } });
+
+      view.show(makeFeature());
+      document.getElementById('detail-menu-btn')!.click();
+      document.querySelector<HTMLElement>('[data-action="copy-coords"]')!.click();
+      await flush();
+
+      expect(writeText).toHaveBeenCalledWith('40.400000, -3.700000');
+      expect(showToast).toHaveBeenCalledWith('Coordinates copied');
+    });
+
+    it('shows an error toast when the clipboard write fails', async () => {
+      Object.defineProperty(navigator, 'clipboard', {
+        configurable: true,
+        value: { writeText: vi.fn().mockRejectedValue(new Error('denied')) },
+      });
+
+      view.show(makeFeature());
+      document.getElementById('detail-menu-btn')!.click();
+      document.querySelector<HTMLElement>('[data-action="copy-coords"]')!.click();
+      await flush();
+
+      expect(showToast).toHaveBeenCalledWith('Could not copy to clipboard', 'error');
+    });
   });
 });

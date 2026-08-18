@@ -516,33 +516,6 @@ export class UIController {
     if (tabHistory) tabHistory.style.display = isVisited ? '' : 'none';
     this.switchPOITab('details');
 
-    // Delete button — inline confirmation
-    const deleteBtn = document.getElementById('delete-btn');
-    if (deleteBtn) {
-      deleteBtn.style.display = 'block';
-      deleteBtn.textContent = 'Delete';
-      deleteBtn.classList.remove('confirming');
-      deleteBtn.onclick = () => {
-        if (deleteBtn.classList.contains('confirming')) {
-          this.mapEngine.removeFeature(feature.properties.id);
-          this.saveCurrentState();
-          this.closeModal();
-          this.showNotification('POI deleted');
-          this.updateTagList();
-          this.renderPOIList();
-        } else {
-          deleteBtn.classList.add('confirming');
-          deleteBtn.textContent = 'Confirm delete?';
-          setTimeout(() => {
-            if (deleteBtn.classList.contains('confirming')) {
-              deleteBtn.classList.remove('confirming');
-              deleteBtn.textContent = 'Delete';
-            }
-          }, 3000);
-        }
-      };
-    }
-
     // Wire up "I went" modal button
     const logVisitBtn = document.getElementById('log-visit-btn');
     if (logVisitBtn) {
@@ -765,6 +738,15 @@ export class UIController {
     showToast(message, type);
   }
 
+  /** Removes a place and persists it. Callers own their own confirm step. */
+  public async deletePlace(id: string): Promise<void> {
+    this.mapEngine.removeFeature(id);
+    await this.saveCurrentState();
+    this.showNotification('Place deleted');
+    this.updateTagList();
+    this.renderPOIList();
+  }
+
   public async handleLogVisit(feature: GeoJSONFeature): Promise<void> {
     logVisit(feature.properties);
     this.mapEngine.updateFeature(feature.properties.id, feature.properties);
@@ -889,10 +871,6 @@ export class UIController {
     if (tabReviews) tabReviews.style.display = 'none';
     if (tabHistory) tabHistory.style.display = 'none';
     this.switchPOITab('details');
-
-    // Hide delete button for new places
-    const deleteBtn = document.getElementById('delete-btn');
-    if (deleteBtn) deleteBtn.style.display = 'none';
 
     // Show modal
     this.openPoiModal(modal);

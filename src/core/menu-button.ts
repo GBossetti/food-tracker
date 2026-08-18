@@ -3,11 +3,15 @@
  * among `[role="menuitem"]` children, Home/End, Escape-to-close-and-restore,
  * outside-pointerdown-to-close, and click/Enter/Space activation (the
  * latter two via the button's native click synthesis — not handled here).
+ *
+ * `onSelect` may return `true` to keep the menu open after activation — for
+ * an item that needs a second confirming click (e.g. "Delete" toggling to
+ * "Confirm delete?") rather than a nested dialog.
  */
 export function setupMenuButton(
   button: HTMLElement,
   menu: HTMLElement,
-  onSelect: (action: string) => void
+  onSelect: (action: string) => boolean | void
 ): () => void {
   let open = false;
   let outsidePointerListener: ((e: PointerEvent) => void) | null = null;
@@ -96,8 +100,9 @@ export function setupMenuButton(
     const item = (e.target as HTMLElement).closest<HTMLElement>('[role="menuitem"]');
     if (!item) return;
     const action = item.dataset.action;
-    closeMenu();
-    if (action) onSelect(action);
+    if (!action) return;
+    const keepOpen = onSelect(action);
+    if (!keepOpen) closeMenu();
   }
 
   button.addEventListener('click', onButtonClick);

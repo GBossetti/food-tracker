@@ -124,6 +124,17 @@ describe('menu-button', () => {
     expect(onSelect).toHaveBeenCalledWith('share');
   });
 
+  it('an onSelect returning true keeps the menu open (e.g. a two-step confirm)', () => {
+    onSelect.mockReturnValue(true);
+    setupMenuButton(button, menu, onSelect);
+    button.click();
+
+    items()[2].click(); // delete
+
+    expect(onSelect).toHaveBeenCalledWith('delete');
+    expect(menu.hidden).toBe(false);
+  });
+
   it('clicking inside the menu but not on a menuitem does not select anything', () => {
     setupMenuButton(button, menu, onSelect);
     button.click();

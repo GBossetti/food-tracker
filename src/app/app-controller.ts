@@ -34,6 +34,8 @@ export class AppController {
       mapEngine,
       onLogVisit: (feature) => this.uiController?.handleLogVisit(feature),
       onBack: () => this.searchSheet.showList(),
+      onEdit: (feature) => this.uiController?.handleFeatureClick(feature),
+      onDelete: (id) => this.uiController?.deletePlace(id),
     });
 
     this.initializeViews();
