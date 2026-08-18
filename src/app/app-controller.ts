@@ -1,10 +1,15 @@
 import { MapEngine } from '../core/map-engine';
 import { StorageLayer } from './storage';
-import { GeoJSONFeatureCollection } from '../core/types';
+import { GeoJSONFeature, GeoJSONFeatureCollection } from '../core/types';
 import { GamificationUI } from './gamification-ui';
 import { NavDrawer } from './nav-drawer';
 import { SearchSheet } from './search-sheet';
+import { PlaceDetailView } from './place-detail';
 import { UIController } from './ui';
+
+function prefersReducedMotion(): boolean {
+  return window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
+}
 
 export class AppController {
   private mapEngine: MapEngine;
@@ -13,6 +18,7 @@ export class AppController {
   private gamificationUI: GamificationUI;
   private navDrawer: NavDrawer;
   private searchSheet: SearchSheet;
+  private placeDetail: PlaceDetailView;
   private uiController: UIController | null = null;
 
   constructor(mapEngine: MapEngine, storage: StorageLayer) {
@@ -24,14 +30,34 @@ export class AppController {
     });
     this.navDrawer = new NavDrawer({ onOpen: () => this.gamificationUI.render() });
     this.searchSheet = new SearchSheet();
+    this.placeDetail = new PlaceDetailView({
+      mapEngine,
+      onLogVisit: (feature) => this.uiController?.handleLogVisit(feature),
+      onBack: () => this.searchSheet.showList(),
+    });
 
     this.initializeViews();
     this.setupNavigation();
+    this.mapEngine.on('click', (event) => this.openPlaceDetail(event.feature));
     this.loadData();
   }
 
   public setUIController(uiController: UIController): void {
     this.uiController = uiController;
+    uiController.setRowActivateHandler((id) => this.showPlaceDetailById(id));
+  }
+
+  private showPlaceDetailById(id: string): void {
+    const feature = this.mapEngine.getAllFeatures().find((f) => f.properties.id === id);
+    if (feature) this.openPlaceDetail(feature);
+  }
+
+  private openPlaceDetail(feature: GeoJSONFeature): void {
+    this.placeDetail.show(feature);
+    this.searchSheet.showDetail();
+    if (this.searchSheet.getSnap() === 'collapsed') this.searchSheet.setSnap('half');
+    const [lng, lat] = feature.geometry.coordinates as [number, number];
+    this.mapEngine.centerOn(lat, lng, 16, this.searchSheet.heightPx(), !prefersReducedMotion());
   }
 
   private initializeViews(): void {

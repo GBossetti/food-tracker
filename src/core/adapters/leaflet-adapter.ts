@@ -107,6 +107,22 @@ export class LeafletAdapter {
   }
 
   /**
+   * Center on a coordinate, shifted up by half of offsetYPx so the point
+   * lands in the visible band above a bottom sheet of that height rather
+   * than the exact viewport center (which the sheet may cover).
+   */
+  centerWithOffset(lat: number, lng: number, zoom?: number, offsetYPx = 0, animate = true): void {
+    const targetZoom = zoom ?? this.map.getZoom();
+    if (offsetYPx === 0) {
+      this.map.setView([lat, lng], targetZoom, { animate });
+      return;
+    }
+    const point = this.map.project([lat, lng], targetZoom).add([0, offsetYPx / 2]);
+    const target = this.map.unproject(point, targetZoom);
+    this.map.setView(target, targetZoom, { animate });
+  }
+
+  /**
    * Add click listener to map
    */
   onMapClick(callback: (lat: number, lng: number) => void): void {

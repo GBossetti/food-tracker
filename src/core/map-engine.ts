@@ -43,11 +43,12 @@ export class MapEngine {
   }
 
   /**
-   * Center map on coordinates
+   * Center map on coordinates. `offsetY` shifts the point up by half that
+   * many pixels — pass the height of a bottom sheet so the point lands in
+   * the visible band above it instead of behind it.
    */
-  centerOn(lat: number, lng: number, zoom?: number): void {
-    const map = this.adapter.getMap();
-    map.setView([lat, lng], zoom || map.getZoom());
+  centerOn(lat: number, lng: number, zoom?: number, offsetY = 0, animate = true): void {
+    this.adapter.centerWithOffset(lat, lng, zoom, offsetY, animate);
   }
 
   /**

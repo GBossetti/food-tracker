@@ -17,7 +17,14 @@ function buildDom(includeDetailPanel = false): void {
             <div id="poi-list-items"></div>
           </div>
         </div>
-        ${includeDetailPanel ? '<div id="sheet-detail-panel" class="sheet-panel" hidden></div>' : ''}
+        ${includeDetailPanel ? `
+        <div id="sheet-detail-panel" class="sheet-panel" hidden>
+          <header class="detail-header">
+            <button type="button" id="detail-back-btn" aria-label="Back to results"></button>
+            <h2 id="detail-title"></h2>
+          </header>
+          <div id="detail-body"></div>
+        </div>` : ''}
       </div>
     </section>
   `;
@@ -179,6 +186,30 @@ describe('SearchSheet', () => {
       expect(sheet.getMode()).toBe('list');
       expect(document.getElementById('sheet-list-panel')!.hidden).toBe(false);
       expect(document.getElementById('sheet-detail-panel')!.hidden).toBe(true);
+    });
+
+    it('collapsed height uses the detail header, not the search row, once in detail mode', () => {
+      const detailHeader = document.querySelector('.detail-header')!;
+      Object.defineProperty(detailHeader, 'offsetHeight', { configurable: true, value: 50 });
+
+      const sheet = new SearchSheet();
+      sheet.showDetail(); // remeasures using the now-active mode
+
+      expect(sheet.heightPx()).toBe(74); // 24 (grabber) + 50 (detail header)
+    });
+
+    it('makes #detail-body inert while collapsed in detail mode, and reachable once expanded', () => {
+      const sheet = new SearchSheet();
+      sheet.showDetail();
+
+      const detailBody = document.getElementById('detail-body')!;
+      expect(detailBody.hasAttribute('inert')).toBe(true);
+
+      sheet.setSnap('half');
+      expect(detailBody.hasAttribute('inert')).toBe(false);
+
+      sheet.setSnap('collapsed');
+      expect(detailBody.hasAttribute('inert')).toBe(true);
     });
   });
 

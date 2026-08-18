@@ -12,6 +12,8 @@ export class SearchSheet {
   private scrollArea: HTMLElement | null;
   private listPanel: HTMLElement;
   private detailPanel: HTMLElement | null;
+  private detailHeader: HTMLElement | null;
+  private detailBody: HTMLElement | null;
   private searchInput: HTMLInputElement | null;
   private onSnapChange: ((s: SnapName) => void) | null;
 
@@ -27,6 +29,8 @@ export class SearchSheet {
     this.searchRow = this.sheet.querySelector('.decide-search')!;
     this.listPanel = document.getElementById('sheet-list-panel')!;
     this.detailPanel = document.getElementById('sheet-detail-panel');
+    this.detailHeader = this.detailPanel?.querySelector('.detail-header') ?? null;
+    this.detailBody = document.getElementById('detail-body');
     this.scrollArea = this.listPanel.querySelector('.sheet-scroll-area');
     this.searchInput = document.getElementById('search-input') as HTMLInputElement | null;
     this.onSnapChange = opts?.onSnapChange ?? null;
@@ -78,6 +82,7 @@ export class SearchSheet {
     this.listPanel.hidden = false;
     if (this.detailPanel) this.detailPanel.hidden = true;
     this.sheet.setAttribute('data-mode', 'list');
+    this.remeasure(); // the collapsed row differs between modes (search row vs. detail header)
   }
 
   showDetail(): void {
@@ -85,6 +90,7 @@ export class SearchSheet {
     this.listPanel.hidden = true;
     this.detailPanel.hidden = false;
     this.sheet.setAttribute('data-mode', 'detail');
+    this.remeasure();
   }
 
   getMode(): 'list' | 'detail' {
@@ -106,7 +112,10 @@ export class SearchSheet {
 
   private measure(): SnapPoints {
     const viewportH = window.innerHeight;
-    const collapsedH = this.grabber.offsetHeight + this.searchRow.offsetHeight;
+    // The row that stays visible when collapsed differs by mode: the search
+    // row for the list, the back/title/menu header for the detail view.
+    const collapsedRow = this.getMode() === 'detail' && this.detailHeader ? this.detailHeader : this.searchRow;
+    const collapsedH = this.grabber.offsetHeight + collapsedRow.offsetHeight;
     const headerH = document.querySelector('.header')?.getBoundingClientRect().height || FALLBACK_HEADER_HEIGHT;
     return resolveSnapPoints(viewportH, collapsedH, headerH);
   }
@@ -137,11 +146,12 @@ export class SearchSheet {
   }
 
   private updateInert(): void {
-    if (!this.scrollArea) return;
+    const target = this.getMode() === 'detail' ? this.detailBody : this.scrollArea;
+    if (!target) return;
     if (this.snap === 'collapsed') {
-      this.scrollArea.setAttribute('inert', '');
+      target.setAttribute('inert', '');
     } else {
-      this.scrollArea.removeAttribute('inert');
+      target.removeAttribute('inert');
     }
   }
 

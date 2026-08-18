@@ -43,6 +43,7 @@ export class UIController {
   private pendingImport: GeoJSONFeatureCollection | null = null;
   private releasePoiModalTrap: (() => void) | null = null;
   private searchDebounceTimer: ReturnType<typeof setTimeout> | undefined;
+  private onRowActivate: ((id: string) => void) | null = null;
 
   constructor(mapEngine: MapEngine, storage: StorageLayer) {
     this.mapEngine = mapEngine;
@@ -60,6 +61,15 @@ export class UIController {
 
   public setUserLocation(lat: number, lng: number): void {
     this.userLocation = [lat, lng];
+  }
+
+  /** Called with a POI id when a results-list row is activated (click/Enter/Space). */
+  public setRowActivateHandler(fn: (id: string) => void): void {
+    this.onRowActivate = fn;
+  }
+
+  public renderList(): void {
+    this.renderPOIList();
   }
 
   private setupEventListeners(): void {
@@ -223,8 +233,8 @@ export class UIController {
       if (e.target === document.getElementById('poi-modal')) this.closeModal();
     });
 
-    // Listen to map events
-    this.mapEngine.on('click', (event) => this.handleFeatureClick(event.feature));
+    // Listen to map events. 'click' (marker tap → edit modal) is handled by
+    // AppController instead, which routes it to the read-only detail view.
     this.mapEngine.on('map:click', (event) => this.handleMapClick(event.feature));
   }
 
@@ -451,7 +461,7 @@ export class UIController {
     this.renderPOIList();
   }
 
-  private handleFeatureClick(feature: GeoJSONFeature): void {
+  public handleFeatureClick(feature: GeoJSONFeature): void {
     const modal = document.getElementById('poi-modal');
     const form = document.getElementById('poi-form') as HTMLFormElement;
     if (!modal || !form) return;
@@ -697,9 +707,8 @@ export class UIController {
       const stars = rating > 0
         ? '★'.repeat(Math.round(rating)) + '☆'.repeat(5 - Math.round(rating))
         : '';
-      const [lng, lat] = f.geometry.coordinates;
       const isWishlist = p.status === 'wishlist';
-      return `<div class="poi-list-item" data-lat="${lat}" data-lng="${lng}" data-id="${escapeHtml(p.id)}" role="button" tabindex="0" aria-label="Show ${escapeHtml(p.name)} on the map">
+      return `<div class="poi-list-item" data-id="${escapeHtml(p.id)}" role="button" tabindex="0" aria-label="View details for ${escapeHtml(p.name)}">
         <span class="poi-list-dot" style="background:${cfg.color}"></span>
         <span class="poi-list-name">${escapeHtml(p.name)}</span>
         ${stars ? `<span class="poi-list-stars">${stars}</span>` : ''}
@@ -711,9 +720,7 @@ export class UIController {
 
     items.querySelectorAll<HTMLElement>('.poi-list-item').forEach(el => {
       const activate = () => {
-        const lat = parseFloat(el.dataset.lat!);
-        const lng = parseFloat(el.dataset.lng!);
-        this.mapEngine.centerOn(lat, lng, 16);
+        this.onRowActivate?.(el.dataset.id!);
       };
       el.addEventListener('click', activate);
       el.addEventListener('keydown', (e) => {
@@ -758,7 +765,7 @@ export class UIController {
     showToast(message, type);
   }
 
-  private async handleLogVisit(feature: GeoJSONFeature): Promise<void> {
+  public async handleLogVisit(feature: GeoJSONFeature): Promise<void> {
     logVisit(feature.properties);
     this.mapEngine.updateFeature(feature.properties.id, feature.properties);
     await this.saveCurrentState();

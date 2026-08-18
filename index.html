@@ -110,6 +110,25 @@
             <div id="poi-list-items" class="poi-list-items"></div>
           </div>
         </div>
+
+        <div id="sheet-detail-panel" class="sheet-panel" hidden>
+          <header class="detail-header">
+            <button type="button" id="detail-back-btn" class="detail-back-btn" aria-label="Back to results">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+            </button>
+            <h2 id="detail-title" class="detail-title"></h2>
+            <button type="button" id="detail-menu-btn" class="detail-menu-btn" aria-label="More actions" aria-haspopup="menu" aria-expanded="false" aria-controls="detail-menu">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+            </button>
+            <div id="detail-menu" class="detail-menu" role="menu" hidden>
+              <button type="button" role="menuitem" data-action="edit">Edit place</button>
+              <button type="button" role="menuitem" data-action="share">Share</button>
+              <button type="button" role="menuitem" data-action="copy-coords">Copy coordinates</button>
+              <button type="button" role="menuitem" data-action="delete" class="detail-menu-danger">Delete place</button>
+            </div>
+          </header>
+          <div id="detail-body" class="detail-body"></div>
+        </div>
       </div>
     </section>
 
