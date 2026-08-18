@@ -87,3 +87,59 @@ describe('index.html static accessibility', () => {
     expect(region?.getAttribute('aria-live')).toBe('polite');
   });
 });
+
+describe('index.html navigation redesign markup', () => {
+  it('the bottom tab bar is gone', () => {
+    expect(document.querySelector('.tab-bar')).toBeNull();
+    expect(document.querySelectorAll('.tab-btn').length).toBe(0);
+  });
+
+  it('the nav drawer is a root-level sibling of #app-view, not nested inside it', () => {
+    const drawer = document.getElementById('nav-drawer');
+    expect(drawer).not.toBeNull();
+    expect(drawer?.parentElement).toBe(document.body);
+    expect(document.getElementById('app-view')?.contains(drawer)).toBe(false);
+  });
+
+  it('the toast region is outside #app-view so overlays never inert it', () => {
+    const region = document.getElementById('toast-region');
+    const appView = document.getElementById('app-view');
+    expect(appView?.contains(region)).toBe(false);
+  });
+
+  it('the hamburger menu button opens the nav drawer', () => {
+    const menuBtn = document.getElementById('menu-btn');
+    expect(menuBtn).not.toBeNull();
+    expect(hasAccessibleName(menuBtn!)).toBe(true);
+    expect(menuBtn?.getAttribute('aria-controls')).toBe('nav-drawer');
+  });
+
+  it('the sheet grabber exposes resize state and controls to assistive tech', () => {
+    const grabber = document.getElementById('sheet-grabber');
+    expect(grabber).not.toBeNull();
+    expect(hasAccessibleName(grabber!)).toBe(true);
+    expect(grabber?.hasAttribute('aria-expanded')).toBe(true);
+    expect(grabber?.getAttribute('aria-controls')).toBe('search-sheet-body');
+  });
+
+  it('the search sheet is a landmark, not a dialog — it is persistent, not modal', () => {
+    const sheet = document.getElementById('search-sheet');
+    expect(sheet).not.toBeNull();
+    expect(sheet?.getAttribute('aria-label')).toBeTruthy();
+    expect(sheet?.hasAttribute('aria-modal')).toBe(false);
+    expect(sheet?.getAttribute('role')).not.toBe('dialog');
+  });
+
+  it('the place detail overflow menu button declares its popup', () => {
+    const menuBtn = document.getElementById('detail-menu-btn');
+    expect(menuBtn).not.toBeNull();
+    expect(menuBtn?.getAttribute('aria-haspopup')).toBe('menu');
+    expect(menuBtn?.getAttribute('aria-controls')).toBe('detail-menu');
+  });
+
+  it('the detail menu items all carry role="menuitem" with a data-action', () => {
+    const items = Array.from(document.querySelectorAll('#detail-menu [role="menuitem"]'));
+    expect(items.length).toBeGreaterThan(0);
+    expect(items.every((el) => !!el.getAttribute('data-action'))).toBe(true);
+  });
+});
