@@ -14,10 +14,7 @@ import { QuickVisitSheet } from './quick-visit-sheet';
 import { trapFocus } from '../core/focus-trap';
 import { pushOverlay, popOverlay } from '../core/overlay-stack';
 import { setupStarRadiogroup, syncStarAria } from '../core/star-rating';
-
-function escapeHtml(str: string): string {
-  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-}
+import { escapeHtml } from '../core/escape-html';
 
 function scrollBehavior(): ScrollBehavior {
   return window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';

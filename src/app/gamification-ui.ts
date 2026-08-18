@@ -1,9 +1,6 @@
 import { GamificationEngine, GamificationData, Challenge, Badge, AreaCluster, GamificationAction } from './gamification';
 import { MapEngine } from '../core/map-engine';
-
-function escapeHtml(str: string): string {
-  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-}
+import { escapeHtml } from '../core/escape-html';
 
 export class GamificationUI {
   private mapEngine: MapEngine;
