@@ -15,6 +15,7 @@ import { trapFocus } from '../core/focus-trap';
 import { pushOverlay, popOverlay } from '../core/overlay-stack';
 import { setupStarRadiogroup, syncStarAria } from '../core/star-rating';
 import { escapeHtml } from '../core/escape-html';
+import { showToast } from './toast';
 
 function scrollBehavior(): ScrollBehavior {
   return window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
@@ -761,21 +762,7 @@ export class UIController {
   }
 
   private showNotification(message: string, type: 'success' | 'error' = 'success'): void {
-    const notification = document.createElement('div');
-    notification.className = `notification ${type}`;
-    notification.textContent = message;
-    // role="alert"/"status" carry their own implicit aria-live (assertive/
-    // polite respectively), so an error toast interrupts immediately while a
-    // success toast waits its turn — independent of the region's own
-    // aria-live="polite" default (index.html #toast-region).
-    notification.setAttribute('role', type === 'error' ? 'alert' : 'status');
-
-    const region = document.getElementById('toast-region');
-    (region ?? document.body).appendChild(notification);
-
-    setTimeout(() => {
-      notification.remove();
-    }, 3000);
+    showToast(message, type);
   }
 
   private async handleLogVisit(feature: GeoJSONFeature): Promise<void> {
