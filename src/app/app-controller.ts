@@ -2,6 +2,7 @@ import { MapEngine } from '../core/map-engine';
 import { StorageLayer } from './storage';
 import { GeoJSONFeatureCollection } from '../core/types';
 import { GamificationUI } from './gamification-ui';
+import { NavDrawer } from './nav-drawer';
 import { UIController } from './ui';
 
 export class AppController {
@@ -9,12 +10,14 @@ export class AppController {
   private storage: StorageLayer;
   private data: GeoJSONFeatureCollection | null = null;
   private gamificationUI: GamificationUI;
+  private navDrawer: NavDrawer;
   private uiController: UIController | null = null;
 
   constructor(mapEngine: MapEngine, storage: StorageLayer) {
     this.mapEngine = mapEngine;
     this.storage = storage;
-    this.gamificationUI = new GamificationUI(mapEngine);
+    this.gamificationUI = new GamificationUI(mapEngine, () => this.navDrawer.close());
+    this.navDrawer = new NavDrawer({ onOpen: () => this.gamificationUI.render() });
 
     this.initializeViews();
     this.setupNavigation();
@@ -82,10 +85,6 @@ export class AppController {
         const map = this.mapEngine.getAdapter().getMap();
         if (map) map.invalidateSize();
       }, 50);
-    }
-
-    if (tab === 'challenges' || tab === 'you') {
-      this.gamificationUI.render();
     }
   }
 

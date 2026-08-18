@@ -27,6 +27,9 @@
 
     <!-- Header -->
     <header class="header">
+      <button id="menu-btn" class="header-btn menu-btn" aria-label="Open menu" aria-haspopup="true" aria-expanded="false" aria-controls="nav-drawer">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
       <span class="header-title">Food Map</span>
       <div class="header-actions">
         <button id="add-poi-btn" class="header-btn header-btn-accent" title="Add place">
@@ -98,109 +101,6 @@
         <div id="poi-list-items" class="poi-list-items"></div>
       </div>
 
-      <!-- Challenges Tab -->
-      <div id="tab-challenges" class="tab-panel">
-        <div class="tab-inner">
-          <h2 class="tab-heading">Challenges</h2>
-          <p class="tab-sub">Earn badges by exploring new places, cuisines, and neighborhoods.</p>
-
-          <div class="challenge-list">
-            <div class="challenge-card">
-              <div class="challenge-icon">🗺️</div>
-              <div class="challenge-body">
-                <div class="challenge-name">Explorer</div>
-                <div class="challenge-desc">Try 3 new places this month</div>
-                <div class="challenge-progress-wrap">
-                  <div class="challenge-progress"><div class="progress-fill" style="--pct:33%"></div></div>
-                  <span class="challenge-meta">1 / 3</span>
-                </div>
-              </div>
-            </div>
-            <div class="challenge-card">
-              <div class="challenge-icon">🍝</div>
-              <div class="challenge-body">
-                <div class="challenge-name">Cuisine Hopper</div>
-                <div class="challenge-desc">Visit 5 different cuisine types</div>
-                <div class="challenge-progress-wrap">
-                  <div class="challenge-progress"><div class="progress-fill" style="--pct:60%"></div></div>
-                  <span class="challenge-meta">3 / 5</span>
-                </div>
-              </div>
-            </div>
-            <div class="challenge-card challenge-locked">
-              <div class="challenge-icon">🏙️</div>
-              <div class="challenge-body">
-                <div class="challenge-name">Neighborhood Regular</div>
-                <div class="challenge-desc">Visit 10 places in one neighborhood</div>
-                <div class="challenge-progress-wrap">
-                  <div class="challenge-progress"><div class="progress-fill" style="--pct:0%"></div></div>
-                  <span class="challenge-meta">Locked</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <h3 class="section-label">Badges</h3>
-          <div class="badges-row">
-            <div class="badge badge-earned"><span class="badge-icon">🌟</span><span class="badge-label">First Save</span></div>
-            <div class="badge badge-earned"><span class="badge-icon">📍</span><span class="badge-label">10 Places</span></div>
-            <div class="badge"><span class="badge-icon">🏙️</span><span class="badge-label">5 Hoods</span></div>
-            <div class="badge"><span class="badge-icon">🍴</span><span class="badge-label">50 Visits</span></div>
-          </div>
-
-          <h3 class="section-label">Areas to Explore</h3>
-          <div id="explore-areas" class="challenge-list"></div>
-        </div>
-      </div>
-
-      <!-- You Tab -->
-      <div id="tab-you" class="tab-panel">
-        <div class="tab-inner">
-          <div class="profile-header">
-            <div class="profile-avatar">G</div>
-            <div class="profile-info">
-              <div class="profile-name">My Map</div>
-              <div class="profile-level">Level 2 · Food Enthusiast</div>
-            </div>
-          </div>
-
-          <div class="you-stats">
-            <div class="you-stat">
-              <span class="you-stat-val" id="you-stat-total">—</span>
-              <span class="you-stat-label">Places</span>
-            </div>
-            <div class="you-stat">
-              <span class="you-stat-val" id="you-stat-visited">—</span>
-              <span class="you-stat-label">Visited</span>
-            </div>
-            <div class="you-stat">
-              <span class="you-stat-val" id="you-stat-wishlist">—</span>
-              <span class="you-stat-label">Wishlist</span>
-            </div>
-          </div>
-
-          <div class="you-section-label">Data &amp; Stats</div>
-          <div class="you-actions">
-            <button id="analytics-btn" class="you-action-btn">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="12" width="4" height="9"/><rect x="10" y="7" width="4" height="14"/><rect x="17" y="3" width="4" height="18"/></svg>
-              <span>Analytics</span>
-              <svg class="you-action-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-            </button>
-            <button id="export-btn" class="you-action-btn">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-              <span>Export data</span>
-              <svg class="you-action-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-            </button>
-            <button id="import-btn" class="you-action-btn">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-              <span>Import data</span>
-              <svg class="you-action-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-            </button>
-          </div>
-          <input type="file" id="import-input" accept=".json,.geojson" style="display:none">
-        </div>
-      </div>
-
     </div><!-- /tab-panels -->
 
     <!-- Bottom Tab Bar -->
@@ -212,14 +112,6 @@
       <button class="tab-btn" data-tab="decide">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><line x1="7" y1="2" x2="7" y2="22"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3zm0 0v7"/></svg>
         <span>Decide</span>
-      </button>
-      <button class="tab-btn" data-tab="challenges">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2z"/></svg>
-        <span>Challenges</span>
-      </button>
-      <button class="tab-btn" data-tab="you">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-        <span>You</span>
       </button>
     </nav>
 
@@ -418,6 +310,115 @@
       </div>
     </div>
   </div>
+
+  <!-- Navigation Drawer: Challenges, You, and data actions. Root-level
+       sibling of #app-view (not nested inside it) so overlay-stack.ts's
+       stack-aware inert can cover #app-view without covering the drawer. -->
+  <aside id="nav-drawer" class="nav-drawer" style="display:none" role="dialog" aria-modal="true" aria-labelledby="nav-drawer-title">
+    <div class="nav-drawer-backdrop"></div>
+    <nav class="nav-drawer-panel">
+      <div class="nav-drawer-head">
+        <h2 id="nav-drawer-title">Menu</h2>
+        <button type="button" id="drawer-close-btn" class="nav-drawer-close" aria-label="Close menu">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+
+      <div class="nav-drawer-body">
+        <div class="profile-header">
+          <div class="profile-avatar">G</div>
+          <div class="profile-info">
+            <div class="profile-name">My Map</div>
+            <div class="profile-level">Level 2 · Food Enthusiast</div>
+          </div>
+        </div>
+
+        <div class="you-stats">
+          <div class="you-stat">
+            <span class="you-stat-val" id="you-stat-total">—</span>
+            <span class="you-stat-label">Places</span>
+          </div>
+          <div class="you-stat">
+            <span class="you-stat-val" id="you-stat-visited">—</span>
+            <span class="you-stat-label">Visited</span>
+          </div>
+          <div class="you-stat">
+            <span class="you-stat-val" id="you-stat-wishlist">—</span>
+            <span class="you-stat-label">Wishlist</span>
+          </div>
+        </div>
+
+        <h3 class="section-label">Challenges</h3>
+        <p class="tab-sub">Earn badges by exploring new places, cuisines, and neighborhoods.</p>
+        <div class="challenge-list">
+          <div class="challenge-card">
+            <div class="challenge-icon">🗺️</div>
+            <div class="challenge-body">
+              <div class="challenge-name">Explorer</div>
+              <div class="challenge-desc">Try 3 new places this month</div>
+              <div class="challenge-progress-wrap">
+                <div class="challenge-progress"><div class="progress-fill" style="--pct:33%"></div></div>
+                <span class="challenge-meta">1 / 3</span>
+              </div>
+            </div>
+          </div>
+          <div class="challenge-card">
+            <div class="challenge-icon">🍝</div>
+            <div class="challenge-body">
+              <div class="challenge-name">Cuisine Hopper</div>
+              <div class="challenge-desc">Visit 5 different cuisine types</div>
+              <div class="challenge-progress-wrap">
+                <div class="challenge-progress"><div class="progress-fill" style="--pct:60%"></div></div>
+                <span class="challenge-meta">3 / 5</span>
+              </div>
+            </div>
+          </div>
+          <div class="challenge-card challenge-locked">
+            <div class="challenge-icon">🏙️</div>
+            <div class="challenge-body">
+              <div class="challenge-name">Neighborhood Regular</div>
+              <div class="challenge-desc">Visit 10 places in one neighborhood</div>
+              <div class="challenge-progress-wrap">
+                <div class="challenge-progress"><div class="progress-fill" style="--pct:0%"></div></div>
+                <span class="challenge-meta">Locked</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <h3 class="section-label">Badges</h3>
+        <div class="badges-row">
+          <div class="badge badge-earned"><span class="badge-icon">🌟</span><span class="badge-label">First Save</span></div>
+          <div class="badge badge-earned"><span class="badge-icon">📍</span><span class="badge-label">10 Places</span></div>
+          <div class="badge"><span class="badge-icon">🏙️</span><span class="badge-label">5 Hoods</span></div>
+          <div class="badge"><span class="badge-icon">🍴</span><span class="badge-label">50 Visits</span></div>
+        </div>
+
+        <h3 class="section-label">Areas to Explore</h3>
+        <div id="explore-areas" class="challenge-list"></div>
+
+        <div class="you-section-label">Data &amp; Stats</div>
+        <div class="you-actions">
+          <button id="analytics-btn" class="you-action-btn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="12" width="4" height="9"/><rect x="10" y="7" width="4" height="14"/><rect x="17" y="3" width="4" height="18"/></svg>
+            <span>Analytics</span>
+            <svg class="you-action-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </button>
+          <button id="export-btn" class="you-action-btn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            <span>Export data</span>
+            <svg class="you-action-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </button>
+          <button id="import-btn" class="you-action-btn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            <span>Import data</span>
+            <svg class="you-action-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </button>
+        </div>
+        <input type="file" id="import-input" accept=".json,.geojson" style="display:none">
+      </div>
+    </nav>
+  </aside>
 
   <script type="module" src="/src/main.ts"></script>
 </body>

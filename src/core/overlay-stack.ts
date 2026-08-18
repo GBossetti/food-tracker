@@ -3,7 +3,7 @@
 // top of it. Only the topmost overlay should be reachable by assistive tech;
 // everything else (including a still-open lower overlay) must stay inert until
 // it becomes the top again.
-const ROOT_SIBLING_IDS = ['app-view', 'poi-modal', 'analytics-modal', 'quick-visit-sheet'];
+const ROOT_SIBLING_IDS = ['app-view', 'poi-modal', 'analytics-modal', 'quick-visit-sheet', 'nav-drawer'];
 
 const stack: HTMLElement[] = [];
 

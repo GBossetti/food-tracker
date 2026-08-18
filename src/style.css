@@ -324,6 +324,13 @@ body {
   border-color: transparent;
 }
 
+.menu-btn {
+  padding: 0;
+  width: 32px;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
 /* Add-mode state */
 .header.adding {
   background: rgba(220, 76, 47, 0.12);
@@ -407,8 +414,8 @@ body {
 
 /* Keep map rendered behind the decide sheet.
    z-index: 0 creates a stacking context so Leaflet's internal z-indexes
-   (tiles at 200, markers at 600, popups at 700…) stay confined inside
-   #tab-map and don't paint over the decide sheet at z-index 20. */
+   (tiles at 200, markers at 600…) stay confined inside #tab-map and don't
+   paint over the decide sheet at z-index 20. */
 #tab-map.map-behind-decide {
   display: block;
   z-index: 0;
@@ -847,21 +854,8 @@ body {
 }
 
 /* ===================================
-   Challenges Tab
+   Challenges (nav drawer)
    =================================== */
-
-.tab-inner {
-  padding: 20px 16px 80px;
-}
-
-.tab-heading {
-  font-family: var(--font-display);
-  font-size: 1.5rem;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  color: var(--ink);
-  margin-bottom: 6px;
-}
 
 .tab-sub {
   font-size: var(--text-small);
@@ -2399,4 +2393,85 @@ body {
 
 .qvs-actions .btn {
   flex: 1;
+}
+
+/* ===================================
+   Navigation Drawer
+   =================================== */
+
+.nav-drawer {
+  display: none;
+  position: fixed;
+  inset: 0;
+  /* Below .modal's z-index:1000 — Analytics opens from inside the drawer
+     and must paint above it, not behind it. */
+  z-index: 900;
+}
+
+.nav-drawer-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+}
+
+.nav-drawer-panel {
+  position: relative;
+  width: min(86vw, 340px);
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  box-shadow: var(--shadow-lg);
+  animation: drawerSlideIn 0.22s ease;
+}
+
+@keyframes drawerSlideIn {
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(0); }
+}
+
+.nav-drawer-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 16px 16px 20px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.nav-drawer-head h2 {
+  font-family: var(--font-display);
+  font-size: var(--text-heading);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+
+.nav-drawer-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: transparent;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--border-radius);
+  color: var(--ink-2);
+  cursor: pointer;
+  transition: all var(--transition-speed) ease;
+}
+
+.nav-drawer-close:hover {
+  color: var(--ink);
+  border-color: rgba(250,247,244,0.25);
+  background: rgba(250,247,244,0.04);
+}
+
+.nav-drawer-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 20px;
 }

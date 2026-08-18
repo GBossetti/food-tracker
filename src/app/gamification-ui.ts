@@ -4,9 +4,11 @@ import { escapeHtml } from '../core/escape-html';
 
 export class GamificationUI {
   private mapEngine: MapEngine;
+  private onNavigate: (() => void) | null;
 
-  constructor(mapEngine: MapEngine) {
+  constructor(mapEngine: MapEngine, onNavigate?: () => void) {
     this.mapEngine = mapEngine;
+    this.onNavigate = onNavigate ?? null;
   }
 
   render(): void {
@@ -30,7 +32,7 @@ export class GamificationUI {
   }
 
   private renderChallenges(data: GamificationData): void {
-    const challengeList = document.querySelector('#tab-challenges .challenge-list');
+    const challengeList = document.querySelector('#nav-drawer .challenge-list');
     if (challengeList) {
       challengeList.innerHTML = data.challenges.map(c => this.renderChallengeCard(c)).join('');
       Array.from(challengeList.children).forEach((el, i) => {
@@ -38,7 +40,7 @@ export class GamificationUI {
       });
     }
 
-    const badgesRow = document.querySelector('#tab-challenges .badges-row');
+    const badgesRow = document.querySelector('#nav-drawer .badges-row');
     if (badgesRow) {
       badgesRow.innerHTML = data.badges.map(b => this.renderBadge(b)).join('');
       Array.from(badgesRow.children).forEach(el => {
@@ -60,18 +62,20 @@ export class GamificationUI {
   }
 
   private runAction(action: GamificationAction): void {
+    this.onNavigate?.();
+
     if (action.type === 'map') {
       document.querySelector<HTMLElement>('.tab-btn[data-tab="map"]')?.click();
       setTimeout(() => this.mapEngine.centerOn(action.lat, action.lng, 16), 60);
       return;
     }
 
-    document.querySelector<HTMLElement>('.tab-btn[data-tab="places"]')?.click();
+    document.querySelector<HTMLElement>('.tab-btn[data-tab="decide"]')?.click();
     if (action.status) {
-      document.querySelector<HTMLElement>(`#tab-places .status-tab[data-status="${action.status}"]`)?.click();
+      document.querySelector<HTMLElement>(`#tab-decide .status-tab[data-status="${action.status}"]`)?.click();
     }
     if (action.sort) {
-      document.querySelector<HTMLElement>(`#tab-places .places-sort-chip[data-sort="${action.sort}"]`)?.click();
+      document.querySelector<HTMLElement>(`#tab-decide .sort-chip[data-sort="${action.sort}"]`)?.click();
     }
   }
 
@@ -116,7 +120,7 @@ export class GamificationUI {
   }
 
   private renderProfile(data: GamificationData): void {
-    const profileLevel = document.querySelector('#tab-you .profile-level');
+    const profileLevel = document.querySelector('#nav-drawer .profile-level');
     if (profileLevel) profileLevel.textContent = `Level ${data.profile.level} · ${data.profile.levelName}`;
 
     const total = document.getElementById('you-stat-total');
