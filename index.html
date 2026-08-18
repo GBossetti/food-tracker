@@ -223,11 +223,12 @@
       </button>
     </nav>
 
-    <!-- Toast live region: persistent in the DOM so screen readers pick up
-         announcements appended into it (see specs/inbox.md B4) -->
-    <div id="toast-region" class="toast-region" role="status" aria-live="polite"></div>
-
   </div><!-- /app-view -->
+
+  <!-- Toast live region: a root-level sibling of #app-view (not nested inside
+       it) so a toast fired while an overlay has #app-view inert is still
+       announced instead of landing in an inert subtree. -->
+  <div id="toast-region" class="toast-region" role="status" aria-live="polite"></div>
 
   <!-- POI Modal (full-screen sheet) -->
   <div id="poi-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="poi-hero-title">
