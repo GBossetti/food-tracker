@@ -170,14 +170,7 @@ export class MapEngine {
   // --- PRIVATE METHODS ---
 
   private renderFeature(feature: GeoJSONFeature): void {
-    const id = feature.id?.toString() || feature.properties.id;
-    const name = feature.properties.name || 'Unnamed';
-    
-    // Create popup content
-    const popup = this.createPopupContent(feature);
-
     const marker = this.adapter.addMarker(feature, {
-      popup,
       draggable: false,
     });
 
@@ -185,36 +178,6 @@ export class MapEngine {
     marker.on('click', () => {
       this.emit('click', feature);
     });
-  }
-
-  private createPopupContent(feature: GeoJSONFeature): string {
-    const props = feature.properties;
-    const rating = props.rating || 0;
-    // Replace stars with SVG icons - see SVG_GUIDE.md
-    const reviewCount = props.reviews?.length || 0;
-    
-    return `
-      <div style="min-width: 200px;">
-        <h3 style="margin: 0 0 8px 0;">${props.name || 'Unnamed'}</h3>
-        ${rating > 0 ? `
-          <div style="margin: 4px 0; font-size: 1.1em;">
-            <span style="color: #666; font-size: 0.9em;">Rating: ${rating.toFixed(1)}</span>
-          </div>
-        ` : ''}
-        ${reviewCount > 0 ? `
-          <p style="margin: 4px 0; color: #666; font-size: 0.9em;">
-            ${reviewCount} review${reviewCount !== 1 ? 's' : ''}
-          </p>
-        ` : ''}
-        ${props.tags ? `<p style="margin: 4px 0;"><strong>Tags:</strong> ${props.tags.join(', ')}</p>` : ''}
-        ${props.comments ? `<p style="margin: 4px 0;"><em>${props.comments}</em></p>` : ''}
-        ${props.last_visited ? `
-          <p style="margin: 4px 0; color: #666; font-size: 0.85em;">
-            Last visited: ${new Date(props.last_visited).toLocaleDateString()}
-          </p>
-        ` : ''}
-      </div>
-    `;
   }
 
   private handleMapClick(lat: number, lng: number): void {

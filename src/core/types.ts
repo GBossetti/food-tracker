@@ -72,7 +72,6 @@ export interface MapConfig {
 export interface MarkerOptions {
   draggable?: boolean;
   icon?: any;
-  popup?: string;
 }
 
 export type FeatureEventType = 'click' | 'created' | 'updated' | 'deleted';

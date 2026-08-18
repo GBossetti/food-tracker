@@ -60,18 +60,12 @@ export class LeafletAdapter {
       ">${innerDot}</div>`,
       iconSize: [26, 26],
       iconAnchor: [13, 13],
-      popupAnchor: [0, -16],
     });
 
     const marker = L.marker(latLng, {
       icon,
       draggable: options?.draggable || false,
     });
-
-    // Add popup if provided
-    if (options?.popup) {
-      marker.bindPopup(options.popup);
-    }
 
     marker.addTo(this.layerGroup);
 

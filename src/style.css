@@ -1841,32 +1841,6 @@ body {
 }
 
 /* ===================================
-   Leaflet Popup
-   =================================== */
-
-.leaflet-popup-content-wrapper {
-  background: var(--surface);
-  border-radius: var(--border-radius-lg);
-  box-shadow: var(--shadow-lg);
-  border: 1px solid var(--border-strong);
-}
-
-.leaflet-popup-content h3 {
-  font-family: var(--font-display);
-  font-weight: 700;
-  color: var(--ink);
-  letter-spacing: -0.01em;
-}
-
-.leaflet-popup-content {
-  font-family: var(--font-body);
-  font-size: var(--text-small);
-  color: var(--ink-2);
-}
-
-.leaflet-popup-tip { background: var(--surface); }
-
-/* ===================================
    Analytics Dashboard
    =================================== */
 
