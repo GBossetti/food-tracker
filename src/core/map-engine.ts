@@ -17,6 +17,10 @@ export class MapEngine {
   private adapter: LeafletAdapter;
   private features: Map<string, GeoJSONFeature> = new Map();
   private eventListeners: Map<string, EventCallback[]> = new Map();
+  // Ids currently rendered as markers on the adapter — kept in sync by every
+  // method that adds/removes a marker, so showFeatures() can diff instead of
+  // tearing down and rebuilding every marker on each call (e.g. per keystroke).
+  private shownIds: Set<string> = new Set();
 
   constructor(config: MapConfig) {
     const center = config.center || [40.4168, -3.7038]; // Default: Madrid
@@ -71,6 +75,7 @@ export class MapEngine {
 
     // Render on map
     this.renderFeature(feature);
+    this.shownIds.add(id);
 
     // Emit event
     if (emitEvent) {
@@ -94,6 +99,7 @@ export class MapEngine {
     // Re-render
     this.adapter.removeMarker(id);
     this.renderFeature(feature);
+    this.shownIds.add(id);
 
     // Emit event
     this.emit('updated', feature);
@@ -114,22 +120,35 @@ export class MapEngine {
 
     // Remove from store
     this.features.delete(id);
+    this.shownIds.delete(id);
 
     // Emit event
     this.emit('deleted', feature);
   }
 
   /**
-   * Show only features matching a filter
+   * Show only features matching a filter.
+   * Diffs against the currently shown markers rather than clearing and
+   * rebuilding all of them, so a search keystroke only touches the markers
+   * whose match state actually changed.
    */
   showFeatures(filterFn: (feature: GeoJSONFeature) => boolean): void {
-    this.adapter.clearMarkers();
-
-    this.features.forEach((feature) => {
-      if (filterFn(feature)) {
-        this.renderFeature(feature);
-      }
+    const matchedIds = new Set<string>();
+    this.features.forEach((feature, id) => {
+      if (filterFn(feature)) matchedIds.add(id);
     });
+
+    for (const id of this.shownIds) {
+      if (!matchedIds.has(id)) this.adapter.removeMarker(id);
+    }
+    for (const id of matchedIds) {
+      if (!this.shownIds.has(id)) {
+        const feature = this.features.get(id);
+        if (feature) this.renderFeature(feature);
+      }
+    }
+
+    this.shownIds = matchedIds;
   }
 
   /**
@@ -138,6 +157,7 @@ export class MapEngine {
   clear(): void {
     this.adapter.clearMarkers();
     this.features.clear();
+    this.shownIds.clear();
   }
 
   /**

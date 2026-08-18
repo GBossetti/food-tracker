@@ -42,6 +42,7 @@ export class UIController {
   private _listenersAttached = false;
   private pendingImport: GeoJSONFeatureCollection | null = null;
   private releasePoiModalTrap: (() => void) | null = null;
+  private searchDebounceTimer: ReturnType<typeof setTimeout> | undefined;
 
   constructor(mapEngine: MapEngine, storage: StorageLayer) {
     this.mapEngine = mapEngine;
@@ -109,9 +110,13 @@ export class UIController {
       filtersToggleBtn.setAttribute('aria-expanded', String(expanded));
     });
 
-    // Decide: search input
+    // Decide: search input — debounced so a fast typist doesn't trigger a
+    // full marker-diff + list re-render on every single keystroke
     const searchInput = document.getElementById('search-input') as HTMLInputElement;
-    searchInput?.addEventListener('input', (e) => this.handleSearch(e));
+    searchInput?.addEventListener('input', (e) => {
+      clearTimeout(this.searchDebounceTimer);
+      this.searchDebounceTimer = setTimeout(() => this.handleSearch(e), 120);
+    });
 
     // Tab change: reset map markers when leaving Decide
     document.querySelectorAll('.tab-btn').forEach(btn => {
