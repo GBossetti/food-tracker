@@ -42,78 +42,76 @@
       </div>
     </header>
 
-    <!-- Tab Panels -->
-    <div class="tab-panels">
-
-      <!-- Map Tab -->
-      <div id="tab-map" class="tab-panel active">
-        <div id="map"></div>
-        <div id="add-mode-hint" class="add-mode-hint" style="display:none">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="10" r="3"/><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg>
-          Tap the map to drop a pin
-        </div>
+    <!-- Map layer: permanent full-bleed background. position:relative +
+         z-index:0 on .map-layer creates a stacking context so Leaflet's
+         internal z-indexes (tiles at 200, markers at 600…) stay confined
+         inside it and never paint over the search sheet. -->
+    <div class="map-layer">
+      <div id="map"></div>
+      <div id="add-mode-hint" class="add-mode-hint" style="display:none">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="10" r="3"/><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg>
+        Tap the map to drop a pin
       </div>
+    </div>
 
-      <!-- Decide Tab -->
-      <div id="tab-decide" class="tab-panel">
-        <div class="decide-search">
-          <input type="search" id="search-input" class="search-input" placeholder="Search places…" aria-label="Search places">
-          <div class="status-segment">
-            <button class="status-tab active" data-status="all">All <span class="tab-count"></span></button>
-            <button class="status-tab" data-status="visited">Visited <span class="tab-count"></span></button>
-            <button class="status-tab" data-status="wishlist">Wishlist <span class="tab-count"></span></button>
-          </div>
-        </div>
+    <!-- Search Sheet: persistent, drag-resizable bottom sheet. Collapsed to
+         the search row by default; drag the grabber, tap it, or focus the
+         search field to expand. -->
+    <section id="search-sheet" class="search-sheet" data-snap="collapsed" data-mode="list" aria-label="Places">
+      <button type="button" id="sheet-grabber" class="sheet-grabber" aria-label="Resize places panel" aria-expanded="false" aria-controls="search-sheet-body">
+        <span class="sheet-grabber-pill" aria-hidden="true"></span>
+      </button>
 
-        <div class="chip-section">
-          <div class="chip-row">
-            <button class="category-tab active" data-category="all">All <span class="tab-count"></span></button>
-            <button class="category-tab" data-category="restaurant">Restaurant <span class="tab-count"></span></button>
-            <button class="category-tab" data-category="cafe">Café <span class="tab-count"></span></button>
-            <button class="category-tab" data-category="bar">Bar <span class="tab-count"></span></button>
-            <button class="category-tab" data-category="bakery">Bakery <span class="tab-count"></span></button>
-            <button class="category-tab" data-category="market">Market <span class="tab-count"></span></button>
-            <button class="category-tab" data-category="heladeria">Ice Cream <span class="tab-count"></span></button>
-            <button class="category-tab" data-category="other">Other <span class="tab-count"></span></button>
-          </div>
-        </div>
-
-        <div class="tag-filter-section" id="tag-filter-section" hidden>
-          <div id="tag-filters" class="tag-filters"></div>
-          <button id="clear-filters-btn" class="clear-btn">Clear filters</button>
-        </div>
-
-        <div class="results-header">
-          <span id="poi-list-count" class="results-count"></span>
-          <div class="results-header-actions">
-            <button type="button" id="filters-toggle-btn" class="filters-toggle-chip" aria-expanded="false" aria-controls="tag-filter-section">
-              Filters<span id="filters-toggle-badge" class="filters-toggle-badge"></span>
-            </button>
-            <div class="sort-chips">
-              <button type="button" class="sort-chip active" data-sort="name">Name</button>
-              <button type="button" class="sort-chip" data-sort="rating">Rating</button>
-              <button type="button" class="sort-chip" data-sort="recent">Recent</button>
-              <button type="button" class="sort-chip" data-sort="distance">Nearby</button>
+      <div id="search-sheet-body" class="search-sheet-body">
+        <div id="sheet-list-panel" class="sheet-panel">
+          <div class="decide-search">
+            <input type="search" id="search-input" class="search-input" placeholder="Search places…" aria-label="Search places">
+            <div class="status-segment">
+              <button class="status-tab active" data-status="all">All <span class="tab-count"></span></button>
+              <button class="status-tab" data-status="visited">Visited <span class="tab-count"></span></button>
+              <button class="status-tab" data-status="wishlist">Wishlist <span class="tab-count"></span></button>
             </div>
           </div>
+
+          <div class="sheet-scroll-area">
+            <div class="chip-section">
+              <div class="chip-row">
+                <button class="category-tab active" data-category="all">All <span class="tab-count"></span></button>
+                <button class="category-tab" data-category="restaurant">Restaurant <span class="tab-count"></span></button>
+                <button class="category-tab" data-category="cafe">Café <span class="tab-count"></span></button>
+                <button class="category-tab" data-category="bar">Bar <span class="tab-count"></span></button>
+                <button class="category-tab" data-category="bakery">Bakery <span class="tab-count"></span></button>
+                <button class="category-tab" data-category="market">Market <span class="tab-count"></span></button>
+                <button class="category-tab" data-category="heladeria">Ice Cream <span class="tab-count"></span></button>
+                <button class="category-tab" data-category="other">Other <span class="tab-count"></span></button>
+              </div>
+            </div>
+
+            <div class="tag-filter-section" id="tag-filter-section" hidden>
+              <div id="tag-filters" class="tag-filters"></div>
+              <button id="clear-filters-btn" class="clear-btn">Clear filters</button>
+            </div>
+
+            <div class="results-header">
+              <span id="poi-list-count" class="results-count"></span>
+              <div class="results-header-actions">
+                <button type="button" id="filters-toggle-btn" class="filters-toggle-chip" aria-expanded="false" aria-controls="tag-filter-section">
+                  Filters<span id="filters-toggle-badge" class="filters-toggle-badge"></span>
+                </button>
+                <div class="sort-chips">
+                  <button type="button" class="sort-chip active" data-sort="name">Name</button>
+                  <button type="button" class="sort-chip" data-sort="rating">Rating</button>
+                  <button type="button" class="sort-chip" data-sort="recent">Recent</button>
+                  <button type="button" class="sort-chip" data-sort="distance">Nearby</button>
+                </div>
+              </div>
+            </div>
+
+            <div id="poi-list-items" class="poi-list-items"></div>
+          </div>
         </div>
-
-        <div id="poi-list-items" class="poi-list-items"></div>
       </div>
-
-    </div><!-- /tab-panels -->
-
-    <!-- Bottom Tab Bar -->
-    <nav class="tab-bar">
-      <button class="tab-btn active" data-tab="map">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/></svg>
-        <span>Map</span>
-      </button>
-      <button class="tab-btn" data-tab="decide">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><line x1="7" y1="2" x2="7" y2="22"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3zm0 0v7"/></svg>
-        <span>Decide</span>
-      </button>
-    </nav>
+    </section>
 
   </div><!-- /app-view -->
 

@@ -3,6 +3,7 @@ import { StorageLayer } from './storage';
 import { GeoJSONFeatureCollection } from '../core/types';
 import { GamificationUI } from './gamification-ui';
 import { NavDrawer } from './nav-drawer';
+import { SearchSheet } from './search-sheet';
 import { UIController } from './ui';
 
 export class AppController {
@@ -11,13 +12,18 @@ export class AppController {
   private data: GeoJSONFeatureCollection | null = null;
   private gamificationUI: GamificationUI;
   private navDrawer: NavDrawer;
+  private searchSheet: SearchSheet;
   private uiController: UIController | null = null;
 
   constructor(mapEngine: MapEngine, storage: StorageLayer) {
     this.mapEngine = mapEngine;
     this.storage = storage;
-    this.gamificationUI = new GamificationUI(mapEngine, () => this.navDrawer.close());
+    this.gamificationUI = new GamificationUI(mapEngine, {
+      closeDrawer: () => this.navDrawer.close(),
+      expandSheet: () => this.searchSheet.setSnap('half'),
+    });
     this.navDrawer = new NavDrawer({ onOpen: () => this.gamificationUI.render() });
+    this.searchSheet = new SearchSheet();
 
     this.initializeViews();
     this.setupNavigation();
@@ -47,7 +53,10 @@ export class AppController {
     if (landingView) landingView.classList.remove('active');
     if (appView) appView.classList.add('active');
 
-    this.initTabs();
+    // Collapse the sheet so the map is tappable when add-mode starts
+    document.getElementById('add-poi-btn')?.addEventListener('click', () => {
+      this.searchSheet.setSnap('collapsed');
+    });
 
     setTimeout(() => {
       const map = this.mapEngine.getAdapter().getMap();
@@ -63,43 +72,6 @@ export class AppController {
         () => { /* denied or unavailable — stay on default centre */ }
       );
     }
-  }
-
-  private activateTab(tab: string): void {
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-
-    document.getElementById('tab-map')?.classList.remove('map-behind-decide');
-
-    const btn = document.querySelector<HTMLElement>(`.tab-btn[data-tab="${tab}"]`);
-    const panel = document.getElementById(`tab-${tab}`);
-    if (btn) btn.classList.add('active');
-    if (panel) panel.classList.add('active');
-
-    if (tab === 'decide') {
-      document.getElementById('tab-map')?.classList.add('map-behind-decide');
-    }
-
-    if (tab === 'map') {
-      setTimeout(() => {
-        const map = this.mapEngine.getAdapter().getMap();
-        if (map) map.invalidateSize();
-      }, 50);
-    }
-  }
-
-  private initTabs(): void {
-    document.querySelectorAll<HTMLElement>('.tab-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const tab = btn.dataset.tab;
-        if (tab) this.activateTab(tab);
-      });
-    });
-
-    // Switch to map tab automatically when add-mode is triggered
-    document.getElementById('add-poi-btn')?.addEventListener('click', () => {
-      this.activateTab('map');
-    });
   }
 
   private async loadData(): Promise<void> {

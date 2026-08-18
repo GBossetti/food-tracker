@@ -2,13 +2,18 @@ import { GamificationEngine, GamificationData, Challenge, Badge, AreaCluster, Ga
 import { MapEngine } from '../core/map-engine';
 import { escapeHtml } from '../core/escape-html';
 
+export interface GamificationNavCallbacks {
+  closeDrawer: () => void;
+  expandSheet: () => void;
+}
+
 export class GamificationUI {
   private mapEngine: MapEngine;
-  private onNavigate: (() => void) | null;
+  private nav: GamificationNavCallbacks;
 
-  constructor(mapEngine: MapEngine, onNavigate?: () => void) {
+  constructor(mapEngine: MapEngine, nav: GamificationNavCallbacks) {
     this.mapEngine = mapEngine;
-    this.onNavigate = onNavigate ?? null;
+    this.nav = nav;
   }
 
   render(): void {
@@ -62,20 +67,19 @@ export class GamificationUI {
   }
 
   private runAction(action: GamificationAction): void {
-    this.onNavigate?.();
+    this.nav.closeDrawer();
 
     if (action.type === 'map') {
-      document.querySelector<HTMLElement>('.tab-btn[data-tab="map"]')?.click();
-      setTimeout(() => this.mapEngine.centerOn(action.lat, action.lng, 16), 60);
+      this.mapEngine.centerOn(action.lat, action.lng, 16);
       return;
     }
 
-    document.querySelector<HTMLElement>('.tab-btn[data-tab="decide"]')?.click();
+    this.nav.expandSheet();
     if (action.status) {
-      document.querySelector<HTMLElement>(`#tab-decide .status-tab[data-status="${action.status}"]`)?.click();
+      document.querySelector<HTMLElement>(`#sheet-list-panel .status-tab[data-status="${action.status}"]`)?.click();
     }
     if (action.sort) {
-      document.querySelector<HTMLElement>(`#tab-decide .sort-chip[data-sort="${action.sort}"]`)?.click();
+      document.querySelector<HTMLElement>(`#sheet-list-panel .sort-chip[data-sort="${action.sort}"]`)?.click();
     }
   }
 

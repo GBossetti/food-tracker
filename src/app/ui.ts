@@ -118,18 +118,6 @@ export class UIController {
       this.searchDebounceTimer = setTimeout(() => this.handleSearch(e), 120);
     });
 
-    // Tab change: reset map markers when leaving Decide
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const tab = (btn as HTMLElement).dataset.tab;
-        if (tab !== 'decide') {
-          this.mapEngine.showFeatures(() => true);
-        } else {
-          this.applyFilters();
-        }
-      });
-    });
-
     // Rating stars in main form (scoped to the Details panel so the Reviews
     // panel's own .rating-input .star elements aren't double-bound — both
     // share the .star class and would otherwise also set the place rating)
@@ -151,7 +139,7 @@ export class UIController {
     });
 
     // Decide: category tabs
-    document.querySelectorAll('#tab-decide .category-tab').forEach((tab) => {
+    document.querySelectorAll('#sheet-list-panel .category-tab').forEach((tab) => {
       tab.addEventListener('click', (e) => {
         const cat = (e.currentTarget as HTMLElement).dataset.category as POICategory | 'all';
         this.setActiveCategory(cat);
@@ -171,7 +159,7 @@ export class UIController {
     });
 
     // Decide: status tabs
-    document.querySelectorAll('#tab-decide .status-tab').forEach((tab) => {
+    document.querySelectorAll('#sheet-list-panel .status-tab').forEach((tab) => {
       tab.addEventListener('click', (e) => {
         const status = (e.currentTarget as HTMLElement).dataset.status as POIStatus | 'all';
         this.setActiveStatus(status);
@@ -180,11 +168,11 @@ export class UIController {
 
 
     // Decide: sort chips
-    document.querySelectorAll('#tab-decide .sort-chip').forEach((chip) => {
+    document.querySelectorAll('#sheet-list-panel .sort-chip').forEach((chip) => {
       chip.addEventListener('click', (e) => {
         const target = e.currentTarget as HTMLElement;
         this.sortMode = target.dataset.sort as typeof this.sortMode;
-        document.querySelectorAll('#tab-decide .sort-chip').forEach(c => c.classList.toggle('active', c === target));
+        document.querySelectorAll('#sheet-list-panel .sort-chip').forEach(c => c.classList.toggle('active', c === target));
         if (this.sortMode === 'distance' && !this.userLocation) {
           this.locateUser();
         } else {
@@ -282,20 +270,20 @@ export class UIController {
 
   private setActiveCategory(category: POICategory | 'all'): void {
     this.activeCategory = category;
-    document.querySelectorAll('#tab-decide .category-tab').forEach((tab) => {
+    document.querySelectorAll('#sheet-list-panel .category-tab').forEach((tab) => {
       (tab as HTMLElement).classList.toggle('active', (tab as HTMLElement).dataset.category === category);
     });
-    document.querySelector<HTMLElement>('#tab-decide .category-tab.active')
+    document.querySelector<HTMLElement>('#sheet-list-panel .category-tab.active')
       ?.scrollIntoView({ behavior: scrollBehavior(), inline: 'start', block: 'nearest' });
     this.applyFilters();
   }
 
   private setActiveStatus(status: POIStatus | 'all'): void {
     this.activeStatus = status;
-    document.querySelectorAll('#tab-decide .status-tab').forEach((tab) => {
+    document.querySelectorAll('#sheet-list-panel .status-tab').forEach((tab) => {
       (tab as HTMLElement).classList.toggle('active', (tab as HTMLElement).dataset.status === status);
     });
-    const decideRow = document.querySelector<HTMLElement>('#tab-decide .chip-row');
+    const decideRow = document.querySelector<HTMLElement>('#sheet-list-panel .chip-row');
     if (decideRow) decideRow.scrollLeft = 0;
     this.applyFilters();
   }
@@ -631,7 +619,7 @@ export class UIController {
 
   private updateTabCounts(): void {
     const all = this.mapEngine.getAllFeatures();
-    document.querySelectorAll('#tab-decide .status-tab').forEach((btn) => {
+    document.querySelectorAll('#sheet-list-panel .status-tab').forEach((btn) => {
       const st = (btn as HTMLElement).dataset.status!;
       const count = all.filter(f =>
         matchesFilters(f, {
