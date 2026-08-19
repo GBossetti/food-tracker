@@ -616,14 +616,35 @@ body {
   padding: 14px 14px 10px;
 }
 
-.search-input {
+/* Collapsed = a minimal "tap to search" pill: just the magnifying glass and
+   the rounded bar. The status filter only makes sense once the results
+   below are actually visible. */
+#search-sheet[data-snap="collapsed"] .status-segment {
+  display: none;
+}
+
+.search-field {
+  position: relative;
   flex: 1;
-  width: auto;
   min-width: 0;
-  padding: 0.7rem 1rem;
+}
+
+.search-field-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--ink-3);
+  pointer-events: none;
+}
+
+.search-input {
+  width: 100%;
+  min-height: 44px;
+  padding: 0.7rem 1rem 0.7rem 2.4rem;
   background: var(--surface);
   border: 1px solid var(--border-strong);
-  border-radius: var(--border-radius);
+  border-radius: 100px;
   font-family: var(--font-body);
   font-size: var(--text-body);
   color: var(--ink);
