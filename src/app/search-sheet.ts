@@ -5,6 +5,13 @@ import { attachDragGesture } from '../core/drag-gesture';
 // been laid out yet; matches --header height in style.css.
 const FALLBACK_HEADER_HEIGHT = 54;
 
+// Fallback for the case where the sheet is measured while an ancestor is
+// display:none (e.g. SearchSheet is constructed before the app view is
+// shown) — every offsetHeight reads 0 then, which would otherwise collapse
+// the sheet to zero height instead of just being approximately right until
+// the next remeasure(). ~24px grabber + ~68px search row.
+const FALLBACK_COLLAPSED_HEIGHT = 92;
+
 export class SearchSheet {
   private sheet: HTMLElement;
   private grabber: HTMLElement;
@@ -115,7 +122,7 @@ export class SearchSheet {
     // The row that stays visible when collapsed differs by mode: the search
     // row for the list, the back/title/menu header for the detail view.
     const collapsedRow = this.getMode() === 'detail' && this.detailHeader ? this.detailHeader : this.searchRow;
-    const collapsedH = this.grabber.offsetHeight + collapsedRow.offsetHeight;
+    const collapsedH = (this.grabber.offsetHeight + collapsedRow.offsetHeight) || FALLBACK_COLLAPSED_HEIGHT;
     const headerH = document.querySelector('.header')?.getBoundingClientRect().height || FALLBACK_HEADER_HEIGHT;
     return resolveSnapPoints(viewportH, collapsedH, headerH);
   }

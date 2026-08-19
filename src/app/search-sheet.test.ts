@@ -54,6 +54,28 @@ describe('SearchSheet', () => {
     expect(document.getElementById('search-sheet')!.dataset.snap).toBe('collapsed');
   });
 
+  it('constructed while an ancestor is display:none (all heights read 0), the sheet is not invisible', () => {
+    // Regression: SearchSheet used to be constructed while #app-view was
+    // display:none, before the user opened the app — every offsetHeight
+    // read 0, collapsing the sheet (and its search bar) to zero height.
+    mockHeights(0, 0, 54);
+    const sheet = new SearchSheet();
+
+    expect(sheet.heightPx()).toBeGreaterThan(0);
+    expect(document.documentElement.style.getPropertyValue('--sheet-h')).not.toBe('0px');
+  });
+
+  it('remeasure() after the container becomes visible replaces the zero-height fallback with real measurements', () => {
+    mockHeights(0, 0, 54); // constructed while hidden
+    const sheet = new SearchSheet();
+    expect(sheet.heightPx()).toBeGreaterThan(0); // the fallback, not a real measurement
+
+    mockHeights(24, 64, 54); // container is now visible with real layout
+    sheet.remeasure();
+
+    expect(sheet.heightPx()).toBe(88);
+  });
+
   it('setSnap updates height, data-snap, and the grabber aria-expanded', () => {
     const sheet = new SearchSheet();
     sheet.setSnap('half');

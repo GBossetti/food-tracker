@@ -81,6 +81,11 @@ export class AppController {
     if (landingView) landingView.classList.remove('active');
     if (appView) appView.classList.add('active');
 
+    // #app-view was display:none when SearchSheet measured itself at
+    // construction time, so its collapsed height came out as 0 — re-measure
+    // now that real layout exists.
+    this.searchSheet.remeasure();
+
     // Collapse the sheet so the map is tappable when add-mode starts
     document.getElementById('add-poi-btn')?.addEventListener('click', () => {
       this.searchSheet.setSnap('collapsed');
