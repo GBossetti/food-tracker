@@ -332,6 +332,38 @@ body {
   flex-shrink: 0;
 }
 
+/* Circular icon buttons — the add-place button (header) and the locate-me
+   button (floating over the map). .header-btn-accent still supplies the
+   accent fill/hover colors for add-poi-btn. */
+.round-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  color: var(--ink-2);
+  cursor: pointer;
+  transition: all var(--transition-speed) ease;
+}
+
+.round-btn:hover {
+  color: var(--ink);
+  border-color: rgba(250,247,244,0.25);
+  background: rgba(250,247,244,0.04);
+}
+
+.locate-btn {
+  position: absolute;
+  right: 16px;
+  bottom: calc(var(--sheet-h, 50vh) + 16px);
+  z-index: 900;
+  box-shadow: var(--shadow-md);
+}
+
 /* Add-mode state */
 .header.adding {
   background: rgba(220, 76, 47, 0.12);
