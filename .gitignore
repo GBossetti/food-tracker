@@ -48,6 +48,9 @@ specs/
 # Personal notes
 .notes/
 
+# Personal data imports (never commit real place data)
+local-data/
+
 # Claude Code (local config and docs, stay on this machine)
 .claude/
 docs/
