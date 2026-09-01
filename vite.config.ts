@@ -5,6 +5,7 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
     globals: true,
+    setupFiles: ['./src/test-setup.ts'],
   },
   // Set this to your repo name when deploying to GitHub Pages
   // Example: If your repo is github.com/username/food-map
