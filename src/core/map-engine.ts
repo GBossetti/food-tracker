@@ -52,6 +52,23 @@ export class MapEngine {
   }
 
   /**
+   * Move the viewport to the current search matches: centers with the
+   * sheet's offset on a single match (fitBounds would zoom in too far on
+   * one point), fits bounds to all of them when there are several, and
+   * leaves the viewport untouched on zero — the results list already
+   * carries a search-aware empty state, and there's nothing to fly to.
+   */
+  focusOn(matches: GeoJSONFeature[], offsetY = 0, animate = true): void {
+    if (matches.length === 0) return;
+    if (matches.length === 1) {
+      const [lng, lat] = matches[0].geometry.coordinates as [number, number];
+      this.adapter.centerWithOffset(lat, lng, 16, offsetY, animate);
+      return;
+    }
+    this.adapter.fitBounds(offsetY);
+  }
+
+  /**
    * Load GeoJSON data into the map
    */
   load(data: GeoJSONFeatureCollection): void {

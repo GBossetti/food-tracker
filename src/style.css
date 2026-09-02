@@ -973,6 +973,41 @@ body {
   box-shadow: var(--shadow-sm);
 }
 
+/* Global address results — visually distinct from saved-place rows above,
+   so the two result kinds (yours vs. the whole world) are never confused. */
+.address-results {
+  padding: 4px 10px 16px;
+  border-top: 1px solid var(--border);
+}
+
+.address-results-heading {
+  font-size: var(--text-micro);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink-3);
+  padding: 10px 2px 6px;
+}
+
+.address-result-row {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  border-radius: var(--border-radius);
+  padding: 9px 8px;
+  font-size: var(--text-small);
+  color: var(--ink-2);
+  cursor: pointer;
+}
+
+.address-result-row:hover,
+.address-result-row:focus-visible {
+  background: var(--surface-2);
+  color: var(--ink);
+}
+
 .poi-list-dot {
   width: 8px;
   height: 8px;

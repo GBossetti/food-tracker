@@ -7,6 +7,12 @@ export interface FilterOptions {
   searchTerm: string;
 }
 
+// Folds diacritics so "japon" matches "Japón" and "cafe" matches "Café" —
+// names in this app span many languages/scripts.
+function foldDiacritics(text: string): string {
+  return text.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase();
+}
+
 export function matchesFilters(feature: GeoJSONFeature, options: FilterOptions): boolean {
   const { category, status, selectedTags, searchTerm } = options;
 
@@ -26,10 +32,10 @@ export function matchesFilters(feature: GeoJSONFeature, options: FilterOptions):
   }
 
   if (searchTerm) {
-    const term = searchTerm.toLowerCase();
-    const name = (feature.properties.name || '').toLowerCase();
-    const comments = (feature.properties.comments || '').toLowerCase();
-    const tags = (feature.properties.tags || []).join(' ').toLowerCase();
+    const term = foldDiacritics(searchTerm);
+    const name = foldDiacritics(feature.properties.name || '');
+    const comments = foldDiacritics(feature.properties.comments || '');
+    const tags = foldDiacritics((feature.properties.tags || []).join(' '));
     if (!name.includes(term) && !comments.includes(term) && !tags.includes(term)) return false;
   }
 

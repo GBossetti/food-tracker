@@ -5,6 +5,7 @@ import { GamificationUI } from './gamification-ui';
 import { NavDrawer } from './nav-drawer';
 import { SearchSheet } from './search-sheet';
 import { PlaceDetailView } from './place-detail';
+import { AddressSearch } from './address-search';
 import { UIController } from './ui';
 
 function prefersReducedMotion(): boolean {
@@ -19,6 +20,7 @@ export class AppController {
   private navDrawer: NavDrawer;
   private searchSheet: SearchSheet;
   private placeDetail: PlaceDetailView;
+  private addressSearch: AddressSearch;
   private uiController: UIController | null = null;
 
   constructor(mapEngine: MapEngine, storage: StorageLayer) {
@@ -37,6 +39,10 @@ export class AppController {
       onEdit: (feature) => this.uiController?.handleFeatureClick(feature),
       onDelete: (id) => this.uiController?.deletePlace(id),
     });
+    this.addressSearch = new AddressSearch({
+      onSelect: (result) =>
+        this.mapEngine.centerOn(result.lat, result.lng, 16, this.searchSheet.heightPx(), !prefersReducedMotion()),
+    });
 
     this.initializeViews();
     this.setupNavigation();
@@ -47,6 +53,16 @@ export class AppController {
   public setUIController(uiController: UIController): void {
     this.uiController = uiController;
     uiController.setRowActivateHandler((id) => this.showPlaceDetailById(id));
+  }
+
+  /** The bottom sheet's current height — used to offset map moves so a
+   * point lands in the visible band above it rather than hidden behind it. */
+  public getSheetHeight(): number {
+    return this.searchSheet.heightPx();
+  }
+
+  public handleAddressQuery(query: string): void {
+    this.addressSearch.handleQuery(query);
   }
 
   private showPlaceDetailById(id: string): void {

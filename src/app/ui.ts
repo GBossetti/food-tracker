@@ -924,6 +924,27 @@ export class UIController {
     const input = event.target as HTMLInputElement;
     this.searchTerm = input.value.toLowerCase().trim();
     this.applyFilters();
+
+    // Move the map to follow the search — applyFilters() already removed
+    // non-matching markers, so without this the viewport can be left
+    // pointing at an empty region while the results list is correct.
+    // Gated at 2+ chars so a single keystroke doesn't lurch the map.
+    if (this.searchTerm.length >= 2) {
+      const matches = this.mapEngine
+        .getAllFeatures()
+        .filter((feature) =>
+          matchesFilters(feature, {
+            category: this.activeCategory,
+            status: this.activeStatus,
+            selectedTags: this.selectedTags,
+            searchTerm: this.searchTerm,
+          })
+        );
+      const offsetY = this.appController?.getSheetHeight() ?? 0;
+      this.mapEngine.focusOn(matches, offsetY, scrollBehavior() === 'smooth');
+    }
+
+    this.appController?.handleAddressQuery(this.searchTerm);
   }
 
   /**

@@ -132,9 +132,11 @@ export class LeafletAdapter {
   }
 
   /**
-   * Fit map bounds to show all markers
+   * Fit map bounds to show all markers. `bottomPadding` widens the bottom
+   * edge alone (in px) — pass a bottom sheet's height so fitted markers
+   * don't land hidden behind it.
    */
-  fitBounds(): void {
+  fitBounds(bottomPadding = 50): void {
     // Only fit bounds if there are markers
     if (this.markers.size === 0) {
       return;
@@ -143,9 +145,12 @@ export class LeafletAdapter {
     try {
       const group = new L.FeatureGroup(Array.from(this.markers.values()));
       const bounds = group.getBounds();
-      
+
       if (bounds.isValid()) {
-        this.map.fitBounds(bounds, { padding: [50, 50] });
+        this.map.fitBounds(bounds, {
+          paddingTopLeft: [50, 50],
+          paddingBottomRight: [50, bottomPadding],
+        });
       }
     } catch (error) {
       // Silently handle bounds fitting errors

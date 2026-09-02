@@ -6,6 +6,7 @@ const removeMarker = vi.fn();
 const clearMarkers = vi.fn();
 const onMapClick = vi.fn();
 const fitBounds = vi.fn();
+const centerWithOffset = vi.fn();
 
 vi.mock('./adapters/leaflet-adapter', () => ({
   LeafletAdapter: vi.fn().mockImplementation(function (this: any) {
@@ -14,6 +15,7 @@ vi.mock('./adapters/leaflet-adapter', () => ({
     this.clearMarkers = clearMarkers;
     this.onMapClick = onMapClick;
     this.fitBounds = fitBounds;
+    this.centerWithOffset = centerWithOffset;
     this.getMap = vi.fn();
   }),
 }));
@@ -31,6 +33,8 @@ describe('MapEngine — showFeatures diffing', () => {
     addMarker.mockClear();
     removeMarker.mockClear();
     clearMarkers.mockClear();
+    fitBounds.mockClear();
+    centerWithOffset.mockClear();
     addMarker.mockReturnValue({ on: vi.fn() });
   });
 
@@ -144,5 +148,43 @@ describe('MapEngine — showFeatures diffing', () => {
     engine.showFeatures(() => true);
 
     expect(addMarker).toHaveBeenCalledOnce();
+  });
+});
+
+describe('MapEngine — focusOn (search follows the map)', () => {
+  beforeEach(() => {
+    fitBounds.mockClear();
+    centerWithOffset.mockClear();
+    addMarker.mockReturnValue({ on: vi.fn() });
+  });
+
+  async function makeEngine() {
+    const { MapEngine } = await import('./map-engine');
+    return new MapEngine({ containerId: 'map' });
+  }
+
+  it('does nothing on zero matches', async () => {
+    const engine = await makeEngine();
+    engine.focusOn([], 100, true);
+
+    expect(centerWithOffset).not.toHaveBeenCalled();
+    expect(fitBounds).not.toHaveBeenCalled();
+  });
+
+  it('centers with offset on a single match, at a fixed close zoom', async () => {
+    const engine = await makeEngine();
+    const feature = makeFeature('a');
+    engine.focusOn([feature], 120, false);
+
+    expect(centerWithOffset).toHaveBeenCalledExactlyOnceWith(40.4, -3.7, 16, 120, false);
+    expect(fitBounds).not.toHaveBeenCalled();
+  });
+
+  it('fits bounds (passing the offset through as bottom padding) on several matches', async () => {
+    const engine = await makeEngine();
+    engine.focusOn([makeFeature('a'), makeFeature('b')], 120, true);
+
+    expect(fitBounds).toHaveBeenCalledExactlyOnceWith(120);
+    expect(centerWithOffset).not.toHaveBeenCalled();
   });
 });

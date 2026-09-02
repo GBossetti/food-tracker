@@ -11,14 +11,20 @@ const mockSetView = vi.fn().mockReturnThis(); // chainable: L.map(id).setView(..
 const mockProject = vi.fn().mockReturnValue({ x: 100, y: 200, add: (d: [number, number]) => ({ x: 100 + d[0], y: 200 + d[1] }) });
 const mockUnproject = vi.fn().mockReturnValue({ lat: 41, lng: -3.6 });
 const mockGetZoom = vi.fn().mockReturnValue(13);
+const mockMapFitBounds = vi.fn();
+const mockGetGroupBounds = vi.fn().mockReturnValue({ isValid: () => true });
+const mockFeatureGroup = vi.fn(function (this: any) {
+  this.getBounds = mockGetGroupBounds;
+});
 
 vi.mock('leaflet', () => ({
   default: {
     marker: mockMarker,
     divIcon: mockDivIcon,
     layerGroup: vi.fn().mockReturnValue({ addLayer: vi.fn(), removeLayer: vi.fn(), clearLayers: vi.fn(), addTo: vi.fn() }),
+    FeatureGroup: mockFeatureGroup,
     map: vi.fn().mockReturnValue({
-      addLayer: vi.fn(), setView: mockSetView, on: vi.fn(), fitBounds: vi.fn(),
+      addLayer: vi.fn(), setView: mockSetView, on: vi.fn(), fitBounds: mockMapFitBounds,
       getBounds: vi.fn().mockReturnValue({ isValid: () => false }),
       getZoom: mockGetZoom, project: mockProject, unproject: mockUnproject,
     }),
@@ -166,5 +172,45 @@ describe('LeafletAdapter — centerWithOffset', () => {
     adapter.centerWithOffset(41, -3.6, 16, 0, false);
 
     expect(mockSetView).toHaveBeenCalledWith([41, -3.6], 16, { animate: false });
+  });
+});
+
+describe('LeafletAdapter — fitBounds', () => {
+  beforeEach(() => {
+    mockMapFitBounds.mockClear();
+    mockFeatureGroup.mockClear();
+    const el = document.createElement('div');
+    el.id = 'map';
+    document.body.appendChild(el);
+  });
+
+  afterEach(() => {
+    document.getElementById('map')?.remove();
+  });
+
+  it('no-ops with no markers', async () => {
+    const { LeafletAdapter } = await import('./leaflet-adapter');
+    const adapter = new LeafletAdapter('map', { center: [40.4, -3.7], zoom: 13 });
+    adapter.fitBounds();
+
+    expect(mockMapFitBounds).not.toHaveBeenCalled();
+  });
+
+  it('pads the bottom edge with the given value, defaulting to 50', async () => {
+    const { LeafletAdapter } = await import('./leaflet-adapter');
+    const adapter = new LeafletAdapter('map', { center: [40.4, -3.7], zoom: 13 });
+    adapter.addMarker(makeFeature());
+
+    adapter.fitBounds();
+    expect(mockMapFitBounds).toHaveBeenCalledWith(
+      expect.anything(),
+      { paddingTopLeft: [50, 50], paddingBottomRight: [50, 50] }
+    );
+
+    adapter.fitBounds(200);
+    expect(mockMapFitBounds).toHaveBeenLastCalledWith(
+      expect.anything(),
+      { paddingTopLeft: [50, 50], paddingBottomRight: [50, 200] }
+    );
   });
 });

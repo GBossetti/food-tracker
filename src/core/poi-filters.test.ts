@@ -116,6 +116,20 @@ describe('matchesFilters — search', () => {
   });
 });
 
+describe('matchesFilters — accent-insensitive search', () => {
+  it('an unaccented term matches an accented name', () => {
+    expect(matchesFilters(makeFeature({ name: 'Café Central', comments: '', tags: [] }), { ...baseOptions, searchTerm: 'cafe' })).toBe(true);
+  });
+
+  it('an accented term matches an unaccented name', () => {
+    expect(matchesFilters(makeFeature({ name: 'Cafe Central', comments: '', tags: [] }), { ...baseOptions, searchTerm: 'café' })).toBe(true);
+  });
+
+  it('matches accented tags', () => {
+    expect(matchesFilters(makeFeature({ name: 'Ramen X', comments: '', tags: ['Japón'] }), { ...baseOptions, searchTerm: 'japon' })).toBe(true);
+  });
+});
+
 describe('matchesFilters — combined filters', () => {
   it('all filters must pass simultaneously', () => {
     const feature = makeFeature({ category: 'restaurant', status: 'visited', tags: ['tapas'], name: 'Bar X' });
