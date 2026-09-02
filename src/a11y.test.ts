@@ -143,3 +143,17 @@ describe('index.html navigation redesign markup', () => {
     expect(items.every((el) => !!el.getAttribute('data-action'))).toBe(true);
   });
 });
+
+describe('index.html landing screen', () => {
+  it('has no duplicate DOM title — the hero image carries the wordmark', () => {
+    expect(document.querySelector('.landing-title')).toBeNull();
+  });
+
+  it('the open-map button is an icon button with an accessible name', () => {
+    const btn = document.getElementById('start-app-btn');
+    expect(btn).not.toBeNull();
+    expect(hasAccessibleName(btn as Element)).toBe(true);
+    const svg = btn?.querySelector('svg');
+    expect(svg?.getAttribute('aria-hidden')).toBe('true');
+  });
+});
