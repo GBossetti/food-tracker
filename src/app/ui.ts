@@ -348,7 +348,7 @@ export class UIController {
         this.cancelImportConfirm();
         this.showNotification('Import cancelled — tap Import again to retry', 'error');
       }
-    }, 5000);
+    }, 20000);
   }
 
   private cancelImportConfirm(): void {
