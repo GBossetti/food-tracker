@@ -341,9 +341,13 @@ export class UIController {
     const label = importBtn?.querySelector('span');
     if (label) label.textContent = `Replace ${existingCount} places?`;
     importBtn?.classList.add('confirming');
+    this.showNotification(`Tap Import again to replace ${existingCount} places`);
 
     setTimeout(() => {
-      if (this.pendingImport === data) this.cancelImportConfirm();
+      if (this.pendingImport === data) {
+        this.cancelImportConfirm();
+        this.showNotification('Import cancelled — tap Import again to retry', 'error');
+      }
     }, 5000);
   }
 
