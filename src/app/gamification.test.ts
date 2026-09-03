@@ -44,3 +44,55 @@ describe('GamificationEngine — 50 Visits badge (visit_count ?? 0)', () => {
     expect(badgeEarned(features, '50-visits')).toBe(false); // 49 < 50
   });
 });
+
+function isoWeeksAgo(n: number): string {
+  const d = new Date();
+  d.setDate(d.getDate() - n * 7);
+  return d.toISOString();
+}
+
+describe('GamificationEngine — streak badges', () => {
+  beforeEach(() => localStorage.clear());
+
+  it('awards the 4-week-streak badge once the longest run reaches 4 weeks', () => {
+    const visits = [isoWeeksAgo(0), isoWeeksAgo(1), isoWeeksAgo(2), isoWeeksAgo(3)];
+    expect(badgeEarned([makeFeature({ visits })], '4-week-streak')).toBe(true);
+  });
+
+  it('does not award 4-week-streak for 3 consecutive weeks', () => {
+    const visits = [isoWeeksAgo(0), isoWeeksAgo(1), isoWeeksAgo(2)];
+    expect(badgeEarned([makeFeature({ visits })], '4-week-streak')).toBe(false);
+  });
+
+  it('awards 4-week-streak off the longest historical run, not just the current one', () => {
+    // A 4-week run far in the past, then a gap — current streak is broken but longest isn't.
+    const visits = [isoWeeksAgo(20), isoWeeksAgo(21), isoWeeksAgo(22), isoWeeksAgo(23)];
+    expect(badgeEarned([makeFeature({ visits })], '4-week-streak')).toBe(true);
+  });
+
+  it('awards the 12-week-streak badge at 12 consecutive weeks', () => {
+    const visits = Array.from({ length: 12 }, (_, i) => isoWeeksAgo(i));
+    expect(badgeEarned([makeFeature({ visits })], '12-week-streak')).toBe(true);
+  });
+});
+
+describe('GamificationEngine — newlyEarned', () => {
+  beforeEach(() => localStorage.clear());
+
+  it('lists a badge the first time it is earned', () => {
+    const data = new GamificationEngine([makeFeature({ status: 'visited' })]).calculateAll();
+    expect(data.newlyEarned).toContain('first-save');
+  });
+
+  it('does not list the same badge again on a later call', () => {
+    const features = [makeFeature({ status: 'visited' })];
+    new GamificationEngine(features).calculateAll();
+    const second = new GamificationEngine(features).calculateAll();
+    expect(second.newlyEarned).not.toContain('first-save');
+  });
+
+  it('is empty when no places exist yet', () => {
+    const data = new GamificationEngine([]).calculateAll();
+    expect(data.newlyEarned).toEqual([]);
+  });
+});

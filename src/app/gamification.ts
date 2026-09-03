@@ -5,6 +5,7 @@
 
 import { GeoJSONFeature } from '../core/types';
 import { haversineDistanceKm } from '../core/geo';
+import { computeWeeklyStreak, StreakData } from '../core/streak';
 
 const BADGES_STORAGE_KEY = 'food-map-badges';
 const CLUSTER_RADIUS_KM = 0.35;
@@ -55,6 +56,10 @@ export interface GamificationData {
   areasToExplore: AreaCluster[];
   profile: { points: number; level: number; levelName: string };
   stats: { total: number; visited: number; wishlist: number };
+  streak: StreakData;
+  /** Badge ids earned for the first time by this call — a hook for a future
+   * "unlocked" celebration. Nothing consumes this yet (deliberately quiet). */
+  newlyEarned: string[];
 }
 
 export class GamificationEngine {
@@ -67,12 +72,13 @@ export class GamificationEngine {
   calculateAll(): GamificationData {
     const stats = this.calculateStats();
     const clusters = this.clusterByProximity();
-    const badges = this.calculateBadges(stats, clusters);
+    const streak = this.calculateStreak();
+    const { badges, newlyEarned } = this.calculateBadges(stats, clusters, streak);
     const challenges = this.calculateChallenges(stats, clusters);
     const areasToExplore = this.calculateAreasToExplore(clusters);
     const profile = this.calculateProfile(stats, badges);
 
-    return { challenges, badges, areasToExplore, profile, stats };
+    return { challenges, badges, areasToExplore, profile, stats, streak, newlyEarned };
   }
 
   private calculateStats() {
@@ -84,6 +90,11 @@ export class GamificationEngine {
 
   private isVisited(f: GeoJSONFeature): boolean {
     return f.properties.status === 'visited' || (f.properties.visit_count ?? 0) > 0;
+  }
+
+  private calculateStreak(): StreakData {
+    const allVisits = this.features.flatMap(f => f.properties.visits ?? []);
+    return computeWeeklyStreak(allVisits, new Date());
   }
 
   private clusterByProximity(): AreaCluster[] {
@@ -184,8 +195,9 @@ export class GamificationEngine {
 
   private calculateBadges(
     stats: { total: number; visited: number; wishlist: number },
-    clusters: AreaCluster[]
-  ): Badge[] {
+    clusters: AreaCluster[],
+    streak: StreakData
+  ): { badges: Badge[]; newlyEarned: string[] } {
     const totalVisits = this.features
       .filter(f => this.isVisited(f))
       .reduce((sum, f) => sum + (f.properties.visit_count ?? 0), 0);
@@ -197,21 +209,29 @@ export class GamificationEngine {
       '10-places': stats.total >= 10,
       '5-hoods': distinctVisitedClusters >= 5,
       '50-visits': totalVisits >= 50,
+      '4-week-streak': streak.longest >= 4,
+      '12-week-streak': streak.longest >= 12,
     };
 
     const persisted = this.loadEarnedBadges();
+    const newlyEarned = Object.keys(liveEarned).filter(id => liveEarned[id] && !persisted.has(id));
+
     const merged = new Set(persisted);
     for (const [id, earned] of Object.entries(liveEarned)) {
       if (earned) merged.add(id);
     }
     this.persistEarnedBadges(merged);
 
-    return [
+    const badges: Badge[] = [
       { id: 'first-save', icon: '🌟', label: 'First Save', earned: merged.has('first-save') },
       { id: '10-places', icon: '📍', label: '10 Places', earned: merged.has('10-places') },
       { id: '5-hoods', icon: '🏙️', label: '5 Hoods', earned: merged.has('5-hoods') },
       { id: '50-visits', icon: '🍴', label: '50 Visits', earned: merged.has('50-visits') },
+      { id: '4-week-streak', icon: '🔥', label: 'Four in a Row', earned: merged.has('4-week-streak') },
+      { id: '12-week-streak', icon: '🏆', label: 'Regular', earned: merged.has('12-week-streak') },
     ];
+
+    return { badges, newlyEarned };
   }
 
   private calculateAreasToExplore(clusters: AreaCluster[]): AreaCluster[] {
