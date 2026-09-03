@@ -9,7 +9,7 @@ import { MapEngine } from '../core/map-engine';
 import { StorageLayer } from './storage';
 import { AnalyticsUI } from './analytics-ui.ts';
 import { AppController } from './app-controller';
-import { logVisit, attachVisitReview } from './visit';
+import { logVisit, attachVisitReview, recordVisit } from './visit';
 import { QuickVisitSheet } from './quick-visit-sheet';
 import { trapFocus } from '../core/focus-trap';
 import { pushOverlay, popOverlay } from '../core/overlay-stack';
@@ -410,6 +410,7 @@ export class UIController {
       return;
     }
 
+    const now = new Date().toISOString();
     const feature: GeoJSONFeature = {
       type: 'Feature',
       properties: {
@@ -420,9 +421,10 @@ export class UIController {
         tags,
         comments,
         rating: status === 'wishlist' ? 0 : rating,
-        visited_date: status === 'visited' ? new Date().toISOString().split('T')[0] : undefined,
-        created_at: id ? undefined : new Date().toISOString(),
-        last_visited: status === 'visited' ? new Date().toISOString() : undefined,
+        visited_date: status === 'visited' ? now.split('T')[0] : undefined,
+        created_at: id ? undefined : now,
+        last_visited: status === 'visited' ? now : undefined,
+        visits: status === 'visited' ? [now] : undefined,
       },
       geometry: {
         type: 'Point',
@@ -442,7 +444,10 @@ export class UIController {
       if (existing?.properties.created_at) {
         feature.properties.created_at = existing.properties.created_at;
       }
-      
+      if (existing?.properties.visits) {
+        feature.properties.visits = existing.properties.visits;
+      }
+
       this.mapEngine.updateFeature(id, feature.properties);
     } else {
       // Add new
@@ -1131,8 +1136,7 @@ export class UIController {
     }
     
     attachVisitReview(feature.properties, this.currentReviewRating, reviewText);
-    feature.properties.last_visited = new Date().toISOString();
-    feature.properties.visit_count = (feature.properties.visit_count || 0) + 1;
+    recordVisit(feature.properties);
     
     // Update map
     this.mapEngine.updateFeature(feature.properties.id, feature.properties);

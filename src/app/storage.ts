@@ -13,6 +13,10 @@ export function normalizePOI(feature: GeoJSONFeature): GeoJSONFeature {
   if (!feature.properties.category) feature.properties.category = 'restaurant';
   feature.properties.category = LEGACY_CATEGORY_MAP[feature.properties.category] ?? feature.properties.category;
   if (!feature.properties.status) feature.properties.status = 'visited';
+  if (!feature.properties.visits) {
+    const seed = feature.properties.last_visited ?? feature.properties.visited_date;
+    feature.properties.visits = seed ? [seed] : [];
+  }
   return feature;
 }
 
@@ -72,7 +76,9 @@ export class StorageLayer {
 
   async parseImportFile(file: File): Promise<GeoJSONFeatureCollection> {
     const text = await file.text();
-    return JSON.parse(text) as GeoJSONFeatureCollection;
+    const data = JSON.parse(text) as GeoJSONFeatureCollection;
+    data.features = data.features.map(normalizePOI);
+    return data;
   }
 
   clear(): void {

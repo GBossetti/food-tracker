@@ -44,6 +44,7 @@ export interface POIProperties {
   reviews?: Review[]; // Array of reviews with individual ratings
   visit_count?: number; // How many times visited
   last_visited?: string; // Last visit date
+  visits?: string[]; // Append-only ISO timestamps, one per recorded visit — powers streaks
   created_at?: string; // When POI was created
   [key: string]: any; // Allow custom properties
 }
