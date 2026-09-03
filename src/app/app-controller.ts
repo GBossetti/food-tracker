@@ -48,6 +48,11 @@ export class AppController {
     this.setupNavigation();
     this.mapEngine.on('click', (event) => this.openPlaceDetail(event.feature));
     this.loadData();
+
+    // Render real gamification state immediately — mapEngine.load() has
+    // already run by the time main.ts constructs this controller, so the
+    // drawer never shows placeholder content even before it's first opened.
+    this.gamificationUI.render();
   }
 
   public setUIController(uiController: UIController): void {

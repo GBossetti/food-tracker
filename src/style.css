@@ -1059,6 +1059,23 @@ body {
   margin-bottom: 10px;
 }
 
+.gamification-help {
+  margin-bottom: 14px;
+}
+
+.gamification-help summary {
+  font-size: var(--text-small);
+  color: var(--ink-2);
+  cursor: pointer;
+}
+
+.gamification-help p {
+  font-size: var(--text-micro);
+  color: var(--ink-3);
+  line-height: 1.6;
+  margin-top: 8px;
+}
+
 .challenge-list {
   display: flex;
   flex-direction: column;
@@ -1246,6 +1263,29 @@ body {
   font-size: var(--text-micro);
   color: var(--ink-2);
   margin-top: 2px;
+}
+
+.streak-strip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--border-radius-lg);
+  padding: 10px 14px;
+  margin-bottom: 20px;
+}
+
+.streak-flame {
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+.streak-text {
+  font-family: var(--font-display);
+  font-size: var(--text-small);
+  font-weight: 700;
+  color: var(--ink);
 }
 
 .you-stats {

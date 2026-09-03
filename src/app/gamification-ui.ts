@@ -10,28 +10,62 @@ export interface GamificationNavCallbacks {
 export class GamificationUI {
   private mapEngine: MapEngine;
   private nav: GamificationNavCallbacks;
+  private cache: GamificationData | null = null;
 
   constructor(mapEngine: MapEngine, nav: GamificationNavCallbacks) {
     this.mapEngine = mapEngine;
     this.nav = nav;
+    this.mapEngine.on('created', () => this.invalidate());
+    this.mapEngine.on('updated', () => this.invalidate());
+    this.mapEngine.on('deleted', () => this.invalidate());
+    this.setupDelegatedActivation();
+  }
+
+  /** Drops the memoized calculation so the next render() recomputes it. */
+  invalidate(): void {
+    this.cache = null;
   }
 
   render(): void {
-    const features = this.mapEngine.getAllFeatures();
-    const engine = new GamificationEngine(features);
-    const data = engine.calculateAll();
+    if (!this.cache) {
+      const features = this.mapEngine.getAllFeatures();
+      this.cache = new GamificationEngine(features).calculateAll();
+    }
 
-    this.renderChallenges(data);
-    this.renderProfile(data);
+    this.renderChallenges(this.cache);
+    this.renderProfile(this.cache);
   }
 
-  private bindActivation(el: Element, action: () => void): void {
-    el.addEventListener('click', action);
-    el.addEventListener('keydown', (e) => {
+  /** One delegated click/keydown listener per container, bound once, so
+   * repeated renders never stack duplicate handlers on card elements. */
+  private setupDelegatedActivation(): void {
+    this.bindContainer(
+      document.querySelector('#nav-drawer .challenge-list'),
+      (id) => this.cache?.challenges.find(c => c.id === id)?.action
+    );
+    this.bindContainer(document.querySelector('#nav-drawer .badges-row'), () => ({ type: 'places' }));
+    this.bindContainer(
+      document.getElementById('explore-areas'),
+      (id) => this.cache?.areasToExplore.find(a => a.id === id)?.action
+    );
+  }
+
+  private bindContainer(container: Element | null, resolve: (id: string) => GamificationAction | undefined): void {
+    if (!container) return;
+
+    const activate = (e: Event) => {
+      const target = (e.target as Element).closest<HTMLElement>('[data-id]');
+      if (!target || !container.contains(target)) return;
+      const action = resolve(target.dataset.id!);
+      if (action) this.runAction(action);
+    };
+
+    container.addEventListener('click', activate);
+    container.addEventListener('keydown', (e) => {
       const ke = e as KeyboardEvent;
       if (ke.key === 'Enter' || ke.key === ' ') {
         ke.preventDefault();
-        action();
+        activate(e);
       }
     });
   }
@@ -39,30 +73,21 @@ export class GamificationUI {
   private renderChallenges(data: GamificationData): void {
     const challengeList = document.querySelector('#nav-drawer .challenge-list');
     if (challengeList) {
-      challengeList.innerHTML = data.challenges.map(c => this.renderChallengeCard(c)).join('');
-      Array.from(challengeList.children).forEach((el, i) => {
-        this.bindActivation(el, () => this.runAction(data.challenges[i].action));
-      });
+      challengeList.innerHTML = data.stats.total === 0
+        ? `<p class="tab-sub">Save your first place to start earning badges.</p>`
+        : data.challenges.map(c => this.renderChallengeCard(c)).join('');
     }
 
     const badgesRow = document.querySelector('#nav-drawer .badges-row');
     if (badgesRow) {
       badgesRow.innerHTML = data.badges.map(b => this.renderBadge(b)).join('');
-      Array.from(badgesRow.children).forEach(el => {
-        this.bindActivation(el, () => this.runAction({ type: 'places' }));
-      });
     }
 
     const exploreAreas = document.getElementById('explore-areas');
     if (exploreAreas) {
-      if (data.areasToExplore.length > 0) {
-        exploreAreas.innerHTML = data.areasToExplore.map(a => this.renderAreaCard(a)).join('');
-        Array.from(exploreAreas.children).forEach((el, i) => {
-          this.bindActivation(el, () => this.runAction(data.areasToExplore[i].action));
-        });
-      } else {
-        exploreAreas.innerHTML = `<p class="tab-sub">No unexplored wishlist areas right now — every saved place nearby has been visited.</p>`;
-      }
+      exploreAreas.innerHTML = data.areasToExplore.length > 0
+        ? data.areasToExplore.map(a => this.renderAreaCard(a)).join('')
+        : `<p class="tab-sub">No unexplored wishlist areas right now — every saved place nearby has been visited.</p>`;
     }
   }
 
@@ -87,7 +112,7 @@ export class GamificationUI {
     const pct = Math.round((c.progress / c.target) * 100);
     const complete = c.progress >= c.target;
     return `
-      <div class="challenge-card${complete ? ' challenge-complete' : ''}" role="button" tabindex="0" aria-label="${escapeHtml(c.name)}: ${escapeHtml(c.desc)}, ${c.progress} of ${c.target}">
+      <div class="challenge-card${complete ? ' challenge-complete' : ''}" data-id="${escapeHtml(c.id)}" role="button" tabindex="0" aria-label="${escapeHtml(c.name)}: ${escapeHtml(c.desc)}, ${c.progress} of ${c.target}">
         <div class="challenge-icon">${c.icon}</div>
         <div class="challenge-body">
           <div class="challenge-name">${escapeHtml(c.name)}</div>
@@ -103,7 +128,7 @@ export class GamificationUI {
 
   private renderBadge(b: Badge): string {
     return `
-      <div class="badge${b.earned ? ' badge-earned' : ''}" role="button" tabindex="0" aria-label="${escapeHtml(b.label)}${b.earned ? ', earned' : ', locked'}">
+      <div class="badge${b.earned ? ' badge-earned' : ''}" data-id="${escapeHtml(b.id)}" role="button" tabindex="0" aria-label="${escapeHtml(b.label)}${b.earned ? ', earned' : ', locked'}">
         <span class="badge-icon">${b.icon}</span>
         <span class="badge-label">${escapeHtml(b.label)}</span>
       </div>
@@ -113,7 +138,7 @@ export class GamificationUI {
   private renderAreaCard(a: AreaCluster): string {
     const desc = `${a.wishlist} place${a.wishlist === 1 ? '' : 's'} on your wishlist here, ${a.visited} visited so far`;
     return `
-      <div class="challenge-card" role="button" tabindex="0" aria-label="${escapeHtml(a.label)}: ${desc}">
+      <div class="challenge-card" data-id="${escapeHtml(a.id)}" role="button" tabindex="0" aria-label="${escapeHtml(a.label)}: ${desc}">
         <div class="challenge-icon">📌</div>
         <div class="challenge-body">
           <div class="challenge-name">${escapeHtml(a.label)}</div>
@@ -126,6 +151,19 @@ export class GamificationUI {
   private renderProfile(data: GamificationData): void {
     const profileLevel = document.querySelector('#nav-drawer .profile-level');
     if (profileLevel) profileLevel.textContent = `Level ${data.profile.level} · ${data.profile.levelName}`;
+
+    const streakStrip = document.getElementById('streak-strip');
+    const streakText = document.getElementById('streak-text');
+    if (streakStrip && streakText) {
+      if (data.streak.current > 0) {
+        const weekWord = data.streak.current === 1 ? 'week' : 'weeks';
+        const best = data.streak.longest > data.streak.current ? ` · best: ${data.streak.longest}` : '';
+        streakText.textContent = `${data.streak.current} ${weekWord} in a row${best}`;
+        streakStrip.hidden = false;
+      } else {
+        streakStrip.hidden = true;
+      }
+    }
 
     const total = document.getElementById('you-stat-total');
     const visited = document.getElementById('you-stat-visited');
