@@ -55,4 +55,25 @@ describe('normalizePOI', () => {
     expect(result.properties.tags).toEqual(['tapas']);
     expect(result.properties.rating).toBe(4.5);
   });
+
+  it('backfills visits from last_visited when visits is missing', () => {
+    const result = normalizePOI(makeFeature({ last_visited: '2026-01-05T10:00:00.000Z' }));
+    expect(result.properties.visits).toEqual(['2026-01-05T10:00:00.000Z']);
+  });
+
+  it('falls back to visited_date when last_visited is absent', () => {
+    const result = normalizePOI(makeFeature({ visited_date: '2026-01-05' }));
+    expect(result.properties.visits).toEqual(['2026-01-05']);
+  });
+
+  it('backfills an empty array when no visit timestamp exists at all', () => {
+    const result = normalizePOI(makeFeature());
+    expect(result.properties.visits).toEqual([]);
+  });
+
+  it('leaves an existing visits array untouched', () => {
+    const existing = ['2025-01-01T00:00:00.000Z', '2025-02-01T00:00:00.000Z'];
+    const result = normalizePOI(makeFeature({ visits: existing, last_visited: '2026-01-05T10:00:00.000Z' }));
+    expect(result.properties.visits).toBe(existing);
+  });
 });
